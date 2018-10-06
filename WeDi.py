@@ -36,7 +36,6 @@ class services:
         #add image urls
         for url in self.urls:
             url = url[0]
-            #if (len(url) > 4 and (url[-4:] in self.img_types or url[-3:] in self.img_types)):
             if (self.is_img_link(url)):
                 self.img_urls.append(url)
 
@@ -49,7 +48,6 @@ class services:
                 url = img['src']
             elif ' data-src=' in str(img):
                 url = img['data-src']
-            #if (len(url) > 4 and (url[-4:] in self.img_types or url[-3:] in self.img_types)):
             if (self.is_img_link(url)):
                 self.img_urls.append(url)
 
@@ -65,7 +63,7 @@ class services:
             temp = os.path.basename(filename).split('.')
             ftype = temp[len(temp)-1]
             name = '.'.join(temp[:-1])
-            if len(name) > 3 and name[-1:] == ')' and name[-3:-2] == '(':
+            if len(name) > 3 and name[-1:] == ')' and name[-3:-2] == '(': #TODO fails in case > 9
                 counter = int(name[-2:-1]) #TODO try expect
                 counter += 1
                 name = name[:-2] + str(counter) + ')'
@@ -82,7 +80,12 @@ class services:
         counter = 0
         for url in self.img_urls:
             #print(url)
-            filename = re.search(r'/([\w_-]+[.](jpg|gif|png|jpeg))', url)
+            # regex = r'/([\w_-]+[.]('
+            # for img_type in self.img_types:
+            #     regex += img_type + '|'
+            # regex = regex[:-1] + r')'
+            # filename = re.search(regex, url, re.IGNORECASE)
+            filename = re.search(r'/([\w_-]+[.](jpg|gif|png|jpeg))', url, re.IGNORECASE) #TODO makes it dynamic
             if filename == None:
                 filename = re.sub('[^0-9a-zA-Z]+', '', url) + ".jpg"
             else:

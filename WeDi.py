@@ -12,16 +12,15 @@ class services:
         self.connect()
         self.extract_urls()
 
-    def multi_replace(self, to_be_replaced, replace_with, text):
-        for token in to_be_replaced:
+    def multi_replace(self, tokens_to_be_replaced, replace_with, text):
+        for token in tokens_to_be_replaced:
             text = text.replace(token, replace_with)
         text = text[1:]
         return text
 
     def create_dest_folders(self):
-        to_be_replaced = ['https://www.', 'http://www.', '*', '\\', '/', ':', '<', '>', '|', '?', '"', '\'']
-        site_name = self.multi_replace(to_be_replaced, '_', self.site)
-        print(site_name)
+        tokens_to_be_replaced = ['https://www.', 'http://www.', '*', '\\', '/', ':', '<', '>', '|', '?', '"', '\'']
+        site_name = self.multi_replace(tokens_to_be_replaced, '_', self.site)
         path = os.path.join(site_name, self.path)
         if (len(self.img_urls) != 0) :
             self.img_folder = os.path.join(path, "images")
@@ -37,7 +36,8 @@ class services:
         #add image urls
         for url in self.urls:
             url = url[0]
-            if (len(url) > 4 and (url[-4:] in self.img_types or url[-3:] in self.img_types)):
+            #if (len(url) > 4 and (url[-4:] in self.img_types or url[-3:] in self.img_types)):
+            if (self.is_img_link(url)):
                 self.img_urls.append(url)
 
     def extract_images(self):
@@ -49,27 +49,54 @@ class services:
                 url = img['src']
             elif ' data-src=' in str(img):
                 url = img['data-src']
-            if (len(url) > 4 and (url[-4:] in self.img_types or url[-3:] in self.img_types)):
+            #if (len(url) > 4 and (url[-4:] in self.img_types or url[-3:] in self.img_types)):
+            if (self.is_img_link(url)):
                 self.img_urls.append(url)
+
+    def is_img_link(self, url):
+        for img_type in self.img_types:
+            if ('.' + img_type) in url:
+                return True
+        return False
+
+    def create_filename(self, path, filename):
+        filename = os.path.join(path, filename)
+        while os.path.exists(filename):
+            temp = os.path.basename(filename).split('.')
+            ftype = temp[len(temp)-1]
+            name = '.'.join(temp[:-1])
+            if len(name) > 3 and name[-1:] == ')' and name[-3:-2] == '(':
+                counter = int(name[-2:-1]) #TODO try expect
+                counter += 1
+                name = name[:-2] + str(counter) + ')'
+                filename = name + '.' + ftype
+            else:
+                filename = name + '(1).' + ftype
+            filename = os.path.join(path, filename)
+        return filename
 
     def output_results(self):
         self.create_dest_folders()
         #output for images
         self.img_urls = set(self.img_urls)
+        counter = 0
         for url in self.img_urls:
-            print(url)
+            #print(url)
             filename = re.search(r'/([\w_-]+[.](jpg|gif|png|jpeg))', url)
             if filename == None:
-                print(url)
                 filename = re.sub('[^0-9a-zA-Z]+', '', url) + ".jpg"
             else:
                 filename = filename.group(1)
-            filename = os.path.join(self.img_folder, filename)
+            filename = self.create_filename(self.img_folder, filename)
+            print(filename)
             with open(filename, 'wb') as f:
                 if 'http' not in url:
                     url = '{}{}'.format(self.site, url)
                 response = requests.get(url)
                 f.write(response.content)
+            counter +=1
+            if counter == 3:
+                break
 
 if __name__ == "__main__":
     site = 'https://www.youtube.com/watch?v=GhlLy2elSlI'

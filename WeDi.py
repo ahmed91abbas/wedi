@@ -6,23 +6,33 @@ import os
 class services:
     def __init__(self, site, path):
         self.site = site
-        self.create_dest_folders(path)
+        self.path = path
         self.img_urls = []
         self.img_types = ['jpg', 'jpeg', 'png', 'gif']
         self.connect()
         self.extract_urls()
 
-    def create_dest_folders(self, path):
-        self.img_folder = os.path.join(path, "images")
-        if not os.path.isdir(self.img_folder):
-            os.makedirs(self.img_folder)
+    def multi_replace(self, to_be_replaced, replace_with, text):
+        for token in to_be_replaced:
+            text = text.replace(token, replace_with)
+        text = text[1:]
+        return text
+
+    def create_dest_folders(self):
+        to_be_replaced = ['https://www.', 'http://www.', '*', '\\', '/', ':', '<', '>', '|', '?', '"', '\'']
+        site_name = self.multi_replace(to_be_replaced, '_', self.site)
+        print(site_name)
+        path = os.path.join(site_name, self.path)
+        if (len(self.img_urls) != 0) :
+            self.img_folder = os.path.join(path, "images")
+            if not os.path.isdir(self.img_folder):
+                os.makedirs(self.img_folder)
 
     def connect(self):
         self.response = requests.get(self.site)
         self.soup = BeautifulSoup(self.response.text, 'html.parser')
 
     def extract_urls(self):
-        # self.urls = self.soup.find_all('a')
         self.urls = re.findall('["\']((http|ftp)s?://.*?)["\']', self.response.text)
         #add image urls
         for url in self.urls:
@@ -43,6 +53,7 @@ class services:
                 self.img_urls.append(url)
 
     def output_results(self):
+        self.create_dest_folders()
         #output for images
         self.img_urls = set(self.img_urls)
         for url in self.img_urls:

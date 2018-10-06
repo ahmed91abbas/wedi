@@ -15,11 +15,14 @@ class services:
     def multi_replace(self, tokens_to_be_replaced, replace_with, text):
         for token in tokens_to_be_replaced:
             text = text.replace(token, replace_with)
-        text = text[1:]
+        while(text[:1] == replace_with):
+            text = text[1:]
+        while(text[-1:] == replace_with):
+            text = text[:-1]
         return text
 
     def create_dest_folders(self):
-        tokens_to_be_replaced = ['https://www.', 'http://www.', '*', '\\', '/', ':', '<', '>', '|', '?', '"', '\'']
+        tokens_to_be_replaced = ['https://', 'http://', 'www.', '*', '\\', '/', ':', '<', '>', '|', '?', '"', '\'']
         site_name = self.multi_replace(tokens_to_be_replaced, '_', self.site)
         path = os.path.join(site_name, self.path)
         if (len(self.img_urls) != 0) :
@@ -36,8 +39,9 @@ class services:
         #add image urls
         for url in self.urls:
             url = url[0]
-            if (self.is_img_link(url)):
-                self.img_urls.append(url)
+            for link in url.split(" "):
+                if (self.is_img_link(link)):
+                    self.img_urls.append(link)
 
     def extract_images(self):
         img_tags = self.soup.find_all('img')
@@ -79,7 +83,7 @@ class services:
         self.img_urls = set(self.img_urls)
         counter = 0
         for url in self.img_urls:
-            #print(url)
+            print(url)
             # regex = r'/([\w_-]+[.]('
             # for img_type in self.img_types:
             #     regex += img_type + '|'
@@ -91,7 +95,6 @@ class services:
             else:
                 filename = filename.group(1)
             filename = self.create_filename(self.img_folder, filename)
-            print(filename)
             with open(filename, 'wb') as f:
                 if 'http' not in url:
                     url = '{}{}'.format(self.site, url)
@@ -102,7 +105,7 @@ class services:
                 break
 
 if __name__ == "__main__":
-    site = 'https://www.youtube.com/watch?v=GhlLy2elSlI'
+    site = 'https://www.youtube.com/'
     services = services(site, "")
     services.extract_images()
     services.output_results()

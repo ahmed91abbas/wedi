@@ -37,6 +37,11 @@ class services:
             return protocol + '://' + domain_name + url
         return url
 
+    def apply_special_rules(self, url):
+        if ("github" in self.domain[1]):
+            url = url.replace('https://github.com/', 'https://raw.github.com/')
+            url = url .replace('blob/', '')
+            return url
 
     def multi_replace(self, tokens_to_be_replaced, replace_with, text):
         for token in tokens_to_be_replaced:
@@ -75,6 +80,7 @@ class services:
             #print(url)
             for link in url.split(" "):
                 link = self.fix_url(link)
+                link = self.apply_special_rules(link)
                 if (self.is_img_link(link)):
                     self.img_urls.append(link)
                 if (self.is_doc_link(link)):

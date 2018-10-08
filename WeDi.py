@@ -11,7 +11,7 @@ class services:
         self.img_urls = []
         self.doc_urls = []
         self.img_types = ['jpg', 'jpeg', 'png', 'gif']
-        self.doc_types = ['py']
+        self.doc_types = ['py', 'txt', 'java']
         self.connect()
         self.extract_urls()
 
@@ -128,22 +128,20 @@ class services:
     def output_results(self):
         self.create_dest_folders()
         #output for images
-        # self.img_urls = set(self.img_urls)
+        self.img_urls = set(self.img_urls)
         counter = 0
         for url in self.img_urls:
             print(url)
-            # regex = r'/([\w_-]+[.]('
-            # for img_type in self.img_types:
-            #     regex += img_type + '|'
-            # regex = regex[:-1] + r')'
-            # filename = re.search(regex, url, re.IGNORECASE)
-            filename = re.search(r'/([\w_-]+[.](jpg|gif|png|jpeg))', url, re.IGNORECASE) #TODO makes it dynamic
+            regex = r'/([\w_-]+[.]('
+            for img_type in self.img_types:
+                regex += img_type + '|'
+            regex = regex[:-1] + '))'
+            filename = re.search(regex, url, re.IGNORECASE)
             if filename == None:
                 filename = re.sub('[^0-9a-zA-Z]+', '', url) + ".jpg"
             else:
                 filename = filename.group(1)
             filename = self.create_filename(self.img_folder, filename)
-            print(filename)
             with open(filename, 'wb') as f:
                 response = requests.get(url)
                 f.write(response.content)
@@ -155,7 +153,11 @@ class services:
         self.doc_urls = set(self.doc_urls)
         for url in self.doc_urls:
             print(url)
-            filename = re.search(r'/([\w_-]+[.](py))', url, re.IGNORECASE) #TODO makes it dynamic
+            regex = r'/([\w_-]+[.]('
+            for doc_type in self.doc_types:
+                regex += doc_type + '|'
+            regex = regex[:-1] + '))'
+            filename = re.search(regex, url, re.IGNORECASE)
             if filename == None:
                 filename = re.sub('[^0-9a-zA-Z]+', '', url) + ".txt"
             else:
@@ -166,7 +168,7 @@ class services:
                 f.write(response.content)
 
 if __name__ == "__main__":
-    site = 'https://github.com/pnugues/ilppp/tree/master/programs/labs/chunking/chunker_python/'
+    site = 'https://github.com/ahmed91abbas/ToDo/tree/master/src/gui'
     services = services(site, "")
     services.extract_images()
     services.output_results()

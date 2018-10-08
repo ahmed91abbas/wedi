@@ -7,7 +7,6 @@ class services:
     def __init__(self, site, path):
         self.site = site
         self.domain = self.extract_domain(site)
-        print(self.domain)
         self.path = path
         self.img_urls = []
         self.doc_urls = []
@@ -116,20 +115,20 @@ class services:
             temp = os.path.basename(filename).split('.')
             ftype = temp[len(temp)-1]
             name = '.'.join(temp[:-1])
-            if len(name) > 3 and name[-1:] == ')' and name[-3:-2] == '(': #TODO fails in case > 9
-                counter = int(name[-2:-1]) #TODO try expect
-                counter += 1
-                name = name[:-2] + str(counter) + ')'
-                filename = name + '.' + ftype
+            match = re.findall('[(][0-9]+[)].' + ftype, filename)
+            if match:
+                nbr = int(re.sub('[^0-9]','', match[0])) + 1
+                filename = filename.replace(match[0], '')
+                filename = filename + '(' + str(nbr) +').' + ftype
             else:
                 filename = name + '(1).' + ftype
-            filename = os.path.join(path, filename)
+                filename = os.path.join(path, filename)
         return filename
 
     def output_results(self):
         self.create_dest_folders()
         #output for images
-        self.img_urls = set(self.img_urls)
+        # self.img_urls = set(self.img_urls)
         counter = 0
         for url in self.img_urls:
             print(url)
@@ -144,6 +143,7 @@ class services:
             else:
                 filename = filename.group(1)
             filename = self.create_filename(self.img_folder, filename)
+            print(filename)
             with open(filename, 'wb') as f:
                 response = requests.get(url)
                 f.write(response.content)
@@ -157,7 +157,7 @@ class services:
             print(url)
             filename = re.search(r'/([\w_-]+[.](py))', url, re.IGNORECASE) #TODO makes it dynamic
             if filename == None:
-                filename = re.sub('[^0-9a-zA-Z]+', '', url) + ".py"
+                filename = re.sub('[^0-9a-zA-Z]+', '', url) + ".txt"
             else:
                 filename = filename.group(1)
             filename = self.create_filename(self.doc_folder, filename)
@@ -166,7 +166,7 @@ class services:
                 f.write(response.content)
 
 if __name__ == "__main__":
-    site = 'https://github.com/ryougi1/language_technology/tree/master/L3'
+    site = 'https://github.com/pnugues/ilppp/tree/master/programs/labs/chunking/chunker_python/'
     services = services(site, "")
     services.extract_images()
     services.output_results()

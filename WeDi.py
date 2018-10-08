@@ -6,11 +6,21 @@ import os
 class services:
     def __init__(self, site, path):
         self.site = site
+        self.base_site = self.extract_domain(site)
+        print(self.base_site)
         self.path = path
         self.img_urls = []
+        self.doc_urls = []
         self.img_types = ['jpg', 'jpeg', 'png', 'gif']
+        self.doc_types = ['py']
         self.connect()
         self.extract_urls()
+
+    def extract_domain(self, site):
+        base_site = re.search('(http|ftp)s?[:\/\/]+[A-Za-z0-9\.]+\/', site)
+        if not base_site:
+            return ""
+        return base_site.group(0)
 
     def multi_replace(self, tokens_to_be_replaced, replace_with, text):
         for token in tokens_to_be_replaced:
@@ -29,19 +39,31 @@ class services:
             self.img_folder = os.path.join(path, "images")
             if not os.path.isdir(self.img_folder):
                 os.makedirs(self.img_folder)
+        if (len(self.doc_urls) != 0) :
+            self.doc_folder = os.path.join(path, "documents")
+            if not os.path.isdir(self.doc_folder):
+                os.makedirs(self.doc_folder)
 
     def connect(self):
-        self.response = requests.get(self.site)
+        self.response = requests.get(self.site, allow_redirects=True)
+        # print(self.response.text)
+        #print(self.response.headers)
         self.soup = BeautifulSoup(self.response.text, 'html.parser')
 
     def extract_urls(self):
         self.urls = re.findall('["\']((http|ftp)s?://.*?)["\']', self.response.text)
+        x = [a['href'] for a in self.soup.find_all('a')]
+        #print(x)
+        self.urls = set(self.urls)
         #add image urls
         for url in self.urls:
             url = url[0]
+            #print(url)
             for link in url.split(" "):
                 if (self.is_img_link(link)):
                     self.img_urls.append(link)
+                if (self.is_doc_link(link)):
+                    self.doc_urls.append(link)
 
     def extract_images(self):
         img_tags = self.soup.find_all('img')
@@ -58,6 +80,12 @@ class services:
     def is_img_link(self, url):
         for img_type in self.img_types:
             if ('.' + img_type) in url:
+                return True
+        return False
+
+    def is_doc_link(self, url):
+        for doc_type in self.doc_types:
+            if ('.' + doc_type) in url:
                 return True
         return False
 
@@ -97,15 +125,31 @@ class services:
             filename = self.create_filename(self.img_folder, filename)
             with open(filename, 'wb') as f:
                 if 'http' not in url:
-                    url = '{}{}'.format(self.site, url)
+                    url = '{}{}'.format(self.base_site, url)
                 response = requests.get(url)
                 f.write(response.content)
-            counter +=1
-            if counter == 3:
-                break
+            # counter +=1
+            # if counter == 3:
+            #     break
+
+        #output for documents
+        self.doc_urls = set(self.doc_urls)
+        for url in self.doc_urls:
+            print(url)
+            filename = re.search(r'/([\w_-]+[.](py))', url, re.IGNORECASE) #TODO makes it dynamic
+            if filename == None:
+                filename = re.sub('[^0-9a-zA-Z]+', '', url) + ".py"
+            else:
+                filename = filename.group(1)
+            filename = self.create_filename(self.doc_folder, filename)
+            with open(filename, 'wb') as f:
+                if 'http' not in url:
+                    url = '{}{}'.format(self.base_site, url)
+                response = requests.get(url)
+                f.write(response.content)
 
 if __name__ == "__main__":
-    site = 'https://www.youtube.com/'
+    site = 'https://github.com/ryougi1/language_technology/tree/master/L3'
     services = services(site, "")
     services.extract_images()
     services.output_results()

@@ -6,8 +6,8 @@ import os
 class services:
     def __init__(self, site, path):
         self.site = site
-        self.base_site = self.extract_domain(site)
-        print(self.base_site)
+        self.domain = self.extract_domain(site)
+        print(self.domain)
         self.path = path
         self.img_urls = []
         self.doc_urls = []
@@ -17,10 +17,26 @@ class services:
         self.extract_urls()
 
     def extract_domain(self, site):
-        base_site = re.search('(http|ftp)s?[:\/\/]+[A-Za-z0-9\.]+\/', site)
-        if not base_site:
+        domain = re.search('(http|ftp)s?[:\/\/]+[A-Za-z0-9\.]+\/', site)
+        if not domain:
             return ""
-        return base_site.group(0)
+        res = domain.group(0).split('://')
+        protocol = res[0]
+        domain = res[1]
+        return (protocol, domain)
+
+    def fix_url(self, url):
+        if 'http' not in url:
+            if url[:1] == '/':
+                url = url[1:]
+            protocol = self.domain[0]
+            domain_name = self.domain[1]
+            x = len(domain_name)
+            if len(url) > x and url[:x] == domain_name:
+                return protocol + '://' + url
+            return protocol + '://' + domain_name + url
+        return url
+
 
     def multi_replace(self, tokens_to_be_replaced, replace_with, text):
         for token in tokens_to_be_replaced:
@@ -52,14 +68,13 @@ class services:
 
     def extract_urls(self):
         self.urls = re.findall('["\']((http|ftp)s?://.*?)["\']', self.response.text)
-        x = [a['href'] for a in self.soup.find_all('a')]
-        #print(x)
+        self.urls += [(a['href'], "") for a in self.soup.find_all('a')]
         self.urls = set(self.urls)
-        #add image urls
         for url in self.urls:
             url = url[0]
             #print(url)
             for link in url.split(" "):
+                link = self.fix_url(link)
                 if (self.is_img_link(link)):
                     self.img_urls.append(link)
                 if (self.is_doc_link(link)):
@@ -124,8 +139,6 @@ class services:
                 filename = filename.group(1)
             filename = self.create_filename(self.img_folder, filename)
             with open(filename, 'wb') as f:
-                if 'http' not in url:
-                    url = '{}{}'.format(self.base_site, url)
                 response = requests.get(url)
                 f.write(response.content)
             # counter +=1
@@ -143,8 +156,6 @@ class services:
                 filename = filename.group(1)
             filename = self.create_filename(self.doc_folder, filename)
             with open(filename, 'wb') as f:
-                if 'http' not in url:
-                    url = '{}{}'.format(self.base_site, url)
                 response = requests.get(url)
                 f.write(response.content)
 

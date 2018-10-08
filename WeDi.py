@@ -11,7 +11,8 @@ class services:
         self.img_urls = []
         self.doc_urls = []
         self.img_types = ['jpg', 'jpeg', 'png', 'gif']
-        self.doc_types = ['py', 'txt', 'java']
+        self.doc_types = ['py', 'txt', 'java', 'html', 'php', 'pdf', 'md', 'gitignore']
+        self.settings = {'images':False, 'documents':True}
         self.connect()
         self.extract_urls()
 
@@ -103,7 +104,7 @@ class services:
                 return True
         return False
 
-    def is_doc_link(self, url):
+    def is_doc_link(self, url): #TODO check last part of url and not whole url
         for doc_type in self.doc_types:
             if ('.' + doc_type) in url:
                 return True
@@ -128,8 +129,10 @@ class services:
     def output_results(self):
         self.create_dest_folders()
         #output for images
-        self.img_urls = set(self.img_urls)
         counter = 0
+        if not self.settings['images']:
+            self.img_urls = []
+        self.img_urls = set(self.img_urls)
         for url in self.img_urls:
             print(url)
             regex = r'/([\w_-]+[.]('
@@ -150,6 +153,8 @@ class services:
             #     break
 
         #output for documents
+        if not self.settings['documents']:
+            self.doc_urls = []
         self.doc_urls = set(self.doc_urls)
         for url in self.doc_urls:
             print(url)
@@ -168,7 +173,7 @@ class services:
                 f.write(response.content)
 
 if __name__ == "__main__":
-    site = 'https://github.com/ahmed91abbas/ToDo/tree/master/src/gui'
+    site = 'https://github.com/ahmed91abbas/WeDi'
     services = services(site, "")
     services.extract_images()
     services.output_results()

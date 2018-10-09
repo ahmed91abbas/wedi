@@ -57,11 +57,11 @@ class services:
         tokens_to_be_replaced = ['https://', 'http://', 'www.', '*', '\\', '/', ':', '<', '>', '|', '?', '"', '\'']
         site_name = self.multi_replace(tokens_to_be_replaced, '_', self.site)
         path = os.path.join(site_name, self.path)
-        if (len(self.img_urls) != 0) :
+        if (len(self.img_urls) != 0 and self.settings['images']) :
             self.img_folder = os.path.join(path, "images")
             if not os.path.isdir(self.img_folder):
                 os.makedirs(self.img_folder)
-        if (len(self.doc_urls) != 0) :
+        if (len(self.doc_urls) != 0 and self.settings['documents']) :
             self.doc_folder = os.path.join(path, "documents")
             if not os.path.isdir(self.doc_folder):
                 os.makedirs(self.doc_folder)
@@ -97,6 +97,8 @@ class services:
                 url = img['src']
             elif ' data-src=' in str(img):
                 url = img['data-src']
+            url =  self.fix_url(url)
+            url = self.apply_special_rules(url)
             if (self.is_img_link(url)):
                 self.img_urls.append(url)
 
@@ -106,9 +108,9 @@ class services:
                 return True
         return False
 
-    def is_doc_link(self, url): #TODO check last part of url and not whole url
+    def is_doc_link(self, url):
         for doc_type in self.doc_types:
-            if ('.' + doc_type) in url:
+            if ('.' + doc_type) in url[-len(doc_type) - 1:]:
                 return True
         return False
 
@@ -148,7 +150,7 @@ class services:
                 filename = filename.group(1)
             filename = self.create_filename(self.img_folder, filename)
             with open(filename, 'wb') as f:
-                response = requests.get(url)
+                response = requests.get(url, allow_redirects=True)
                 f.write(response.content)
             # counter +=1
             # if counter == 3:
@@ -164,21 +166,22 @@ class services:
             for doc_type in self.doc_types:
                 regex += doc_type + '|'
             regex = regex[:-1] + '))'
-            filename = re.search(regex, url, re.IGNORECASE)
+            filename = re.findall(regex, url, re.IGNORECASE)
             if filename == None:
                 filename = re.sub('[^0-9a-zA-Z]+', '', url) + ".txt"
             else:
-                filename = filename.group(1)
+                filename = filename[len(filename)-1][0]
             filename = self.create_filename(self.doc_folder, filename)
             with open(filename, 'wb') as f:
-                response = requests.get(url)
+                response = requests.get(url, allow_redirects=True)
+                # print(self.response.headers['Content-Type'])
                 f.write(response.content)
 
 if __name__ == "__main__":
-    site = 'http://cs.lth.se/edan20/coursework/'
+    site = 'http://cs.lth.se/edaa60/datorlaborationer/?no_cache=1'
     path = ""
     img_types = ['jpg', 'jpeg', 'png', 'gif']
-    doc_types = ['py', 'txt', 'java', 'html', 'php', 'pdf', 'md', 'gitignore']
+    doc_types = ['py', 'txt', 'java', 'php', 'pdf', 'md', 'gitignore', 'c']
     settings = {'path':path, 'images':False, 'documents':True, 'img_types':img_types, 'doc_types':doc_types}
     services = services(site, settings)
     services.extract_images()

@@ -4,15 +4,15 @@ from bs4 import BeautifulSoup
 import os
 
 class services:
-    def __init__(self, site, path):
+    def __init__(self, site, settings):
         self.site = site
         self.domain = self.extract_domain(site)
-        self.path = path
+        self.path = settings['path']
         self.img_urls = []
         self.doc_urls = []
-        self.img_types = ['jpg', 'jpeg', 'png', 'gif']
-        self.doc_types = ['py', 'txt', 'java', 'html', 'php', 'pdf', 'md', 'gitignore']
-        self.settings = {'images':False, 'documents':True}
+        self.img_types = settings['img_types']
+        self.doc_types = settings['doc_types']
+        self.settings = settings
         self.connect()
         self.extract_urls()
 
@@ -42,6 +42,7 @@ class services:
             url = url.replace('https://github.com/', 'https://raw.github.com/')
             url = url .replace('blob/', '')
             return url
+        return url
 
     def multi_replace(self, tokens_to_be_replaced, replace_with, text):
         for token in tokens_to_be_replaced:
@@ -73,11 +74,12 @@ class services:
 
     def extract_urls(self):
         self.urls = re.findall('["\']((http|ftp)s?://.*?)["\']', self.response.text)
-        self.urls += [(a['href'], "") for a in self.soup.find_all('a')]
+        for link in self.soup.find_all('a'):
+            if 'href' in str(link):
+                self.urls.append((link['href'], ""))
         self.urls = set(self.urls)
         for url in self.urls:
             url = url[0]
-            #print(url)
             for link in url.split(" "):
                 link = self.fix_url(link)
                 link = self.apply_special_rules(link)
@@ -173,8 +175,12 @@ class services:
                 f.write(response.content)
 
 if __name__ == "__main__":
-    site = 'https://github.com/ahmed91abbas/WeDi'
-    services = services(site, "")
+    site = 'http://cs.lth.se/edan20/coursework/'
+    path = ""
+    img_types = ['jpg', 'jpeg', 'png', 'gif']
+    doc_types = ['py', 'txt', 'java', 'html', 'php', 'pdf', 'md', 'gitignore']
+    settings = {'path':path, 'images':False, 'documents':True, 'img_types':img_types, 'doc_types':doc_types}
+    services = services(site, settings)
     services.extract_images()
     services.output_results()
 

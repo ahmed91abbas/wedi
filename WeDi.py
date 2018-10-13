@@ -2,6 +2,7 @@ import regex as re
 import requests
 from bs4 import BeautifulSoup
 import os
+import shutil
 
 class services:
     def __init__(self, site, settings):
@@ -65,6 +66,17 @@ class services:
             self.doc_folder = os.path.join(path, "documents")
             if not os.path.isdir(self.doc_folder):
                 os.makedirs(self.doc_folder)
+
+    def safe_url_request(self, url):
+        try:
+            try:
+                response = requests.get(self.site, allow_redirects=True)
+            except:
+                response = requests.get(self.site)
+        except:
+            response = None
+        return response
+
 
     def connect(self):
         self.response = requests.get(self.site, allow_redirects=True)
@@ -150,8 +162,10 @@ class services:
                 filename = filename.group(1)
             filename = self.create_filename(self.img_folder, filename)
             with open(filename, 'wb') as f:
-                response = requests.get(url, allow_redirects=True)
-                f.write(response.content)
+                response = self.safe_url_request(url)
+                if response != None:
+                    # print(self.response.headers['Content-Type'])
+                    f.write(response.content)
             # counter +=1
             # if counter == 3:
             #     break
@@ -173,17 +187,27 @@ class services:
                 filename = filename[len(filename)-1][0]
             filename = self.create_filename(self.doc_folder, filename)
             with open(filename, 'wb') as f:
-                response = requests.get(url, allow_redirects=True)
-                # print(self.response.headers['Content-Type'])
-                f.write(response.content)
+                #response = requests.get(url, allow_redirects=True)
+                response = self.safe_url_request(url)
+                if response != None:
+                    # print(self.response.headers['Content-Type'])
+                    f.write(response.content)
+
+    def clean_up(self):
+        dirs = [os.path.join(self.path, d) for d in os.listdir(self.path)
+                    if os.path.isdir(os.path.join(self.path, d))]
+        for d in dirs:
+            if d != os.path.join(self.path, '.git'):
+                shutil.rmtree(d)
 
 if __name__ == "__main__":
-    site = 'http://cs.lth.se/edaa60/datorlaborationer/?no_cache=1'
-    path = ""
+    site = 'https://www.blocket.se/'
+    path = "."
     img_types = ['jpg', 'jpeg', 'png', 'gif']
     doc_types = ['py', 'txt', 'java', 'php', 'pdf', 'md', 'gitignore', 'c']
-    settings = {'path':path, 'images':False, 'documents':True, 'img_types':img_types, 'doc_types':doc_types}
+    settings = {'path':path, 'images':True, 'documents':True, 'img_types':img_types, 'doc_types':doc_types}
     services = services(site, settings)
+    services.clean_up() #TODO remove
     services.extract_images()
     services.output_results()
 

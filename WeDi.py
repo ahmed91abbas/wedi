@@ -13,7 +13,9 @@ class services:
         self.img_urls = []
         self.doc_urls = []
         self.img_types = settings['img_types']
+        self.img_folder = ""
         self.doc_types = settings['doc_types']
+        self.doc_folder = ""
         self.settings = settings
         self.connect()
         self.extract_urls()
@@ -75,7 +77,6 @@ class services:
             wget.download(url, filename)
         except:
             print("Falied to download!")
-
 
     def connect(self):
         try:
@@ -144,44 +145,26 @@ class services:
                 filename = os.path.join(path, filename)
         return filename
 
-    def download_images(self):
-        self.img_urls = set(self.img_urls)
-        for url in self.img_urls:
-            regex = r'/([\w_-]+[.]('
-            for img_type in self.img_types:
-                regex += img_type + '|'
+    def download_links(self, urls, types, output_dir):
+        urls = set(urls)
+        for url in urls:
+            regex = r'/([\w_-]*[.]('
+            for t in types:
+                regex += t + '|'
             regex = regex[:-1] + '))'
             filename = re.findall(regex, url, re.IGNORECASE)
-            if filename == None or len(filename) == 0:
-                print("****************  JPG   ***************")
-                filename = re.sub('[^0-9a-zA-Z]+', '', url) + ".jpg"
-            else:
+            if filename != None and len(filename) != 0:
                 filename = filename[len(filename)-1][0]
-            filename = self.create_filename(self.img_folder, filename)
+            filename = self.create_filename(output_dir, filename)
             self.download_url(url, filename)
 
-    def download_documents(self):
-        self.doc_urls = set(self.doc_urls)
-        for url in self.doc_urls:
-            regex = r'/([\w_-]*[.]('
-            for doc_type in self.doc_types:
-                regex += doc_type + '|'
-            regex = regex[:-1] + '))'
-            filename = re.findall(regex, url, re.IGNORECASE)
-            if filename == None or len(filename) == 0:
-                print("****************  TXT   ***************")
-                filename = re.sub('[^0-9a-zA-Z]+', '', url) + ".txt"
-            else:
-                filename = filename[len(filename)-1][0]
-            filename = self.create_filename(self.doc_folder, filename)
-            self.download_url(url, filename)
 
     def output_results(self):
         self.create_dest_folders()
         if self.settings['images']:
-            self.download_images()
+            self.download_links(self.img_urls, self.img_types, self.img_folder)
         if self.settings['documents']:
-            self.download_documents()
+            self.download_links(self.doc_urls, self.doc_types, self.doc_folder)
 
     def clean_up(self):
         try:
@@ -194,7 +177,7 @@ class services:
             pass
 
 if __name__ == "__main__":
-    site = 'https://www.youtube.com/watch?v=ZNswbkSGHGI'
+    site = 'https://www.youtube.com/watch?v=NoFfgJbkl-o'
     path = "."
     img_types = ['jpg', 'jpeg', 'png', 'gif']
     doc_types = ['py', 'txt', 'java', 'php', 'pdf', 'md', 'gitignore', 'c']

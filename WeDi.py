@@ -3,6 +3,7 @@ import requests
 from bs4 import BeautifulSoup
 import os
 import shutil
+import wget
 
 class services:
     def __init__(self, site, settings):
@@ -16,6 +17,7 @@ class services:
         self.settings = settings
         self.connect()
         self.extract_urls()
+        self.extract_images()
 
     def extract_domain(self, site):
         domain = re.search('(http|ftp)s?[:\/\/]+[A-Za-z0-9\.]+\/', site)
@@ -67,15 +69,11 @@ class services:
             if not os.path.isdir(self.doc_folder):
                 os.makedirs(self.doc_folder)
 
-    def safe_url_request(self, url):
+    def download_url(self, url, filename):
         try:
-            try:
-                response = requests.get(self.site, allow_redirects=True)
-            except:
-                response = requests.get(self.site)
+            wget.download(url, filename)
         except:
-            response = None
-        return response
+            pass
 
 
     def connect(self):
@@ -142,72 +140,62 @@ class services:
                 filename = os.path.join(path, filename)
         return filename
 
-    def output_results(self):
-        self.create_dest_folders()
-        #output for images
-        counter = 0
+    def download_images(self):
         if not self.settings['images']:
             self.img_urls = []
         self.img_urls = set(self.img_urls)
         for url in self.img_urls:
-            print(url)
             regex = r'/([\w_-]+[.]('
             for img_type in self.img_types:
                 regex += img_type + '|'
             regex = regex[:-1] + '))'
-            filename = re.search(regex, url, re.IGNORECASE)
-            if filename == None:
+            filename = re.findall(regex, url, re.IGNORECASE)
+            if filename == None or len(filename) == 0:
                 filename = re.sub('[^0-9a-zA-Z]+', '', url) + ".jpg"
             else:
-                filename = filename.group(1)
+                filename = filename[len(filename)-1][0]
             filename = self.create_filename(self.img_folder, filename)
-            with open(filename, 'wb') as f:
-                response = self.safe_url_request(url)
-                if response != None:
-                    # print(self.response.headers['Content-Type'])
-                    f.write(response.content)
-            # counter +=1
-            # if counter == 3:
-            #     break
+            self.download_url(url, filename)
 
-        #output for documents
+    def download_documents(self):
         if not self.settings['documents']:
             self.doc_urls = []
         self.doc_urls = set(self.doc_urls)
         for url in self.doc_urls:
-            print(url)
-            regex = r'/([\w_-]+[.]('
+            regex = r'/([\w_-]*[.]('
             for doc_type in self.doc_types:
                 regex += doc_type + '|'
             regex = regex[:-1] + '))'
             filename = re.findall(regex, url, re.IGNORECASE)
-            if filename == None:
+            if filename == None or len(filename) == 0:
                 filename = re.sub('[^0-9a-zA-Z]+', '', url) + ".txt"
             else:
                 filename = filename[len(filename)-1][0]
             filename = self.create_filename(self.doc_folder, filename)
-            with open(filename, 'wb') as f:
-                #response = requests.get(url, allow_redirects=True)
-                response = self.safe_url_request(url)
-                if response != None:
-                    # print(self.response.headers['Content-Type'])
-                    f.write(response.content)
+            self.download_url(url, filename)
+
+    def output_results(self):
+        self.create_dest_folders()
+        self.download_images()
+        self.download_documents()
 
     def clean_up(self):
-        dirs = [os.path.join(self.path, d) for d in os.listdir(self.path)
-                    if os.path.isdir(os.path.join(self.path, d))]
-        for d in dirs:
-            if d != os.path.join(self.path, '.git'):
-                shutil.rmtree(d)
+        try:
+            dirs = [os.path.join(self.path, d) for d in os.listdir(self.path)
+                        if os.path.isdir(os.path.join(self.path, d))]
+            for d in dirs:
+                if d != os.path.join(self.path, '.git'):
+                    shutil.rmtree(d)
+        except:
+            pass
 
 if __name__ == "__main__":
-    site = 'https://www.blocket.se/'
+    site = 'https://github.com/ahmed91abbas/WeDi'
     path = "."
     img_types = ['jpg', 'jpeg', 'png', 'gif']
     doc_types = ['py', 'txt', 'java', 'php', 'pdf', 'md', 'gitignore', 'c']
     settings = {'path':path, 'images':True, 'documents':True, 'img_types':img_types, 'doc_types':doc_types}
     services = services(site, settings)
     services.clean_up() #TODO remove
-    services.extract_images()
     services.output_results()
 

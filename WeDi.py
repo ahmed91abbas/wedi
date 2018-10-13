@@ -71,9 +71,10 @@ class services:
 
     def download_url(self, url, filename):
         try:
+            print("\n", url)
             wget.download(url, filename)
         except:
-            pass
+            print("Falied to download!")
 
 
     def connect(self):
@@ -193,7 +194,7 @@ class services:
             pass
 
 if __name__ == "__main__":
-    site = 'https://github.com/ahmed91abbas/WeDi'
+    site = 'https://www.youtube.com/watch?v=ZNswbkSGHGI'
     path = "."
     img_types = ['jpg', 'jpeg', 'png', 'gif']
     doc_types = ['py', 'txt', 'java', 'php', 'pdf', 'md', 'gitignore', 'c']

@@ -77,10 +77,13 @@ class services:
 
 
     def connect(self):
-        self.response = requests.get(self.site, allow_redirects=True)
-        # print(self.response.text)
-        #print(self.response.headers)
-        self.soup = BeautifulSoup(self.response.text, 'html.parser')
+        try:
+            self.response = requests.get(self.site, allow_redirects=True)
+            # print(self.response.text)
+            #print(self.response.headers)
+            self.soup = BeautifulSoup(self.response.text, 'html.parser')
+        except:
+            print("Couldn't establish a connection to: " + self.site)
 
     def extract_urls(self):
         self.urls = re.findall('["\']((http|ftp)s?://.*?)["\']', self.response.text)
@@ -141,8 +144,6 @@ class services:
         return filename
 
     def download_images(self):
-        if not self.settings['images']:
-            self.img_urls = []
         self.img_urls = set(self.img_urls)
         for url in self.img_urls:
             regex = r'/([\w_-]+[.]('
@@ -151,6 +152,7 @@ class services:
             regex = regex[:-1] + '))'
             filename = re.findall(regex, url, re.IGNORECASE)
             if filename == None or len(filename) == 0:
+                print("****************  JPG   ***************")
                 filename = re.sub('[^0-9a-zA-Z]+', '', url) + ".jpg"
             else:
                 filename = filename[len(filename)-1][0]
@@ -158,8 +160,6 @@ class services:
             self.download_url(url, filename)
 
     def download_documents(self):
-        if not self.settings['documents']:
-            self.doc_urls = []
         self.doc_urls = set(self.doc_urls)
         for url in self.doc_urls:
             regex = r'/([\w_-]*[.]('
@@ -168,6 +168,7 @@ class services:
             regex = regex[:-1] + '))'
             filename = re.findall(regex, url, re.IGNORECASE)
             if filename == None or len(filename) == 0:
+                print("****************  TXT   ***************")
                 filename = re.sub('[^0-9a-zA-Z]+', '', url) + ".txt"
             else:
                 filename = filename[len(filename)-1][0]
@@ -176,8 +177,10 @@ class services:
 
     def output_results(self):
         self.create_dest_folders()
-        self.download_images()
-        self.download_documents()
+        if self.settings['images']:
+            self.download_images()
+        if self.settings['documents']:
+            self.download_documents()
 
     def clean_up(self):
         try:

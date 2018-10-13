@@ -11,9 +11,9 @@ class services:
         self.domain = self.extract_domain(site)
         self.path = settings['path']
         self.img_urls = []
-        self.doc_urls = []
         self.img_types = settings['img_types']
         self.img_folder = ""
+        self.doc_urls = []
         self.doc_types = settings['doc_types']
         self.doc_folder = ""
         self.settings = settings

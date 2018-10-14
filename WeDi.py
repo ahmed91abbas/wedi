@@ -4,7 +4,12 @@ from bs4 import BeautifulSoup
 import os
 import shutil
 import wget
-#import pytube
+#import youtube-dl TODO
+'''
+second layer video and audio download using youtube dl
+download sound with highest quilety
+make quility options for video download
+'''
 
 class services:
     def __init__(self, site, settings):
@@ -20,6 +25,9 @@ class services:
         self.vid_urls = []
         self.vid_types = settings['vid_types']
         self.vid_folder = ""
+        self.aud_urls = []
+        self.aud_types = settings['aud_types']
+        self.aud_folder = ""
         self.settings = settings
         self.connect()
         self.urls = self.extract_urls()
@@ -78,6 +86,10 @@ class services:
             self.vid_folder = os.path.join(path, "videos")
             if not os.path.isdir(self.vid_folder):
                 os.makedirs(self.vid_folder)
+        if (len(self.aud_urls) != 0 and self.settings['audio']) :
+            self.aud_folder = os.path.join(path, "audio")
+            if not os.path.isdir(self.aud_folder):
+                os.makedirs(self.aud_folder)
 
     def download_url(self, url, filename):
         try:
@@ -144,6 +156,12 @@ class services:
                 return True
         return False
 
+    def is_aud_link(self, url):
+        for aud_type in self.aud_types:
+            if ('.' + aud_type) in url[-len(aud_type) - 1:]:
+                return True
+        return False
+
     def create_filename(self, path, filename):
         filename = os.path.join(path, filename)
         while os.path.exists(filename):
@@ -163,15 +181,15 @@ class services:
     def download_links(self, urls, types, output_dir):
         urls = set(urls)
         for url in urls:
-            regex = r'/([\w_-]*[.]('
+            regex = r'/([^/]*[.]('
             for t in types:
                 regex += t + '|'
             regex = regex[:-1] + '))'
             filename = re.findall(regex, url, re.IGNORECASE)
             if filename != None and len(filename) != 0:
                 filename = filename[len(filename)-1][0]
-            filename = self.create_filename(output_dir, filename)
-            self.download_url(url, filename)
+                filename = self.create_filename(output_dir, filename)
+                self.download_url(url, filename)
 
 
     def output_results(self):
@@ -182,6 +200,8 @@ class services:
             self.download_links(self.doc_urls, self.doc_types, self.doc_folder)
         if self.settings['videos']:
             self.download_links(self.vid_urls, self.vid_types, self.vid_folder)
+        if self.settings['audio']:
+            self.download_links(self.aud_urls, self.aud_types, self.aud_folder)
 
     def clean_up(self):
         try:
@@ -194,12 +214,13 @@ class services:
             pass
 
 if __name__ == "__main__":
-    site = 'https://stock.adobe.com/'
+    site = 'https://youtube.com/'
     path = "."
     img_types = ['jpg', 'jpeg', 'png', 'gif']
     doc_types = ['py', 'txt', 'java', 'php', 'pdf', 'md', 'gitignore', 'c']
     vid_types = ['mp4', 'avi', 'mpeg', 'mpg', 'wmv', 'mov', 'flv', 'swf', 'mkv', '3gp']
-    settings = {'path':path, 'images':True, 'documents':True, 'videos':True, 'img_types':img_types, 'doc_types':doc_types, 'vid_types':vid_types}
+    aud_types = ['mp3', 'aac', 'wma', 'wav']
+    settings = {'path':path, 'images':True, 'documents':True, 'videos':True, 'audio':True, 'img_types':img_types, 'doc_types':doc_types, 'vid_types':vid_types, 'aud_types':aud_types}
     services = services(site, settings)
     services.clean_up() #TODO remove
     services.output_results()

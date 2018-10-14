@@ -17,6 +17,9 @@ class services:
         self.doc_urls = []
         self.doc_types = settings['doc_types']
         self.doc_folder = ""
+        self.vid_urls = []
+        self.vid_types = settings['vid_types']
+        self.vid_folder = ""
         self.settings = settings
         self.connect()
         self.urls = self.extract_urls()
@@ -71,6 +74,10 @@ class services:
             self.doc_folder = os.path.join(path, "documents")
             if not os.path.isdir(self.doc_folder):
                 os.makedirs(self.doc_folder)
+        if (len(self.vid_urls) != 0 and self.settings['videos']) :
+            self.vid_folder = os.path.join(path, "videos")
+            if not os.path.isdir(self.vid_folder):
+                os.makedirs(self.vid_folder)
 
     def download_url(self, url, filename):
         try:
@@ -131,6 +138,12 @@ class services:
                 return True
         return False
 
+    def is_vid_link(self, url):
+        for vid_type in self.vid_types:
+            if ('.' + vid_type) in url[-len(vid_type) - 1:]:
+                return True
+        return False
+
     def create_filename(self, path, filename):
         filename = os.path.join(path, filename)
         while os.path.exists(filename):
@@ -167,6 +180,8 @@ class services:
             self.download_links(self.img_urls, self.img_types, self.img_folder)
         if self.settings['documents']:
             self.download_links(self.doc_urls, self.doc_types, self.doc_folder)
+        if self.settings['videos']:
+            self.download_links(self.vid_urls, self.vid_types, self.vid_folder)
 
     def clean_up(self):
         try:
@@ -179,12 +194,12 @@ class services:
             pass
 
 if __name__ == "__main__":
-    site = 'https://www.youtube.com/watch?v=NoFfgJbkl-o'
+    site = 'https://stock.adobe.com/'
     path = "."
     img_types = ['jpg', 'jpeg', 'png', 'gif']
     doc_types = ['py', 'txt', 'java', 'php', 'pdf', 'md', 'gitignore', 'c']
-    #vid_types = ['mp4', 'avi', 'mpeg', 'mpg', 'wmv', 'mov', 'flv', 'swf', 'mkv', '3gp']
-    settings = {'path':path, 'images':True, 'documents':True, 'img_types':img_types, 'doc_types':doc_types}
+    vid_types = ['mp4', 'avi', 'mpeg', 'mpg', 'wmv', 'mov', 'flv', 'swf', 'mkv', '3gp']
+    settings = {'path':path, 'images':True, 'documents':True, 'videos':True, 'img_types':img_types, 'doc_types':doc_types, 'vid_types':vid_types}
     services = services(site, settings)
     services.clean_up() #TODO remove
     services.output_results()

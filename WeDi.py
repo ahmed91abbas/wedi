@@ -4,6 +4,7 @@ from bs4 import BeautifulSoup
 import os
 import shutil
 import wget
+#import pytube
 
 class services:
     def __init__(self, site, settings):
@@ -18,7 +19,7 @@ class services:
         self.doc_folder = ""
         self.settings = settings
         self.connect()
-        self.extract_urls()
+        self.urls = self.extract_urls()
         self.extract_images()
 
     def extract_domain(self, site):
@@ -88,12 +89,12 @@ class services:
             print("Couldn't establish a connection to: " + self.site)
 
     def extract_urls(self):
-        self.urls = re.findall('["\']((http|ftp)s?://.*?)["\']', self.response.text)
+        urls = re.findall('["\']((http|ftp)s?://.*?)["\']', self.response.text)
         for link in self.soup.find_all('a'):
             if 'href' in str(link):
-                self.urls.append((link['href'], ""))
-        self.urls = set(self.urls)
-        for url in self.urls:
+                urls.append((link['href'], ""))
+        urls = set(urls)
+        for url in urls:
             url = url[0]
             for link in url.split(" "):
                 link = self.fix_url(link)
@@ -102,6 +103,7 @@ class services:
                     self.img_urls.append(link)
                 if (self.is_doc_link(link)):
                     self.doc_urls.append(link)
+        return urls
 
     def extract_images(self):
         img_tags = self.soup.find_all('img')
@@ -181,6 +183,7 @@ if __name__ == "__main__":
     path = "."
     img_types = ['jpg', 'jpeg', 'png', 'gif']
     doc_types = ['py', 'txt', 'java', 'php', 'pdf', 'md', 'gitignore', 'c']
+    #vid_types = ['mp4', 'avi', 'mpeg', 'mpg', 'wmv', 'mov', 'flv', 'swf', 'mkv', '3gp']
     settings = {'path':path, 'images':True, 'documents':True, 'img_types':img_types, 'doc_types':doc_types}
     services = services(site, settings)
     services.clean_up() #TODO remove

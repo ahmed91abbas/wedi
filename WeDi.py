@@ -4,7 +4,7 @@ from bs4 import BeautifulSoup
 import os
 import shutil
 import wget
-#import youtube-dl TODO
+import youtube_dl
 '''
 second layer video and audio download using youtube dl
 download sound with highest quilety
@@ -90,7 +90,7 @@ class services:
             self.vid_folder = os.path.join(path, "videos")
             if not os.path.isdir(self.vid_folder):
                 os.makedirs(self.vid_folder)
-        if (len(self.aud_urls) != 0 and self.aud_run) :
+        if (self.aud_run) :
             self.aud_folder = os.path.join(path, "audio")
             if not os.path.isdir(self.aud_folder):
                 os.makedirs(self.aud_folder)
@@ -225,6 +225,24 @@ class services:
                 for url in set(self.aud_urls):
                     f.write(url + "\n")
 
+    def ydl_audio(self):
+        ydl_opts = {
+            'format': 'bestaudio/best',
+            'outtmpl': self.aud_folder + '\%(title)s.%(ext)s',
+            'postprocessors': [{
+                'key': 'FFmpegExtractAudio',
+                'preferredcodec': 'mp3',
+                'preferredquality': '192',
+            }],
+        }
+        with youtube_dl.YoutubeDL(ydl_opts) as ydl:
+            ydl.download([self.site])
+
+    def ydl_video(self):
+        ydl_opts = {}
+        with youtube_dl.YoutubeDL(ydl_opts) as ydl:
+            ydl.download([self.site])
+
     def output_results(self):
         self.create_dest_folders()
         if self.img_run:
@@ -233,8 +251,10 @@ class services:
             self.download_links(self.doc_urls, self.doc_types, self.doc_folder)
         if self.vid_run:
             self.download_links(self.vid_urls, self.vid_types, self.vid_folder)
+            self.ydl_video()
         if self.aud_run:
             self.download_links(self.aud_urls, self.aud_types, self.aud_folder)
+            self.ydl_audio()
         if self.dev_run:
             self.output_dev()
 
@@ -249,7 +269,8 @@ class services:
             pass
 
 if __name__ == "__main__":
-    site = 'https://youtube.com/'
+    site = 'https://www.dplay.se/videos/stories-from-norway/stories-from-norway-102'
+    site = 'https://www.youtube.com/watch?v=KQ0W7wU_YRo'
     path = "."
     img_types = ['jpg', 'jpeg', 'png', 'gif']
     doc_types = ['py', 'txt', 'java', 'php', 'pdf', 'md', 'gitignore', 'c']
@@ -258,8 +279,8 @@ if __name__ == "__main__":
     img_settings = {'run':False, 'img_types':img_types}
     doc_settings = {'run':False, 'doc_types':doc_types}
     vid_settings = {'run':False, 'vid_types':vid_types}
-    aud_settings = {'run':False, 'aud_types':aud_types}
-    dev_settings = {'run':True}
+    aud_settings = {'run':True, 'aud_types':aud_types}
+    dev_settings = {'run':False}
     settings = {'path':path, 'images':img_settings, 'documents':doc_settings, 'videos':vid_settings, 'audio':aud_settings, 'dev':dev_settings}
     services = services(site, settings)
     services.clean_up() #TODO remove

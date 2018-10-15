@@ -17,18 +17,21 @@ class services:
         self.domain = self.extract_domain(site)
         self.path = settings['path']
         self.img_urls = []
-        self.img_types = settings['img_types']
+        self.img_run = settings['images']['run']
+        self.img_types = settings['images']['img_types']
         self.img_folder = ""
         self.doc_urls = []
-        self.doc_types = settings['doc_types']
+        self.doc_run = settings['documents']['run']
+        self.doc_types = settings['documents']['doc_types']
         self.doc_folder = ""
         self.vid_urls = []
-        self.vid_types = settings['vid_types']
+        self.vid_run = settings['videos']['run']
+        self.vid_types = settings['videos']['vid_types']
         self.vid_folder = ""
         self.aud_urls = []
-        self.aud_types = settings['aud_types']
+        self.aud_run = settings['audio']['run']
+        self.aud_types = settings['audio']['aud_types']
         self.aud_folder = ""
-        self.settings = settings
         self.connect()
         self.urls = self.extract_urls()
         self.extract_images()
@@ -74,19 +77,19 @@ class services:
         tokens_to_be_replaced = ['https://', 'http://', 'www.', '*', '\\', '/', ':', '<', '>', '|', '?', '"', '\'']
         site_name = self.multi_replace(tokens_to_be_replaced, '_', self.site)
         path = os.path.join(site_name, self.path)
-        if (len(self.img_urls) != 0 and self.settings['images']) :
+        if (len(self.img_urls) != 0 and self.img_run) :
             self.img_folder = os.path.join(path, "images")
             if not os.path.isdir(self.img_folder):
                 os.makedirs(self.img_folder)
-        if (len(self.doc_urls) != 0 and self.settings['documents']) :
+        if (len(self.doc_urls) != 0 and self.doc_run) :
             self.doc_folder = os.path.join(path, "documents")
             if not os.path.isdir(self.doc_folder):
                 os.makedirs(self.doc_folder)
-        if (len(self.vid_urls) != 0 and self.settings['videos']) :
+        if (len(self.vid_urls) != 0 and self.vid_run) :
             self.vid_folder = os.path.join(path, "videos")
             if not os.path.isdir(self.vid_folder):
                 os.makedirs(self.vid_folder)
-        if (len(self.aud_urls) != 0 and self.settings['audio']) :
+        if (len(self.aud_urls) != 0 and self.aud_run) :
             self.aud_folder = os.path.join(path, "audio")
             if not os.path.isdir(self.aud_folder):
                 os.makedirs(self.aud_folder)
@@ -194,13 +197,13 @@ class services:
 
     def output_results(self):
         self.create_dest_folders()
-        if self.settings['images']:
+        if self.img_run:
             self.download_links(self.img_urls, self.img_types, self.img_folder)
-        if self.settings['documents']:
+        if self.doc_run:
             self.download_links(self.doc_urls, self.doc_types, self.doc_folder)
-        if self.settings['videos']:
+        if self.vid_run:
             self.download_links(self.vid_urls, self.vid_types, self.vid_folder)
-        if self.settings['audio']:
+        if self.aud_run:
             self.download_links(self.aud_urls, self.aud_types, self.aud_folder)
 
     def clean_up(self):
@@ -220,7 +223,11 @@ if __name__ == "__main__":
     doc_types = ['py', 'txt', 'java', 'php', 'pdf', 'md', 'gitignore', 'c']
     vid_types = ['mp4', 'avi', 'mpeg', 'mpg', 'wmv', 'mov', 'flv', 'swf', 'mkv', '3gp']
     aud_types = ['mp3', 'aac', 'wma', 'wav']
-    settings = {'path':path, 'images':True, 'documents':True, 'videos':True, 'audio':True, 'img_types':img_types, 'doc_types':doc_types, 'vid_types':vid_types, 'aud_types':aud_types}
+    img_settings = {'run':True, 'img_types':img_types}
+    doc_settings = {'run':True, 'doc_types':doc_types}
+    vid_settings = {'run':True, 'vid_types':vid_types}
+    aud_settings = {'run':True, 'aud_types':aud_types}
+    settings = {'path':path, 'images':img_settings, 'documents':doc_settings, 'videos':vid_settings, 'audio':aud_settings}
     services = services(site, settings)
     services.clean_up() #TODO remove
     services.output_results()

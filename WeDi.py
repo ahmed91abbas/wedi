@@ -1,3 +1,4 @@
+from __future__ import unicode_literals
 import regex as re
 import requests
 from bs4 import BeautifulSoup
@@ -10,6 +11,18 @@ second layer video and audio download using youtube dl
 download sound with highest quilety
 make quility options for video download
 '''
+class MyLogger(object):
+    def debug(self, msg):
+        pass
+    def warning(self, msg):
+        pass
+    def error(self, msg):
+        pass
+
+def my_hook(d):
+    print("Progress: " + d['_percent_str'], end="\r")
+    if d['status'] == 'finished':
+        print('Done downloading, now converting ...')
 
 class services:
     def __init__(self, site, settings):
@@ -86,7 +99,7 @@ class services:
             self.doc_folder = os.path.join(path, "documents")
             if not os.path.isdir(self.doc_folder):
                 os.makedirs(self.doc_folder)
-        if (len(self.vid_urls) != 0 and self.vid_run) :
+        if (self.vid_run) :
             self.vid_folder = os.path.join(path, "videos")
             if not os.path.isdir(self.vid_folder):
                 os.makedirs(self.vid_folder)
@@ -234,14 +247,32 @@ class services:
                 'preferredcodec': 'mp3',
                 'preferredquality': '192',
             }],
+            'logger': MyLogger(),
+            'progress_hooks': [my_hook],
         }
-        with youtube_dl.YoutubeDL(ydl_opts) as ydl:
-            ydl.download([self.site])
+        try:
+            with youtube_dl.YoutubeDL(ydl_opts) as ydl:
+                ydl.download([self.site])
+        except:
+            pass
 
     def ydl_video(self):
-        ydl_opts = {}
-        with youtube_dl.YoutubeDL(ydl_opts) as ydl:
-            ydl.download([self.site])
+        ydl_opts = {
+            'outtmpl': self.vid_folder + '\%(title)s.%(ext)s',
+            'logger': MyLogger(),
+            'progress_hooks': [my_hook],
+        }
+        try:
+            with youtube_dl.YoutubeDL(ydl_opts) as ydl:
+                ydl.download([self.site])
+        except:
+            pass
+
+    def rm_empty_dirs(self):
+        if self.vid_run and not os.listdir(self.vid_folder):
+            os.rmdir(self.vid_folder)
+        if self.aud_run and not os.listdir(self.aud_folder):
+            os.rmdir(self.aud_folder)
 
     def output_results(self):
         self.create_dest_folders()
@@ -257,6 +288,7 @@ class services:
             self.ydl_audio()
         if self.dev_run:
             self.output_dev()
+        self.rm_empty_dirs()
 
     def clean_up(self):
         try:
@@ -270,7 +302,8 @@ class services:
 
 if __name__ == "__main__":
     site = 'https://www.dplay.se/videos/stories-from-norway/stories-from-norway-102'
-    site = 'https://www.youtube.com/watch?v=KQ0W7wU_YRo'
+    site = 'https://www.youtube.com/watch?v=dbRKKXzP0hM'
+    site = 'https://www.youtube.com/watch?v=zmr2I8caF0c' #small
     path = "."
     img_types = ['jpg', 'jpeg', 'png', 'gif']
     doc_types = ['py', 'txt', 'java', 'php', 'pdf', 'md', 'gitignore', 'c']

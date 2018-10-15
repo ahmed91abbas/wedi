@@ -32,9 +32,10 @@ class services:
         self.aud_run = settings['audio']['run']
         self.aud_types = settings['audio']['aud_types']
         self.aud_folder = ""
+        self.dev_run = settings['dev']['run']
+        self.dev_folder = ""
         self.connect()
         self.urls = self.extract_urls()
-        self.extract_images()
 
     def extract_domain(self, site):
         domain = re.search('(http|ftp)s?[:\/\/]+[A-Za-z0-9\.]+\/', site)
@@ -93,6 +94,10 @@ class services:
             self.aud_folder = os.path.join(path, "audio")
             if not os.path.isdir(self.aud_folder):
                 os.makedirs(self.aud_folder)
+        if (self.dev_run) :
+            self.dev_folder = os.path.join(path, "dev")
+            if not os.path.isdir(self.dev_folder):
+                os.makedirs(self.dev_folder)
 
     def download_url(self, url, filename):
         try:
@@ -125,6 +130,7 @@ class services:
                     self.img_urls.append(link)
                 if (self.is_doc_link(link)):
                     self.doc_urls.append(link)
+        self.extract_images()
         return urls
 
     def extract_images(self):
@@ -194,6 +200,8 @@ class services:
                 filename = self.create_filename(output_dir, filename)
                 self.download_url(url, filename)
 
+    def output_dev(self):
+        print("TODO")
 
     def output_results(self):
         self.create_dest_folders()
@@ -205,6 +213,8 @@ class services:
             self.download_links(self.vid_urls, self.vid_types, self.vid_folder)
         if self.aud_run:
             self.download_links(self.aud_urls, self.aud_types, self.aud_folder)
+        if self.dev_run:
+            self.output_dev()
 
     def clean_up(self):
         try:
@@ -223,11 +233,12 @@ if __name__ == "__main__":
     doc_types = ['py', 'txt', 'java', 'php', 'pdf', 'md', 'gitignore', 'c']
     vid_types = ['mp4', 'avi', 'mpeg', 'mpg', 'wmv', 'mov', 'flv', 'swf', 'mkv', '3gp']
     aud_types = ['mp3', 'aac', 'wma', 'wav']
-    img_settings = {'run':True, 'img_types':img_types}
-    doc_settings = {'run':True, 'doc_types':doc_types}
-    vid_settings = {'run':True, 'vid_types':vid_types}
-    aud_settings = {'run':True, 'aud_types':aud_types}
-    settings = {'path':path, 'images':img_settings, 'documents':doc_settings, 'videos':vid_settings, 'audio':aud_settings}
+    img_settings = {'run':False, 'img_types':img_types}
+    doc_settings = {'run':False, 'doc_types':doc_types}
+    vid_settings = {'run':False, 'vid_types':vid_types}
+    aud_settings = {'run':False, 'aud_types':aud_types}
+    dev_settings = {'run':True}
+    settings = {'path':path, 'images':img_settings, 'documents':doc_settings, 'videos':vid_settings, 'audio':aud_settings, 'dev':dev_settings}
     services = services(site, settings)
     services.clean_up() #TODO remove
     services.output_results()

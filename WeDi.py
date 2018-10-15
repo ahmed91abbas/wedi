@@ -201,7 +201,29 @@ class services:
                 self.download_url(url, filename)
 
     def output_dev(self):
-        print("TODO")
+        with open(os.path.join(self.dev_folder, 'mainURL.txt'), 'w') as f:
+            f.write(self.site + "\n\n")
+            f.write("Headers:\n")
+            for head in self.response.headers:
+                f.write(head + ": " + str(self.response.headers[head]) + "\n")
+        with open(os.path.join(self.dev_folder, 'source.html'), 'wb') as f:
+            f.write(self.soup.prettify().encode("utf-8"))
+        if (len(self.img_urls) != 0):
+            with open(os.path.join(self.dev_folder, 'imgURLs.txt'), 'w') as f:
+                for url in set(self.img_urls):
+                    f.write(url + "\n")
+        if (len(self.doc_urls) != 0):
+            with open(os.path.join(self.dev_folder, 'docURLs.txt'), 'w') as f:
+                for url in set(self.doc_urls):
+                    f.write(url + "\n")
+        if (len(self.vid_urls) != 0):
+            with open(os.path.join(self.dev_folder, 'vidURLs.txt'), 'w') as f:
+                for url in set(self.vid_urls):
+                    f.write(url + "\n")
+        if (len(self.aud_urls) != 0):
+            with open(os.path.join(self.dev_folder, 'audURLs.txt'), 'w') as f:
+                for url in set(self.aud_urls):
+                    f.write(url + "\n")
 
     def output_results(self):
         self.create_dest_folders()

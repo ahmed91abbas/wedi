@@ -19,6 +19,13 @@ class MyLogger(object):
     def error(self, msg):
         pass
 
+'''
+{'status': 'downloading', 'downloaded_bytes': 257554, 'total_bytes': 6422892,
+'tmpfilename': "youtube.com_watch_v=bugktEHP1n0\\audio\\Naruto [AMV] - 'Battle of Brothers'.webm.part",
+ 'filename': "youtube.com_watch_v=bugktEHP1n0\\audio\\Naruto [AMV] - 'Battle of Brothers'.webm",
+  'eta': 71, 'speed': 86186.11424142345, 'elapsed': 8.062560796737671, '_eta_str': '01:11',
+   '_percent_str': '  4.0%', '_speed_str': '84.17KiB/s', '_total_bytes_str': '6.13MiB'}
+'''
 def my_hook(d):
     print("Progress: " + d['_percent_str'], end="\r")
     if d['status'] == 'finished':
@@ -302,8 +309,8 @@ class services:
 
 if __name__ == "__main__":
     site = 'https://www.dplay.se/videos/stories-from-norway/stories-from-norway-102'
-    site = 'https://www.youtube.com/watch?v=dbRKKXzP0hM'
     site = 'https://www.youtube.com/watch?v=zmr2I8caF0c' #small
+    site = 'https://www.youtube.com/watch?v=bugktEHP1n0'
     path = "."
     img_types = ['jpg', 'jpeg', 'png', 'gif']
     doc_types = ['py', 'txt', 'java', 'php', 'pdf', 'md', 'gitignore', 'c']

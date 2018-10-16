@@ -1,6 +1,7 @@
 import tkinter as tk
 from WeDi import services
 import sys
+import threading
 
 class GUI:
     def __init__(self):
@@ -139,7 +140,11 @@ class GUI:
             aud_settings = {'run':self.aud_run, 'aud_types':aud_types}
             dev_settings = {'run':self.dev_run}
             settings = {'path':path, 'images':img_settings, 'documents':doc_settings, 'videos':vid_settings, 'audio':aud_settings, 'dev':dev_settings}
-            services(site, settings)
+            # def run_services():
+            #     services(site, settings)
+            thread = threading.Thread(target= services, args=(site, settings, ))
+            thread.daemon = True
+            thread.start()
         else:
             print("Enter site!")
 

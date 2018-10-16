@@ -1,5 +1,5 @@
 import tkinter as tk
-import WeDi
+from WeDi import services
 import sys
 
 class GUI:
@@ -37,7 +37,7 @@ class GUI:
         self.siteEntry = tk.Entry(self.start_frame, width=box_width+25, font=font)
         self.siteEntry.pack(side='top')
         clipboard = self.root.clipboard_get()
-        if len(clipboard) > 4 and clipboard[:4] == 'http':
+        if len(clipboard) > 10 and clipboard[:4] == 'http':
             self.siteEntry.insert(0, clipboard)
         tk.Button(self.start_frame, text=" X ", font=font, bg=self.button_color, width=5, command=self.clear_site).pack(side='right')
         tk.Label(self.start_frame, text="Choose what you want to download", font=font, padx=20, pady=20, bg=self.bg_color).pack(side='top')
@@ -58,6 +58,7 @@ class GUI:
         formats = ["Best video quality", "Worst video quality", "Only video (no audio)"]
         self.option = tk.StringVar()
         self.option.set(formats[0]) #from setting TODO
+        self.vid_format = formats[0]
         self.options = tk.OptionMenu(self.body_frame, self.option, *formats, command=set_format)  # creates drop down menu
         self.options.config(bg = self.button_color, fg='black', font=font, width=box_width-4)
         self.options["menu"].config(bg=self.button_color, font=font, fg='black')
@@ -122,7 +123,25 @@ class GUI:
         messagebox.showinfo("About", "WeDi (Web Dissector) is...")
 
     def on_run(self):
-        print("run wedi")
+        site = self.siteEntry.get()
+        if len(site) > 10 and site[:4] == 'http':
+            path = "."
+            img_types = ['jpg', 'jpeg', 'png', 'gif']
+            doc_types = ['py', 'txt', 'java', 'php', 'pdf', 'md', 'gitignore', 'c']
+            vid_types = ['mp4', 'avi', 'mpeg', 'mpg', 'wmv', 'mov', 'flv', 'swf', 'mkv', '3gp']
+            aud_types = ['mp3', 'aac', 'wma', 'wav']
+            img_settings = {'run':self.img_run, 'img_types':img_types}
+            doc_settings = {'run':self.doc_run, 'doc_types':doc_types}
+            #format: best/worst/bestvideo/bestvideo+bestaudio
+
+            format_dict = {"Best video quality":'best', "Worst video quality":'worst', "Only video (no audio)":'bestvideo'}
+            vid_settings = {'run':self.vid_run, 'vid_types':vid_types, 'format':format_dict[self.vid_format]}
+            aud_settings = {'run':self.aud_run, 'aud_types':aud_types}
+            dev_settings = {'run':self.dev_run}
+            settings = {'path':path, 'images':img_settings, 'documents':doc_settings, 'videos':vid_settings, 'audio':aud_settings, 'dev':dev_settings}
+            services(site, settings)
+        else:
+            print("Enter site!")
 
 if __name__ == '__main__':
     GUI()

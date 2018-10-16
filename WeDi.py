@@ -19,7 +19,7 @@ class MyLogger(object):
 
 def my_hook(d):
     print("Progress:" + d['_percent_str'], "of ~" + d['_total_bytes_str'],
-         "at " + d['_speed_str'], "ETA " + d['_eta_str'], end='\r')
+         "at " + d['_speed_str'], "ETA " + d['_eta_str'], " "*5, end='\r')
     if d['status'] == 'finished':
         print('\nDone downloading, now converting ...')
 
@@ -39,6 +39,7 @@ class services:
         self.vid_urls = []
         self.vid_run = settings['videos']['run']
         self.vid_types = settings['videos']['vid_types']
+        self.vid_format = settings['videos']['format']
         self.vid_folder = ""
         self.aud_urls = []
         self.aud_run = settings['audio']['run']
@@ -126,6 +127,7 @@ class services:
             self.soup = BeautifulSoup(self.response.text, 'html.parser')
         except:
             print("Couldn't establish a connection to: " + self.site)
+            exit()
 
     def extract_urls(self):
         urls = re.findall('["\']((http|ftp)s?://.*?)["\']', self.response.text)
@@ -256,23 +258,17 @@ class services:
             pass
 
     def ydl_video(self):
-        ydl_opts = {}
-        with youtube_dl.YoutubeDL(ydl_opts) as ydl:
-            meta = ydl.extract_info(
-                'https://www.youtube.com/watch?v=9bZkp7q19f0', download=False)
-            formats = meta.get('formats', [meta])
-        for f in meta:
-            print(f + ": " + str(meta[f]))
-        # ydl_opts = {
-        #     'outtmpl': self.vid_folder + '\%(title)s.%(ext)s',
-        #     'logger': MyLogger(),
-        #     'progress_hooks': [my_hook],
-        # }
-        # try:
-        #     with youtube_dl.YoutubeDL(ydl_opts) as ydl:
-        #         ydl.download([self.site])
-        # except:
-        #     pass
+        ydl_opts = {
+            'outtmpl': self.vid_folder + '\%(title)s.%(ext)s',
+            'format': self.vid_format,
+            'logger': MyLogger(),
+            'progress_hooks': [my_hook],
+        }
+        try:
+            with youtube_dl.YoutubeDL(ydl_opts) as ydl:
+                ydl.download([self.site])
+        except:
+            pass
 
     def rm_empty_dirs(self):
         if self.vid_run and not os.listdir(self.vid_folder):
@@ -313,9 +309,9 @@ class services:
             pass
 
 if __name__ == "__main__":
-    site = 'https://www.youtube.com/watch?v=zmr2I8caF0c' #small
     site = 'https://www.dplay.se/videos/stories-from-norway/stories-from-norway-102'
     site = 'https://www1.gogoanime.sh/boruto-naruto-next-generations-episode-77'
+    site = 'https://www.youtube.com/watch?v=zmr2I8caF0c' #small
     site = 'https://www.youtube.com/watch?v=bugktEHP1n0'
     path = "."
     img_types = ['jpg', 'jpeg', 'png', 'gif']
@@ -324,7 +320,8 @@ if __name__ == "__main__":
     aud_types = ['mp3', 'aac', 'wma', 'wav']
     img_settings = {'run':False, 'img_types':img_types}
     doc_settings = {'run':False, 'doc_types':doc_types}
-    vid_settings = {'run':True, 'vid_types':vid_types}
+    #format: best/worst/bestvideo/bestvideo+bestaudio
+    vid_settings = {'run':True, 'vid_types':vid_types, 'format':'best'}
     aud_settings = {'run':False, 'aud_types':aud_types}
     dev_settings = {'run':False}
     settings = {'path':path, 'images':img_settings, 'documents':doc_settings, 'videos':vid_settings, 'audio':aud_settings, 'dev':dev_settings}

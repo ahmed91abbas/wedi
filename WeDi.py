@@ -49,6 +49,7 @@ class services:
         self.dev_folder = ""
         self.connect()
         self.urls = self.extract_urls()
+        self.output_results()
 
     def extract_domain(self, site):
         domain = re.search('(http|ftp)s?[:\/\/]+[A-Za-z0-9\.]+\/', site)
@@ -327,5 +328,4 @@ if __name__ == "__main__":
     settings = {'path':path, 'images':img_settings, 'documents':doc_settings, 'videos':vid_settings, 'audio':aud_settings, 'dev':dev_settings}
     services = services(site, settings)
     services.clean_up() #TODO remove
-    services.output_results()
 

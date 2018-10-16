@@ -7,8 +7,6 @@ import shutil
 import wget
 import youtube_dl
 '''
-second layer video and audio download using youtube dl
-download sound with highest quilety
 make quility options for video download
 '''
 class MyLogger(object):
@@ -17,19 +15,13 @@ class MyLogger(object):
     def warning(self, msg):
         pass
     def error(self, msg):
-        pass
+        print(msg)
 
-'''
-{'status': 'downloading', 'downloaded_bytes': 257554, 'total_bytes': 6422892,
-'tmpfilename': "youtube.com_watch_v=bugktEHP1n0\\audio\\Naruto [AMV] - 'Battle of Brothers'.webm.part",
- 'filename': "youtube.com_watch_v=bugktEHP1n0\\audio\\Naruto [AMV] - 'Battle of Brothers'.webm",
-  'eta': 71, 'speed': 86186.11424142345, 'elapsed': 8.062560796737671, '_eta_str': '01:11',
-   '_percent_str': '  4.0%', '_speed_str': '84.17KiB/s', '_total_bytes_str': '6.13MiB'}
-'''
 def my_hook(d):
-    print("Progress: " + d['_percent_str'], end="\r")
+    print("Progress:" + d['_percent_str'], "of ~" + d['_total_bytes_str'],
+         "at " + d['_speed_str'], "ETA " + d['_eta_str'], end='\r')
     if d['status'] == 'finished':
-        print('Done downloading, now converting ...')
+        print('\nDone downloading, now converting ...')
 
 class services:
     def __init__(self, site, settings):
@@ -264,16 +256,23 @@ class services:
             pass
 
     def ydl_video(self):
-        ydl_opts = {
-            'outtmpl': self.vid_folder + '\%(title)s.%(ext)s',
-            'logger': MyLogger(),
-            'progress_hooks': [my_hook],
-        }
-        try:
-            with youtube_dl.YoutubeDL(ydl_opts) as ydl:
-                ydl.download([self.site])
-        except:
-            pass
+        ydl_opts = {}
+        with youtube_dl.YoutubeDL(ydl_opts) as ydl:
+            meta = ydl.extract_info(
+                'https://www.youtube.com/watch?v=9bZkp7q19f0', download=False)
+            formats = meta.get('formats', [meta])
+        for f in meta:
+            print(f + ": " + str(meta[f]))
+        # ydl_opts = {
+        #     'outtmpl': self.vid_folder + '\%(title)s.%(ext)s',
+        #     'logger': MyLogger(),
+        #     'progress_hooks': [my_hook],
+        # }
+        # try:
+        #     with youtube_dl.YoutubeDL(ydl_opts) as ydl:
+        #         ydl.download([self.site])
+        # except:
+        #     pass
 
     def rm_empty_dirs(self):
         if self.vid_run and not os.listdir(self.vid_folder):
@@ -285,13 +284,19 @@ class services:
         self.create_dest_folders()
         if self.img_run:
             self.download_links(self.img_urls, self.img_types, self.img_folder)
+            print()
         if self.doc_run:
             self.download_links(self.doc_urls, self.doc_types, self.doc_folder)
+            print()
         if self.vid_run:
             self.download_links(self.vid_urls, self.vid_types, self.vid_folder)
+            print()
+            print("Trying to extract video using youtube_dl...")
             self.ydl_video()
         if self.aud_run:
             self.download_links(self.aud_urls, self.aud_types, self.aud_folder)
+            print()
+            print("Trying to extract audio using youtube_dl...")
             self.ydl_audio()
         if self.dev_run:
             self.output_dev()
@@ -308,8 +313,9 @@ class services:
             pass
 
 if __name__ == "__main__":
-    site = 'https://www.dplay.se/videos/stories-from-norway/stories-from-norway-102'
     site = 'https://www.youtube.com/watch?v=zmr2I8caF0c' #small
+    site = 'https://www.dplay.se/videos/stories-from-norway/stories-from-norway-102'
+    site = 'https://www1.gogoanime.sh/boruto-naruto-next-generations-episode-77'
     site = 'https://www.youtube.com/watch?v=bugktEHP1n0'
     path = "."
     img_types = ['jpg', 'jpeg', 'png', 'gif']
@@ -318,8 +324,8 @@ if __name__ == "__main__":
     aud_types = ['mp3', 'aac', 'wma', 'wav']
     img_settings = {'run':False, 'img_types':img_types}
     doc_settings = {'run':False, 'doc_types':doc_types}
-    vid_settings = {'run':False, 'vid_types':vid_types}
-    aud_settings = {'run':True, 'aud_types':aud_types}
+    vid_settings = {'run':True, 'vid_types':vid_types}
+    aud_settings = {'run':False, 'aud_types':aud_types}
     dev_settings = {'run':False}
     settings = {'path':path, 'images':img_settings, 'documents':doc_settings, 'videos':vid_settings, 'audio':aud_settings, 'dev':dev_settings}
     services = services(site, settings)

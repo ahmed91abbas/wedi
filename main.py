@@ -35,6 +35,8 @@ class GUI:
         menu.add_cascade(label="Help", menu=helpmenu)
         helpmenu.add_command(label="About...", command=self.about)
 
+        self.whitebutton = tk.PhotoImage(file=os.path.join('textures', 'wdocimg.gif'))
+        self.greenbutton = tk.PhotoImage(file=os.path.join('textures', 'green_button.gif'))
 
         self.start_frame = tk.Frame(self.root, bg=self.bg_color)
         self.start_frame2 = tk.Frame(self.root, bg=self.bg_color)
@@ -45,7 +47,10 @@ class GUI:
         self.title.pack(side='top')
         self.siteEntry = tk.Entry(self.start_frame, width=box_width+25, font=font)
         self.siteEntry.pack(side='top')
-        clipboard = self.root.clipboard_get()
+        try:
+            clipboard = self.root.clipboard_get()
+        except:
+            clipboard = ""
         if len(clipboard) > 10 and clipboard[:4] == 'http':
             self.siteEntry.insert(0, clipboard)
         tk.Button(self.start_frame, text=" X ", font=font, bg=self.button_color, width=5, command=self.clear_site).pack(side='right')
@@ -55,11 +60,12 @@ class GUI:
 # self.roundedbutton = tk.Button(self, image=self.loadimage)
 # self.roundedbutton["bg"] = "white"
 # self.roundedbutton["border"] = "0"
-        self.loadimage = tk.PhotoImage(file=os.path.join('textures', 'white_button.png'))
+
         color = self.button_color
         if self.settings['documents']['run']:
             color = self.green_color
-        self.doc_button = tk.Button(self.body_frame, text="Documents", image=self.loadimage, font=font, bg=color, width=box_width, command=self.on_documents)
+        self.doc_button = tk.Button(self.body_frame, image=self.whitebutton, border=0, bg=self.bg_color, activebackground=self.bg_color, command=self.on_documents)
+        #self.doc_button = tk.Button(self.body_frame, text="Documents", font=font, bg=color, width=box_width, command=self.on_documents)
         self.doc_button.grid(row=0, column=0, padx=20, pady=10)
         color = self.button_color
         if self.settings['images']['run']:
@@ -109,7 +115,10 @@ class GUI:
 
     def paste_site(self):
         self.siteEntry.delete(0, "end")
-        clipboard = self.root.clipboard_get()
+        try:
+            clipboard = self.root.clipboard_get()
+        except:
+            clipboard = ""
         if len(clipboard) > 10 and clipboard[:4] == 'http':
             self.siteEntry.insert(0, clipboard)
 
@@ -127,9 +136,9 @@ class GUI:
     def on_documents(self):
         self.settings['documents']['run'] = not self.settings['documents']['run']
         if self.settings['documents']['run']:
-            self.doc_button['bg'] = self.green_color
+            self.doc_button['image'] = self.greenbutton
         else:
-            self.doc_button['bg'] = self.button_color
+            self.doc_button['image'] = self.whitebutton
 
     def on_images(self):
         self.settings['images']['run'] = not self.settings['images']['run']

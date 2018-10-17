@@ -28,6 +28,7 @@ class services:
         self.site = site
         self.domain = self.extract_domain(site)
         self.path = settings['path']
+        self.clean_up() #TODO remove
         self.img_urls = []
         self.img_run = settings['images']['run']
         self.img_types = settings['images']['img_types']
@@ -42,8 +43,8 @@ class services:
         self.vid_format = settings['videos']['format']
         self.vid_folder = ""
         self.aud_urls = []
-        self.aud_run = settings['audio']['run']
-        self.aud_types = settings['audio']['aud_types']
+        self.aud_run = settings['audios']['run']
+        self.aud_types = settings['audios']['aud_types']
         self.aud_folder = ""
         self.dev_run = settings['dev']['run']
         self.dev_folder = ""
@@ -105,7 +106,7 @@ class services:
             if not os.path.isdir(self.vid_folder):
                 os.makedirs(self.vid_folder)
         if (self.aud_run) :
-            self.aud_folder = os.path.join(path, "audio")
+            self.aud_folder = os.path.join(path, "audios")
             if not os.path.isdir(self.aud_folder):
                 os.makedirs(self.aud_folder)
         if (self.dev_run) :
@@ -240,12 +241,12 @@ class services:
                 for url in set(self.aud_urls):
                     f.write(url + "\n")
 
-    def ydl_audio(self):
+    def ydl_audios(self):
         ydl_opts = {
-            'format': 'bestaudio/best',
+            'format': 'bestaudios/best',
             'outtmpl': self.aud_folder + '\%(title)s.%(ext)s',
             'postprocessors': [{
-                'key': 'FFmpegExtractAudio',
+                'key': 'FFmpegExtractaudios',
                 'preferredcodec': 'mp3',
                 'preferredquality': '192',
             }],
@@ -293,11 +294,12 @@ class services:
         if self.aud_run:
             self.download_links(self.aud_urls, self.aud_types, self.aud_folder)
             print()
-            print("Trying to extract audio using youtube_dl...")
-            self.ydl_audio()
+            print("Trying to extract audios using youtube_dl...")
+            self.ydl_audios()
         if self.dev_run:
             self.output_dev()
         self.rm_empty_dirs()
+        print("Done.")
 
     def clean_up(self):
         try:
@@ -314,6 +316,7 @@ if __name__ == "__main__":
     site = 'https://www1.gogoanime.sh/boruto-naruto-next-generations-episode-77'
     site = 'https://www.youtube.com/watch?v=zmr2I8caF0c' #small
     site = 'https://www.youtube.com/watch?v=bugktEHP1n0'
+    site = 'https://www.youtube.com/watch?v=zkNzxsaCunU' #weird file name not installing
     path = "."
     img_types = ['jpg', 'jpeg', 'png', 'gif']
     doc_types = ['py', 'txt', 'java', 'php', 'pdf', 'md', 'gitignore', 'c']
@@ -321,11 +324,10 @@ if __name__ == "__main__":
     aud_types = ['mp3', 'aac', 'wma', 'wav']
     img_settings = {'run':False, 'img_types':img_types}
     doc_settings = {'run':False, 'doc_types':doc_types}
-    #format: best/worst/bestvideo/bestvideo+bestaudio
+    #format: best/worst/bestvideo/bestvideo+bestaudios
     vid_settings = {'run':True, 'vid_types':vid_types, 'format':'best'}
     aud_settings = {'run':False, 'aud_types':aud_types}
     dev_settings = {'run':False}
-    settings = {'path':path, 'images':img_settings, 'documents':doc_settings, 'videos':vid_settings, 'audio':aud_settings, 'dev':dev_settings}
+    settings = {'path':path, 'images':img_settings, 'documents':doc_settings, 'videos':vid_settings, 'audios':aud_settings, 'dev':dev_settings}
     services = services(site, settings)
-    services.clean_up() #TODO remove
 

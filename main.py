@@ -2,15 +2,16 @@ import tkinter as tk
 from WeDi import services
 import sys
 import threading
+import pickle
 
 class GUI:
     def __init__(self):
-        self.vid_run = False
-        self.doc_run = False
-        self.img_run = False
-        self.dev_run = False
-        self.aud_run = False
-
+        try:
+            self.settings = pickle.load(open('settings.sav', 'rb'))
+        except:
+            self.settings = self.default_settings()
+        self.format_dict = {"Best video quality":'best', "Worst video quality":'worst', "Only video (no audio)":'bestvideo'}
+        self.inv_format_dict = {v: k for k, v in self.format_dict.items()}
         self.bg_color = '#e6e6ff'
         self.green_color = '#4af441'
         self.button_color = '#ffffe6'
@@ -40,32 +41,45 @@ class GUI:
         clipboard = self.root.clipboard_get()
         if len(clipboard) > 10 and clipboard[:4] == 'http':
             self.siteEntry.insert(0, clipboard)
+        tk.Button(self.start_frame, text=" P ", font=font, bg=self.button_color, width=5, command=self.paste_site).pack(side='right')
         tk.Button(self.start_frame, text=" X ", font=font, bg=self.button_color, width=5, command=self.clear_site).pack(side='right')
         tk.Label(self.start_frame, text="Choose what you want to download", font=font, padx=20, pady=20, bg=self.bg_color).pack(side='top')
 
-        self.doc_button = tk.Button(self.body_frame, text="Documents", font=font, bg=self.button_color, width=box_width, command=self.on_documents)
+        color = self.button_color
+        if self.settings['documents']['run']:
+            color = self.green_color
+        self.doc_button = tk.Button(self.body_frame, text="Documents", font=font, bg=color, width=box_width, command=self.on_documents)
         self.doc_button.grid(row=0, column=0, padx=20, pady=10)
-        self.img_button = tk.Button(self.body_frame, text="Images", font=font, bg=self.button_color, width=box_width, command=self.on_images)
+        color = self.button_color
+        if self.settings['images']['run']:
+            color = self.green_color
+        self.img_button = tk.Button(self.body_frame, text="Images", font=font, bg=color, width=box_width, command=self.on_images)
         self.img_button.grid(row=0, column=1, padx=20, pady=10)
-        self.aud_button = tk.Button(self.body_frame, text="Audios", font=font, bg=self.button_color, width=box_width, command=self.on_audios)
+        color = self.button_color
+        if self.settings['audios']['run']:
+            color = self.green_color
+        self.aud_button = tk.Button(self.body_frame, text="Audios", font=font, bg=color, width=box_width, command=self.on_audios)
         self.aud_button.grid(row=1, column=0, padx=20, pady=10)
-        self.dev_button = tk.Button(self.body_frame, text="Analytics", font=font, bg=self.button_color, width=box_width, command=self.on_analytics)
+        color = self.button_color
+        if self.settings['dev']['run']:
+            color = self.green_color
+        self.dev_button = tk.Button(self.body_frame, text="Analytics", font=font, bg=color, width=box_width, command=self.on_analytics)
         self.dev_button.grid(row=1, column=1, padx=20, pady=10)
-        self.vid_button = tk.Button(self.body_frame, text="Videos", font=font, bg=self.button_color, width=box_width, command=self.on_videos)
+        color = self.button_color
+        if self.settings['videos']['run']:
+            color = self.green_color
+        self.vid_button = tk.Button(self.body_frame, text="Videos", font=font, bg=color, width=box_width, command=self.on_videos)
         self.vid_button.grid(row=2, column=0, padx=20, pady=10)
 
         def set_format(value):
-            self.vid_format = value
+            self.settings['videos']['format'] = self.format_dict[value]
         formats = ["Best video quality", "Worst video quality", "Only video (no audio)"]
         self.option = tk.StringVar()
-        self.option.set(formats[0]) #from setting TODO
-        self.vid_format = formats[0]
+        self.option.set(self.inv_format_dict[self.settings['videos']['format']])
         self.options = tk.OptionMenu(self.body_frame, self.option, *formats, command=set_format)  # creates drop down menu
         self.options.config(bg = self.button_color, fg='black', font=font, width=box_width-4)
         self.options["menu"].config(bg=self.button_color, font=font, fg='black')
         self.options.grid(row=2, column=1)
-
-
 
         self.run_button = tk.Button(self.end_frame, text='Run', font=font, bg=self.button_color, padx=50, pady=10, command=self.on_run)
         self.run_button.pack(side='left', padx=50, pady=30)
@@ -81,41 +95,47 @@ class GUI:
     def clear_site(self):
         self.siteEntry.delete(0, "end")
 
+    def paste_site(self):
+        self.siteEntry.delete(0, "end")
+        clipboard = self.root.clipboard_get()
+        if len(clipboard) > 10 and clipboard[:4] == 'http':
+            self.siteEntry.insert(0, clipboard)
+
     def on_close(self):
         self.root.quit()
         sys.exit(1)
 
     def on_videos(self):
-        self.vid_run = not self.vid_run
-        if self.vid_run:
+        self.settings['videos']['run'] = not self.settings['videos']['run']
+        if self.settings['videos']['run']:
             self.vid_button['bg'] = self.green_color
         else:
             self.vid_button['bg'] = self.button_color
 
     def on_documents(self):
-        self.doc_run = not self.doc_run
-        if self.doc_run:
+        self.settings['documents']['run'] = not self.settings['documents']['run']
+        if self.settings['documents']['run']:
             self.doc_button['bg'] = self.green_color
         else:
             self.doc_button['bg'] = self.button_color
 
     def on_images(self):
-        self.img_run = not self.img_run
-        if self.img_run:
+        self.settings['images']['run'] = not self.settings['images']['run']
+        if self.settings['images']['run']:
             self.img_button['bg'] = self.green_color
         else:
             self.img_button['bg'] = self.button_color
 
     def on_audios(self):
-        self.aud_run = not self.aud_run
-        if self.aud_run:
+        self.settings['audios']['run'] = not self.settings['audios']['run']
+        if self.settings['audios']['run']:
             self.aud_button['bg'] = self.green_color
         else:
             self.aud_button['bg'] = self.button_color
 
     def on_analytics(self):
-        self.dev_run = not self.dev_run
-        if self.dev_run:
+        self.settings['dev']['run'] = not self.settings['dev']['run']
+        if self.settings['dev']['run']:
             self.dev_button['bg'] = self.green_color
         else:
             self.dev_button['bg'] = self.button_color
@@ -123,26 +143,26 @@ class GUI:
     def about(self):
         messagebox.showinfo("About", "WeDi (Web Dissector) is...")
 
+    def default_settings(self):
+        path = "."
+        img_types = ['jpg', 'jpeg', 'png', 'gif']
+        doc_types = ['py', 'txt', 'java', 'php', 'pdf', 'md', 'gitignore', 'c']
+        vid_types = ['mp4', 'avi', 'mpeg', 'mpg', 'wmv', 'mov', 'flv', 'swf', 'mkv', '3gp']
+        aud_types = ['mp3', 'aac', 'wma', 'wav']
+        img_settings = {'run':True, 'img_types':img_types}
+        doc_settings = {'run':True, 'doc_types':doc_types}
+        vid_settings = {'run':True, 'vid_types':vid_types, 'format':'best'}
+        aud_settings = {'run':True, 'aud_types':aud_types}
+        dev_settings = {'run':True}
+        settings = {'path':path, 'images':img_settings, 'documents':doc_settings, 'videos':vid_settings, 'audios':aud_settings, 'dev':dev_settings}
+        pickle.dump(settings, open('settings.sav', 'wb'))
+        return settings
+
     def on_run(self):
         site = self.siteEntry.get()
         if len(site) > 10 and site[:4] == 'http':
-            path = "."
-            img_types = ['jpg', 'jpeg', 'png', 'gif']
-            doc_types = ['py', 'txt', 'java', 'php', 'pdf', 'md', 'gitignore', 'c']
-            vid_types = ['mp4', 'avi', 'mpeg', 'mpg', 'wmv', 'mov', 'flv', 'swf', 'mkv', '3gp']
-            aud_types = ['mp3', 'aac', 'wma', 'wav']
-            img_settings = {'run':self.img_run, 'img_types':img_types}
-            doc_settings = {'run':self.doc_run, 'doc_types':doc_types}
-            #format: best/worst/bestvideo/bestvideo+bestaudio
-
-            format_dict = {"Best video quality":'best', "Worst video quality":'worst', "Only video (no audio)":'bestvideo'}
-            vid_settings = {'run':self.vid_run, 'vid_types':vid_types, 'format':format_dict[self.vid_format]}
-            aud_settings = {'run':self.aud_run, 'aud_types':aud_types}
-            dev_settings = {'run':self.dev_run}
-            settings = {'path':path, 'images':img_settings, 'documents':doc_settings, 'videos':vid_settings, 'audio':aud_settings, 'dev':dev_settings}
-            # def run_services():
-            #     services(site, settings)
-            thread = threading.Thread(target= services, args=(site, settings, ))
+            pickle.dump(self.settings, open('settings.sav', 'wb'))
+            thread = threading.Thread(target= services, args=(site, self.settings, ))
             thread.daemon = True
             thread.start()
         else:

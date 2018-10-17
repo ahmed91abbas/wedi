@@ -35,8 +35,16 @@ class GUI:
         menu.add_cascade(label="Help", menu=helpmenu)
         helpmenu.add_command(label="About...", command=self.about)
 
-        self.whitebutton = tk.PhotoImage(file=os.path.join('textures', 'wdocimg.gif'))
-        self.greenbutton = tk.PhotoImage(file=os.path.join('textures', 'green_button.gif'))
+        self.docgray = tk.PhotoImage(file=os.path.join('textures', 'docgray.png'))
+        self.docgreen = tk.PhotoImage(file=os.path.join('textures', 'docgreen.png'))
+        self.imggray = tk.PhotoImage(file=os.path.join('textures', 'imggray.png'))
+        self.imggreen = tk.PhotoImage(file=os.path.join('textures', 'imggreen.png'))
+        self.audgray = tk.PhotoImage(file=os.path.join('textures', 'audgray.png'))
+        self.audgreen = tk.PhotoImage(file=os.path.join('textures', 'audgreen.png'))
+        self.devgray = tk.PhotoImage(file=os.path.join('textures', 'devgray.png'))
+        self.devgreen = tk.PhotoImage(file=os.path.join('textures', 'devgreen.png'))
+        self.vidgray = tk.PhotoImage(file=os.path.join('textures', 'vidgray.png'))
+        self.vidgreen = tk.PhotoImage(file=os.path.join('textures', 'vidgreen.png'))
 
         self.start_frame = tk.Frame(self.root, bg=self.bg_color)
         self.start_frame2 = tk.Frame(self.root, bg=self.bg_color)
@@ -56,36 +64,31 @@ class GUI:
         tk.Button(self.start_frame, text=" X ", font=font, bg=self.button_color, width=5, command=self.clear_site).pack(side='right')
         tk.Button(self.start_frame, text=" P ", font=font, bg=self.button_color, width=5, command=self.paste_site).pack(side='right')
         tk.Label(self.start_frame2, text="Choose what you want to download", font=font, padx=20, pady=20, bg=self.bg_color).pack(side='top')
-# self.loadimage = tk.PhotoImage(file="rounded_button.png")
-# self.roundedbutton = tk.Button(self, image=self.loadimage)
-# self.roundedbutton["bg"] = "white"
-# self.roundedbutton["border"] = "0"
 
-        color = self.button_color
+        color = self.docgray
         if self.settings['documents']['run']:
-            color = self.green_color
-        self.doc_button = tk.Button(self.body_frame, image=self.whitebutton, border=0, bg=self.bg_color, activebackground=self.bg_color, command=self.on_documents)
-        #self.doc_button = tk.Button(self.body_frame, text="Documents", font=font, bg=color, width=box_width, command=self.on_documents)
+            color = self.docgreen
+        self.doc_button = tk.Button(self.body_frame, image=color, border=0, bg= self.bg_color, activebackground=self.bg_color, command=self.on_documents)
         self.doc_button.grid(row=0, column=0, padx=20, pady=10)
-        color = self.button_color
+        color = self.imggray
         if self.settings['images']['run']:
-            color = self.green_color
-        self.img_button = tk.Button(self.body_frame, text="Images", font=font, bg=color, width=box_width, command=self.on_images)
+            color = self.imggreen
+        self.img_button = tk.Button(self.body_frame, image=color, border=0, bg= self.bg_color, activebackground=self.bg_color, command=self.on_images)
         self.img_button.grid(row=0, column=1, padx=20, pady=10)
-        color = self.button_color
+        color = self.audgray
         if self.settings['audios']['run']:
-            color = self.green_color
-        self.aud_button = tk.Button(self.body_frame, text="Audios", font=font, bg=color, width=box_width, command=self.on_audios)
+            color = self.audgreen
+        self.aud_button = tk.Button(self.body_frame, image=color, border=0, bg= self.bg_color, activebackground=self.bg_color, command=self.on_audios)
         self.aud_button.grid(row=1, column=0, padx=20, pady=10)
-        color = self.button_color
+        color = self.devgray
         if self.settings['dev']['run']:
-            color = self.green_color
-        self.dev_button = tk.Button(self.body_frame, text="Analytics", font=font, bg=color, width=box_width, command=self.on_analytics)
+            color = self.devgreen
+        self.dev_button = tk.Button(self.body_frame, image=color, border=0, bg= self.bg_color, activebackground=self.bg_color, command=self.on_analytics)
         self.dev_button.grid(row=1, column=1, padx=20, pady=10)
-        color = self.button_color
+        color = self.vidgray
         if self.settings['videos']['run']:
-            color = self.green_color
-        self.vid_button = tk.Button(self.body_frame, text="Videos", font=font, bg=color, width=box_width, command=self.on_videos)
+            color = self.vidgreen
+        self.vid_button = tk.Button(self.body_frame, image=color, border=0, bg= self.bg_color, activebackground=self.bg_color, command=self.on_videos)
         self.vid_button.grid(row=2, column=0, padx=20, pady=10)
 
         def set_format(value):
@@ -129,37 +132,37 @@ class GUI:
     def on_videos(self):
         self.settings['videos']['run'] = not self.settings['videos']['run']
         if self.settings['videos']['run']:
-            self.vid_button['bg'] = self.green_color
+            self.vid_button['image'] = self.vidgreen
         else:
-            self.vid_button['bg'] = self.button_color
+            self.vid_button['image'] = self.vidgray
 
     def on_documents(self):
         self.settings['documents']['run'] = not self.settings['documents']['run']
         if self.settings['documents']['run']:
-            self.doc_button['image'] = self.greenbutton
+            self.doc_button['image'] = self.docgreen
         else:
-            self.doc_button['image'] = self.whitebutton
+            self.doc_button['image'] = self.docgray
 
     def on_images(self):
         self.settings['images']['run'] = not self.settings['images']['run']
         if self.settings['images']['run']:
-            self.img_button['bg'] = self.green_color
+            self.img_button['image'] = self.imggreen
         else:
-            self.img_button['bg'] = self.button_color
+            self.img_button['image'] = self.imggray
 
     def on_audios(self):
         self.settings['audios']['run'] = not self.settings['audios']['run']
         if self.settings['audios']['run']:
-            self.aud_button['bg'] = self.green_color
+            self.aud_button['image'] = self.audgreen
         else:
-            self.aud_button['bg'] = self.button_color
+            self.aud_button['image'] = self.audgray
 
     def on_analytics(self):
         self.settings['dev']['run'] = not self.settings['dev']['run']
         if self.settings['dev']['run']:
-            self.dev_button['bg'] = self.green_color
+            self.dev_button['image'] = self.devgreen
         else:
-            self.dev_button['bg'] = self.button_color
+            self.dev_button['image'] = self.devgray
 
     def about(self):
         tk.messagebox.showinfo("About", "WeDi (Web Dissector) is...")

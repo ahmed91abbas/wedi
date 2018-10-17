@@ -15,7 +15,7 @@ class GUI:
         self.bg_color = '#e6e6ff'
         self.green_color = '#4af441'
         self.button_color = '#ffffe6'
-        title_font = ("calibri", 20)
+        title_font = ("calibri", 25)
         font = ('calibri', 13)
         box_width = 40
         self.root = tk.Tk()
@@ -31,6 +31,7 @@ class GUI:
 
 
         self.start_frame = tk.Frame(self.root, bg=self.bg_color)
+        self.start_frame2 = tk.Frame(self.root, bg=self.bg_color)
         self.body_frame = tk.Frame(self.root, bg=self.bg_color)
         self.end_frame = tk.Frame(self.root, bg=self.bg_color)
 
@@ -41,9 +42,9 @@ class GUI:
         clipboard = self.root.clipboard_get()
         if len(clipboard) > 10 and clipboard[:4] == 'http':
             self.siteEntry.insert(0, clipboard)
-        tk.Button(self.start_frame, text=" P ", font=font, bg=self.button_color, width=5, command=self.paste_site).pack(side='right')
         tk.Button(self.start_frame, text=" X ", font=font, bg=self.button_color, width=5, command=self.clear_site).pack(side='right')
-        tk.Label(self.start_frame, text="Choose what you want to download", font=font, padx=20, pady=20, bg=self.bg_color).pack(side='top')
+        tk.Button(self.start_frame, text=" P ", font=font, bg=self.button_color, width=5, command=self.paste_site).pack(side='right')
+        tk.Label(self.start_frame2, text="Choose what you want to download", font=font, padx=20, pady=20, bg=self.bg_color).pack(side='top')
 
         color = self.button_color
         if self.settings['documents']['run']:
@@ -87,6 +88,7 @@ class GUI:
         self.button.pack(side='left', padx=50, pady=30)
 
         self.start_frame.pack(side="top")
+        self.start_frame2.pack(side="top")
         self.body_frame.pack()
         self.end_frame.pack(side="bottom")
 

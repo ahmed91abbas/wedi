@@ -4,6 +4,11 @@ import sys
 import threading
 import pickle
 
+# self.loadimage = tk.PhotoImage(file="rounded_button.png")
+# self.roundedbutton = tk.Button(self, image=self.loadimage)
+# self.roundedbutton["bg"] = "white"
+# self.roundedbutton["border"] = "0"
+
 class GUI:
     def __init__(self):
         try:

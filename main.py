@@ -23,6 +23,7 @@ class GUI:
         self.button_color = '#ffffe6'
         title_font = ("calibri", 25)
         font = ('calibri', 13)
+        menufont = ('calibri', 16)
         box_width = 40
         self.root = tk.Tk()
         self.root.configure(background=self.bg_color)
@@ -45,13 +46,17 @@ class GUI:
         self.devgreen = tk.PhotoImage(file=os.path.join('textures', 'devgreen.png'))
         self.vidgray = tk.PhotoImage(file=os.path.join('textures', 'vidgray.png'))
         self.vidgreen = tk.PhotoImage(file=os.path.join('textures', 'vidgreen.png'))
+        self.buttonframe = tk.PhotoImage(file=os.path.join('textures', 'buttonframe.png'))
+        self.titleimg = tk.PhotoImage(file=os.path.join('textures', 'titleimg.png'))
+        self.pasteimg = tk.PhotoImage(file=os.path.join('textures', 'pasteimg.png'))
+        self.backimg = tk.PhotoImage(file=os.path.join('textures', 'backimg.png'))
 
         self.start_frame = tk.Frame(self.root, bg=self.bg_color)
         self.start_frame2 = tk.Frame(self.root, bg=self.bg_color)
         self.body_frame = tk.Frame(self.root, bg=self.bg_color)
         self.end_frame = tk.Frame(self.root, bg=self.bg_color)
 
-        self.title = tk.Label(self.start_frame, text="WeDi", font=title_font, bg=self.bg_color, pady=35)
+        self.title = tk.Label(self.start_frame, image=self.titleimg, bg=self.bg_color, pady=35)
         self.title.pack(side='top')
         self.siteEntry = tk.Entry(self.start_frame, width=box_width+25, font=font)
         self.siteEntry.pack(side='top')
@@ -61,8 +66,8 @@ class GUI:
             clipboard = ""
         if len(clipboard) > 10 and clipboard[:4] == 'http':
             self.siteEntry.insert(0, clipboard)
-        tk.Button(self.start_frame, text=" X ", font=font, bg=self.button_color, width=5, command=self.clear_site).pack(side='right')
-        tk.Button(self.start_frame, text=" P ", font=font, bg=self.button_color, width=5, command=self.paste_site).pack(side='right')
+        tk.Button(self.start_frame, image=self.backimg, bg=self.button_color, command=self.clear_site).pack(side='right')
+        tk.Button(self.start_frame, image=self.pasteimg, bg=self.button_color, command=self.paste_site).pack(side='right')
         tk.Label(self.start_frame2, text="Choose what you want to download", font=font, padx=20, pady=20, bg=self.bg_color).pack(side='top')
 
         color = self.docgray
@@ -97,8 +102,8 @@ class GUI:
         self.option = tk.StringVar()
         self.option.set(self.inv_format_dict[self.settings['videos']['format']])
         self.options = tk.OptionMenu(self.body_frame, self.option, *formats, command=set_format)  # creates drop down menu
-        self.options.config(bg = self.button_color, fg='black', font=font, width=box_width-4)
-        self.options["menu"].config(bg=self.button_color, font=font, fg='black')
+        self.options.config(indicatoron=0,bg=self.bg_color, border=0, highlightthickness=0, image=self.buttonframe, compound=tk.CENTER, activebackground=self.bg_color, font=menufont)
+        self.options["menu"].config(bg=self.button_color, font=menufont)
         self.options.grid(row=2, column=1)
 
         self.run_button = tk.Button(self.end_frame, text='Run', font=font, bg=self.button_color, padx=50, pady=10, command=self.on_run)

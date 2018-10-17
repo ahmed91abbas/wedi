@@ -3,6 +3,7 @@ from WeDi import services
 import sys
 import threading
 import pickle
+import os
 
 # self.loadimage = tk.PhotoImage(file="rounded_button.png")
 # self.roundedbutton = tk.Button(self, image=self.loadimage)
@@ -50,11 +51,15 @@ class GUI:
         tk.Button(self.start_frame, text=" X ", font=font, bg=self.button_color, width=5, command=self.clear_site).pack(side='right')
         tk.Button(self.start_frame, text=" P ", font=font, bg=self.button_color, width=5, command=self.paste_site).pack(side='right')
         tk.Label(self.start_frame2, text="Choose what you want to download", font=font, padx=20, pady=20, bg=self.bg_color).pack(side='top')
-
+# self.loadimage = tk.PhotoImage(file="rounded_button.png")
+# self.roundedbutton = tk.Button(self, image=self.loadimage)
+# self.roundedbutton["bg"] = "white"
+# self.roundedbutton["border"] = "0"
+        self.loadimage = tk.PhotoImage(file=os.path.join('textures', 'white_button.png'))
         color = self.button_color
         if self.settings['documents']['run']:
             color = self.green_color
-        self.doc_button = tk.Button(self.body_frame, text="Documents", font=font, bg=color, width=box_width, command=self.on_documents)
+        self.doc_button = tk.Button(self.body_frame, text="Documents", image=self.loadimage, font=font, bg=color, width=box_width, command=self.on_documents)
         self.doc_button.grid(row=0, column=0, padx=20, pady=10)
         color = self.button_color
         if self.settings['images']['run']:
@@ -148,7 +153,7 @@ class GUI:
             self.dev_button['bg'] = self.button_color
 
     def about(self):
-        messagebox.showinfo("About", "WeDi (Web Dissector) is...")
+        tk.messagebox.showinfo("About", "WeDi (Web Dissector) is...")
 
     def default_settings(self):
         path = "."

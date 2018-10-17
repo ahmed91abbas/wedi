@@ -306,7 +306,7 @@ class services:
             dirs = [os.path.join(self.path, d) for d in os.listdir(self.path)
                         if os.path.isdir(os.path.join(self.path, d))]
             for d in dirs:
-                if d != os.path.join(self.path, '.git'):
+                if d != os.path.join(self.path, '.git') and d != os.path.join(self.path, 'textures'):
                     shutil.rmtree(d)
         except:
             pass

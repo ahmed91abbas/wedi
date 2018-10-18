@@ -1,14 +1,10 @@
 import tkinter as tk
+from tkinter import messagebox
 from WeDi import services
 import sys
 import threading
 import pickle
 import os
-
-# self.loadimage = tk.PhotoImage(file="rounded_button.png")
-# self.roundedbutton = tk.Button(self, image=self.loadimage)
-# self.roundedbutton["bg"] = "white"
-# self.roundedbutton["border"] = "0"
 
 class GUI:
     def __init__(self):
@@ -32,9 +28,13 @@ class GUI:
 
         menu = tk.Menu(self.root)
         self.root.config(menu=menu)
+        prefmenu = tk.Menu(menu)
+        menu.add_cascade(label="Preferences", menu=prefmenu)
+        prefmenu.add_command(label="Settings", command=self.about)
         helpmenu = tk.Menu(menu)
         menu.add_cascade(label="Help", menu=helpmenu)
-        helpmenu.add_command(label="About...", command=self.about)
+        helpmenu.add_command(label="How to...", command=self.about)
+        helpmenu.add_command(label="About", command=self.about)
 
         self.docgray = tk.PhotoImage(file=os.path.join('textures', 'docgray.png'))
         self.docgreen = tk.PhotoImage(file=os.path.join('textures', 'docgreen.png'))
@@ -170,7 +170,7 @@ class GUI:
             self.dev_button['image'] = self.devgray
 
     def about(self):
-        tk.messagebox.showinfo("About", "WeDi (Web Dissector) is...")
+        messagebox.showinfo("About", "WeDi (Web Dissector) is...")
 
     def default_settings(self):
         path = "."

@@ -277,6 +277,10 @@ class services:
             os.rmdir(self.vid_folder)
         if self.aud_run and not os.listdir(self.aud_folder):
             os.rmdir(self.aud_folder)
+        if self.doc_run and not os.listdir(self.doc_folder):
+            os.rmdir(self.doc_folder)
+        if self.img_run and not os.listdir(self.img_folder):
+            os.rmdir(self.img_folder)
 
     def output_results(self):
         self.create_dest_folders()
@@ -317,15 +321,15 @@ if __name__ == "__main__":
     site = 'https://www.youtube.com/watch?v=zmr2I8caF0c' #small
     site = 'https://www.youtube.com/watch?v=bugktEHP1n0'
     site = 'https://www.youtube.com/watch?v=zkNzxsaCunU' #weird file name not installing
+    site = 'https://pythonspot.com/tk-message-box/' #failing to download images
     path = "."
     img_types = ['jpg', 'jpeg', 'png', 'gif']
     doc_types = ['py', 'txt', 'java', 'php', 'pdf', 'md', 'gitignore', 'c']
     vid_types = ['mp4', 'avi', 'mpeg', 'mpg', 'wmv', 'mov', 'flv', 'swf', 'mkv', '3gp']
     aud_types = ['mp3', 'aac', 'wma', 'wav']
-    img_settings = {'run':False, 'img_types':img_types}
+    img_settings = {'run':True, 'img_types':img_types}
     doc_settings = {'run':False, 'doc_types':doc_types}
-    #format: best/worst/bestvideo/bestvideo+bestaudios
-    vid_settings = {'run':True, 'vid_types':vid_types, 'format':'best'}
+    vid_settings = {'run':False, 'vid_types':vid_types, 'format':'best'}
     aud_settings = {'run':False, 'aud_types':aud_types}
     dev_settings = {'run':False}
     settings = {'path':path, 'images':img_settings, 'documents':doc_settings, 'videos':vid_settings, 'audios':aud_settings, 'dev':dev_settings}

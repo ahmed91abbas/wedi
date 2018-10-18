@@ -5,6 +5,7 @@ import sys
 import threading
 import pickle
 import os
+import runGUI
 
 class GUI:
     def __init__(self):
@@ -17,9 +18,9 @@ class GUI:
         self.bg_color = '#e6e6ff'
         self.green_color = '#4af441'
         self.button_color = '#ffffe6'
-        title_font = ("calibri", 25)
         font = ('calibri', 13)
-        menufont = ('calibri', 16)
+        menufont = ('calibri', 16, 'bold')
+        menufont1 = ('calibri', 16)
         box_width = 40
         self.root = tk.Tk()
         self.root.configure(background=self.bg_color)
@@ -103,7 +104,7 @@ class GUI:
         self.option.set(self.inv_format_dict[self.settings['videos']['format']])
         self.options = tk.OptionMenu(self.body_frame, self.option, *formats, command=set_format)  # creates drop down menu
         self.options.config(indicatoron=0,bg=self.bg_color, border=0, highlightthickness=0, image=self.buttonframe, compound=tk.CENTER, activebackground=self.bg_color, font=menufont)
-        self.options["menu"].config(bg=self.button_color, font=menufont)
+        self.options["menu"].config(bg=self.button_color, font=menufont1)
         self.options.grid(row=2, column=1)
 
         self.run_button = tk.Button(self.end_frame, text='Run', font=font, bg=self.button_color, padx=50, pady=10, command=self.on_run)
@@ -116,7 +117,7 @@ class GUI:
         self.body_frame.pack()
         self.end_frame.pack(side="bottom")
 
-        tk.mainloop()
+        self.root.mainloop()
 
     def clear_site(self):
         self.siteEntry.delete(0, "end")
@@ -187,6 +188,13 @@ class GUI:
         pickle.dump(settings, open('settings.sav', 'wb'))
         return settings
 
+    def test(self):
+        r = runGUI.runGUI()
+        r.cycleImages()
+        def stop():
+            r.set_stopevent(True)
+        self.root.after(2500, stop)
+
     def on_run(self):
         site = self.siteEntry.get()
         if len(site) > 10 and site[:4] == 'http':
@@ -195,6 +203,10 @@ class GUI:
             thread.daemon = True
             thread.start()
         else:
+            self.test()
+            # thread = threading.Thread(target= self.test)
+            # thread.daemon = True
+            # thread.start()
             print("Enter site!")
 
 if __name__ == '__main__':

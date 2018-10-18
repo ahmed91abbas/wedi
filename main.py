@@ -194,7 +194,7 @@ class GUI:
         r.cycleImages()
         def stop():
             r.set_stopevent(True)
-        self.root.after(2500, stop)
+        #self.root.after(2500, stop)
 
     def on_run(self):
         site = self.siteEntry.get()
@@ -204,10 +204,9 @@ class GUI:
             thread.daemon = True
             thread.start()
         else:
-            self.test()
-            # thread = threading.Thread(target= self.test)
-            # thread.daemon = True
-            # thread.start()
+            thread = threading.Thread(target= self.test)
+            thread.daemon = True
+            thread.start()
             print("Enter site!")
 
 if __name__ == '__main__':

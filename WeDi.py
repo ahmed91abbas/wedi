@@ -93,26 +93,21 @@ class services:
         tokens_to_be_replaced = ['https://', 'http://', 'www.', '*', '\\', '/', ':', '<', '>', '|', '?', '"', '\'']
         site_name = self.multi_replace(tokens_to_be_replaced, '_', self.site)
         path = os.path.join(site_name, self.path)
-        if (len(self.img_urls) != 0 and self.img_run) :
-            self.img_folder = os.path.join(path, "images")
-            if not os.path.isdir(self.img_folder):
-                os.makedirs(self.img_folder)
-        if (len(self.doc_urls) != 0 and self.doc_run) :
-            self.doc_folder = os.path.join(path, "documents")
-            if not os.path.isdir(self.doc_folder):
-                os.makedirs(self.doc_folder)
-        if (self.vid_run) :
-            self.vid_folder = os.path.join(path, "videos")
-            if not os.path.isdir(self.vid_folder):
-                os.makedirs(self.vid_folder)
-        if (self.aud_run) :
-            self.aud_folder = os.path.join(path, "audios")
-            if not os.path.isdir(self.aud_folder):
-                os.makedirs(self.aud_folder)
-        if (self.dev_run) :
-            self.dev_folder = os.path.join(path, "dev")
-            if not os.path.isdir(self.dev_folder):
-                os.makedirs(self.dev_folder)
+        self.img_folder = os.path.join(path, "images")
+        if not os.path.isdir(self.img_folder):
+            os.makedirs(self.img_folder)
+        self.doc_folder = os.path.join(path, "documents")
+        if not os.path.isdir(self.doc_folder):
+            os.makedirs(self.doc_folder)
+        self.vid_folder = os.path.join(path, "videos")
+        if not os.path.isdir(self.vid_folder):
+            os.makedirs(self.vid_folder)
+        self.aud_folder = os.path.join(path, "audios")
+        if not os.path.isdir(self.aud_folder):
+            os.makedirs(self.aud_folder)
+        self.dev_folder = os.path.join(path, "dev")
+        if not os.path.isdir(self.dev_folder):
+            os.makedirs(self.dev_folder)
 
     def download_url(self, url, filename):
         try:
@@ -273,13 +268,13 @@ class services:
             pass
 
     def rm_empty_dirs(self):
-        if self.vid_run and not os.listdir(self.vid_folder):
+        if not os.listdir(self.vid_folder):
             os.rmdir(self.vid_folder)
-        if self.aud_run and not os.listdir(self.aud_folder):
+        if not os.listdir(self.aud_folder):
             os.rmdir(self.aud_folder)
-        if self.doc_run and not os.listdir(self.doc_folder):
+        if not os.listdir(self.doc_folder):
             os.rmdir(self.doc_folder)
-        if self.img_run and not os.listdir(self.img_folder):
+        if not os.listdir(self.img_folder):
             os.rmdir(self.img_folder)
 
     def output_results(self):

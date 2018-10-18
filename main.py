@@ -50,7 +50,7 @@ class GUI:
         self.buttonframe = tk.PhotoImage(file=os.path.join('textures', 'buttonframe.png'))
         self.titleimg = tk.PhotoImage(file=os.path.join('textures', 'titleimg.png'))
         self.pasteimg = tk.PhotoImage(file=os.path.join('textures', 'pasteimg.png'))
-        self.backimg = tk.PhotoImage(file=os.path.join('textures', 'backimg.png'))
+        self.delimg = tk.PhotoImage(file=os.path.join('textures', 'delimg.png'))
 
         self.start_frame = tk.Frame(self.root, bg=self.bg_color)
         self.start_frame2 = tk.Frame(self.root, bg=self.bg_color)
@@ -67,7 +67,7 @@ class GUI:
             clipboard = ""
         if len(clipboard) > 10 and clipboard[:4] == 'http':
             self.siteEntry.insert(0, clipboard)
-        tk.Button(self.start_frame, image=self.backimg, bg=self.button_color, command=self.clear_site).pack(side='right')
+        tk.Button(self.start_frame, image=self.delimg, bg=self.button_color, command=self.clear_site).pack(side='right')
         tk.Button(self.start_frame, image=self.pasteimg, bg=self.button_color, command=self.paste_site).pack(side='right')
         tk.Label(self.start_frame2, text="Choose what you want to download", font=font, padx=20, pady=20, bg=self.bg_color).pack(side='top')
 

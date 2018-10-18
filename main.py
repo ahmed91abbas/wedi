@@ -51,6 +51,7 @@ class GUI:
         self.titleimg = tk.PhotoImage(file=os.path.join('textures', 'titleimg.png'))
         self.pasteimg = tk.PhotoImage(file=os.path.join('textures', 'pasteimg.png'))
         self.delimg = tk.PhotoImage(file=os.path.join('textures', 'delimg.png'))
+        self.buttonimg = tk.PhotoImage(file=os.path.join('textures', 'button.png'))
 
         self.start_frame = tk.Frame(self.root, bg=self.bg_color)
         self.start_frame2 = tk.Frame(self.root, bg=self.bg_color)
@@ -107,9 +108,9 @@ class GUI:
         self.options["menu"].config(bg=self.button_color, font=menufont1)
         self.options.grid(row=2, column=1)
 
-        self.run_button = tk.Button(self.end_frame, text='Run', font=font, bg=self.button_color, padx=50, pady=10, command=self.on_run)
+        self.run_button = tk.Button(self.end_frame, text="Run", font=font, image=self.buttonimg, border=0, bg=self.bg_color, activebackground=self.bg_color,compound=tk.CENTER, command=self.on_run)
         self.run_button.pack(side='left', padx=50, pady=30)
-        self.button = tk.Button(self.end_frame, text='Exit', font=font, bg=self.button_color, padx=50, pady=10, command=self.on_close)
+        self.button = tk.Button(self.end_frame, text='Exit', font=font, image=self.buttonimg, border=0, bg=self.bg_color, activebackground=self.bg_color,compound=tk.CENTER, command=self.on_close)
         self.button.pack(side='left', padx=50, pady=30)
 
         self.start_frame.pack(side="top")

@@ -8,9 +8,7 @@ import wget
 import youtube_dl
 import platform
 import subprocess
-'''
-make quility options for video download
-'''
+
 class MyLogger(object):
     def debug(self, msg):
         pass
@@ -345,6 +343,6 @@ if __name__ == "__main__":
     vid_settings = {'run':False, 'vid_types':vid_types, 'format':'best'}
     aud_settings = {'run':False, 'aud_types':aud_types}
     dev_settings = {'run':False}
-    settings = {'path':path, 'images':img_settings, 'documents':doc_settings, 'videos':vid_settings, 'audios':aud_settings, 'dev':dev_settings}
+    settings = {'path':path, 'openfolder':False, 'images':img_settings, 'documents':doc_settings, 'videos':vid_settings, 'audios':aud_settings, 'dev':dev_settings}
     services = services(site, settings)
 

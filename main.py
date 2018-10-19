@@ -185,7 +185,7 @@ class GUI:
         vid_settings = {'run':True, 'vid_types':vid_types, 'format':'best'}
         aud_settings = {'run':True, 'aud_types':aud_types}
         dev_settings = {'run':True}
-        settings = {'path':path, 'images':img_settings, 'documents':doc_settings, 'videos':vid_settings, 'audios':aud_settings, 'dev':dev_settings}
+        settings = {'path':path, 'openfolder':False, 'images':img_settings, 'documents':doc_settings, 'videos':vid_settings, 'audios':aud_settings, 'dev':dev_settings}
         pickle.dump(settings, open('settings.sav', 'wb'))
         return settings
 

@@ -6,6 +6,8 @@ import os
 import shutil
 import wget
 import youtube_dl
+import platform
+import subprocess
 '''
 make quility options for video download
 '''
@@ -51,6 +53,8 @@ class services:
         self.connect()
         self.urls = self.extract_urls()
         self.output_results()
+        if settings['openfolder']:
+            self.open_path()
 
     def extract_domain(self, site):
         domain = re.search('(http|ftp)s?[:\/\/]+[A-Za-z0-9\.]+\/', site)
@@ -62,15 +66,17 @@ class services:
         return (protocol, domain)
 
     def fix_url(self, url):
-        if 'http' not in url:
-            if url[:1] == '/':
-                url = url[1:]
+        if 'http' not in url and len(url) > 2:
             protocol = self.domain[0]
             domain_name = self.domain[1]
-            x = len(domain_name)
-            if len(url) > x and url[:x] == domain_name:
-                return protocol + '://' + url
-            return protocol + '://' + domain_name + url
+            if url[:2] == '//':
+                return protocol + ':' + url
+            if url[:1] == '/':
+                url = url[1:]
+                x = len(domain_name)
+                if len(url) > x and url[:x] == domain_name:
+                    return protocol + '://' + url
+                return protocol + '://' + domain_name + url
         return url
 
     def apply_special_rules(self, url):
@@ -92,20 +98,20 @@ class services:
     def create_dest_folders(self):
         tokens_to_be_replaced = ['https://', 'http://', 'www.', '*', '\\', '/', ':', '<', '>', '|', '?', '"', '\'']
         site_name = self.multi_replace(tokens_to_be_replaced, '_', self.site)
-        path = os.path.join(site_name, self.path)
-        self.img_folder = os.path.join(path, "images")
+        self.downloadpath = os.path.join(site_name, self.path)
+        self.img_folder = os.path.join(self.downloadpath, "images")
         if not os.path.isdir(self.img_folder):
             os.makedirs(self.img_folder)
-        self.doc_folder = os.path.join(path, "documents")
+        self.doc_folder = os.path.join(self.downloadpath, "documents")
         if not os.path.isdir(self.doc_folder):
             os.makedirs(self.doc_folder)
-        self.vid_folder = os.path.join(path, "videos")
+        self.vid_folder = os.path.join(self.downloadpath, "videos")
         if not os.path.isdir(self.vid_folder):
             os.makedirs(self.vid_folder)
-        self.aud_folder = os.path.join(path, "audios")
+        self.aud_folder = os.path.join(self.downloadpath, "audios")
         if not os.path.isdir(self.aud_folder):
             os.makedirs(self.aud_folder)
-        self.dev_folder = os.path.join(path, "dev")
+        self.dev_folder = os.path.join(self.downloadpath, "dev")
         if not os.path.isdir(self.dev_folder):
             os.makedirs(self.dev_folder)
 
@@ -153,6 +159,7 @@ class services:
                 url = img['src']
             elif ' data-src=' in str(img):
                 url = img['data-src']
+
             url =  self.fix_url(url)
             url = self.apply_special_rules(url)
             if (self.is_img_link(url)):
@@ -276,6 +283,8 @@ class services:
             os.rmdir(self.doc_folder)
         if not os.listdir(self.img_folder):
             os.rmdir(self.img_folder)
+        if not os.listdir(self.dev_folder):
+            os.rmdir(self.dev_folder)
 
     def output_results(self):
         self.create_dest_folders()
@@ -300,6 +309,14 @@ class services:
         self.rm_empty_dirs()
         print("Done.")
 
+    def open_path(self):
+        if platform.system() == "Windows":
+            os.startfile(self.downloadpath)
+        elif platform.system() == "Darwin":
+            subprocess.Popen(["open", self.downloadpath])
+        else:
+            subprocess.Popen(["xdg-open", self.downloadpath])
+
     def clean_up(self):
         try:
             dirs = [os.path.join(self.path, d) for d in os.listdir(self.path)
@@ -316,13 +333,14 @@ if __name__ == "__main__":
     site = 'https://www.youtube.com/watch?v=zmr2I8caF0c' #small
     site = 'https://www.youtube.com/watch?v=bugktEHP1n0'
     site = 'https://www.youtube.com/watch?v=zkNzxsaCunU' #weird file name not installing
-    site = 'https://pythonspot.com/tk-message-box/' #failing to download images
+    site = 'https://stackoverflow.com/' #error domain name
+    site = 'https://stackoverflow.com/' #failing images
     path = "."
     img_types = ['jpg', 'jpeg', 'png', 'gif']
     doc_types = ['py', 'txt', 'java', 'php', 'pdf', 'md', 'gitignore', 'c']
     vid_types = ['mp4', 'avi', 'mpeg', 'mpg', 'wmv', 'mov', 'flv', 'swf', 'mkv', '3gp']
     aud_types = ['mp3', 'aac', 'wma', 'wav']
-    img_settings = {'run':True, 'img_types':img_types}
+    img_settings = {'run':False, 'img_types':img_types}
     doc_settings = {'run':False, 'doc_types':doc_types}
     vid_settings = {'run':False, 'vid_types':vid_types, 'format':'best'}
     aud_settings = {'run':False, 'aud_types':aud_types}

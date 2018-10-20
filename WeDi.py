@@ -8,6 +8,7 @@ import wget
 import youtube_dl
 import platform
 import subprocess
+import sys
 
 class MyLogger(object):
     def debug(self, msg):
@@ -72,10 +73,11 @@ class services:
                 return protocol + ':' + url
             if url[:1] == '/':
                 url = url[1:]
-                x = len(domain_name)
-                if len(url) > x and url[:x] == domain_name:
-                    return protocol + '://' + url
-                return protocol + '://' + domain_name + url
+            x = len(domain_name)
+            if len(url) > x and url[:x] == domain_name:
+                return protocol + '://' + url
+            return protocol + '://' + domain_name + url
+
         return url
 
     def apply_special_rules(self, url):
@@ -116,8 +118,22 @@ class services:
 
     def download_url(self, url, filename):
         try:
-            print("\n", url)
-            wget.download(url, filename)
+            with open(filename, "wb") as f:
+                print("\nDownloading %s" % url)
+                response = requests.get(url, stream=True)
+                total_length = response.headers.get('content-length')
+
+                if total_length is None: # no content length header
+                    f.write(response.content)
+                else:
+                    dl = 0
+                    total_length = int(total_length)
+                    for data in response.iter_content(chunk_size=4096):
+                        dl += len(data)
+                        f.write(data)
+                        done = int(50 * dl / total_length)
+                        sys.stdout.write("\r[%s%s]" % ('=' * done, ' ' * (50-done)) )
+                        sys.stdout.flush()
         except:
             print("Falied to download!")
 
@@ -330,14 +346,15 @@ if __name__ == "__main__":
     site = 'https://www.dplay.se/videos/stories-from-norway/stories-from-norway-102'
     site = 'https://www1.gogoanime.sh/boruto-naruto-next-generations-episode-77'
     site = 'https://www.youtube.com/watch?v=bugktEHP1n0'
+    site = 'http://cs.lth.se/edan20/'
     site = 'https://www.youtube.com/watch?v=zmr2I8caF0c' #small
     path = "."
     img_types = ['jpg', 'jpeg', 'png', 'gif']
     doc_types = ['py', 'txt', 'java', 'php', 'pdf', 'md', 'gitignore', 'c']
     vid_types = ['mp4', 'avi', 'mpeg', 'mpg', 'wmv', 'mov', 'flv', 'swf', 'mkv', '3gp', 'webm', 'ogg']
     aud_types = ['mp3', 'aac', 'wma', 'wav', 'm4a']
-    img_settings = {'run':False, 'img_types':img_types}
-    doc_settings = {'run':False, 'doc_types':doc_types}
+    img_settings = {'run':True, 'img_types':img_types}
+    doc_settings = {'run':True, 'doc_types':doc_types}
     vid_settings = {'run':False, 'vid_types':vid_types, 'format':'best'}
     aud_settings = {'run':False, 'aud_types':aud_types}
     dev_settings = {'run':False}

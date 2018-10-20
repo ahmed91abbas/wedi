@@ -60,9 +60,15 @@ class services:
             self.open_path()
 
     def my_hook(self, d):
-        if d['status'] == 'finished':
-            self.gui.update_values(url=d['filename'], perc='100.0%', size=d['_total_bytes_str'],
-                 eta='0 Seconds', speed='0.0 KB/s', action='Done downloading, now converting...')
+        if d['status'] == 'finished' or d['_percent_str'] == '100.0%':
+            total_length = d['_total_bytes_str']
+            if total_length > 10**6:
+                total_length = str(round(total_length/10**6, 3)) + ' MB'
+            else:
+                total_length = str(round(total_length/10**3, 3)) + ' KB'
+            self.gui.update_values(url=d['filename'], dl=total_length, perc='100.0%',
+                size=total_length, eta='0 Seconds', speed='0.0 KB/s',
+                action='Done downloading, now converting...')
             print('\nDone downloading, now converting...')
         else:
             self.gui.update_values(url=self.site, dl=d['downloaded_bytes'], perc=d['_percent_str'],
@@ -154,11 +160,13 @@ class services:
                     sys.stdout.write("\r[%s%s]" % ('=' * done, ' ' * (50-done)) )
                     sys.stdout.flush()
                     if dl == total_length:
-                        perc = '100.0%'
+                        perc_str = '100.0%'
                         speed_str = '0.0 KB/s'
                         eta_str = '0 Seconds'
+                        dl_str = total_length_str = total_length
                     else:
-                        perc = str(round(dl*100/total_length, 1)) + '%'
+                        dl_str = str(dl)
+                        perc_str = str(round(dl*100/total_length, 1)) + '%'
                         speed = dl/(time.clock() - start)
                         eta = int((total_length - dl) / speed)
                         if eta > 3600:
@@ -171,7 +179,7 @@ class services:
                             speed_str = str(round(speed/10**6, 1)) + ' MB/s'
                         else:
                             speed_str = str(int(speed/1000)) + ' KB/s'
-                    self.gui.update_values(url=url, dl=dl, perc=perc, size=total_length_str, eta=eta_str, speed=speed_str)
+                    self.gui.update_values(url=url, dl=dl_str, perc=perc_str, size=total_length_str, eta=eta_str, speed=speed_str)
         # except:
         #     print("Falied to download!")
 
@@ -341,6 +349,9 @@ class services:
 
     def output_results(self):
         self.create_dest_folders()
+        if self.dev_run:
+            self.output_dev()
+            print()
         if self.img_run:
             self.download_links(self.img_urls, self.img_types, self.img_folder)
             print()
@@ -352,13 +363,13 @@ class services:
             print()
             print("Trying to extract video using youtube_dl...")
             self.ydl_video()
+            print()
         if self.aud_run:
             self.download_links(self.aud_urls, self.aud_types, self.aud_folder)
             print()
             print("Trying to extract audios using youtube_dl...")
             self.ydl_audios()
-        if self.dev_run:
-            self.output_dev()
+            print()
         self.rm_empty_dirs()
         print("Done.")
         self.gui.set_stopevent()

@@ -2,7 +2,6 @@ import tkinter as tk
 from tkinter import messagebox
 from WeDi import services
 import sys
-import threading
 import pickle
 import os
 import runGUI

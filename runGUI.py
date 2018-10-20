@@ -7,6 +7,11 @@ from PIL import Image, ImageTk
 
 class runGUI:
     def __init__(self, site, settings):
+        self.createGUI()
+        self.cycleImages()
+        self.mainloop()
+
+    def createGUI(self):
         self.stopevent = False
         self.top = tk.Toplevel()
         self.top.title("Run status")
@@ -40,9 +45,9 @@ class runGUI:
         #downloadingFrame children
         w2 = int(width / 3)
         w1 = width - w2
-        tk.Label(self.dFrame1, borderwidth= 2, relief='solid', text='Now downloading...', bg=self.bg_color, width=w1).pack(side='left')
+        tk.Label(self.dFrame1, text='Now downloading...', bg=self.bg_color, width=w1).pack(side='left')
         openfolder = IntVar()
-        tk.Checkbutton(self.dFrame1, borderwidth= 2, relief='solid', text="Open download folder when done", variable=openfolder, width=w2).pack(side='right')
+        tk.Checkbutton(self.dFrame1, text="Open download folder when done", variable=openfolder, width=w2).pack(side='right')
 
         self.urlLabel = tk.Label(self.dFrame2, borderwidth= 2, relief='solid', text='URL goes here', bg=self.bg_color, width=width)
         self.urlLabel.pack(side='left')
@@ -121,6 +126,9 @@ class runGUI:
         if not self.stopevent:
             self.top.after(1000, self.cycleImages)
 
+    def update_values(self, info):
+        self.urlLabel['text'] = "SAaaaaaaaaaaaaaaaaaaaaaaa"
+
     def on_close(self):
         self.top.destroy()
 
@@ -128,6 +136,4 @@ class runGUI:
         tk.mainloop()
 
 if __name__ == '__main__':
-    r = runGUI(None, None)
-    r.cycleImages()
-    r.mainloop()
+    runGUI(None, None)

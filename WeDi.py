@@ -23,7 +23,7 @@ def my_hook(d):
             "at " + d['_speed_str'], "ETA " + d['_eta_str'], " "*5, end='\r')
 
 class services:
-    def __init__(self, site, settings):
+    def __init__(self, site, settings, GUI=None):
         self.site = site
         self.domain = self.extract_domain(site)
         self.path = settings['path']

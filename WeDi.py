@@ -2,13 +2,10 @@ from __future__ import unicode_literals
 import regex as re
 import requests
 from bs4 import BeautifulSoup
-import os
-import shutil
-import wget
+import os, sys, shutil
 import youtube_dl
 import platform
 import subprocess
-import sys
 
 class MyLogger(object):
     def debug(self, msg):

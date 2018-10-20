@@ -86,8 +86,6 @@ class runGUI:
         wimg = int(width/3.5)
         wlist = width - 2*wimg
         hlist = int(width/4)
-        docgray = tk.PhotoImage(file=os.path.join('textures', 'button.png'))
-        docgreen = tk.PhotoImage(file=os.path.join('textures', 'docgreen.png'))
         self.leftAnimationLabel = tk.Label(self.lFrame1, bg=self.bg_color)
         self.leftAnimationLabel.pack(side='left')
         self.listLabel = tk.Label(self.lFrame2, text='list goes here', width=wlist, height=hlist)

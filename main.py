@@ -4,6 +4,7 @@ import sys
 import pickle
 import os
 import runGUI
+from PIL import Image, ImageTk
 
 class GUI:
     def __init__(self):
@@ -35,21 +36,21 @@ class GUI:
         helpmenu.add_command(label="How to...", command=self.about)
         helpmenu.add_command(label="About", command=self.about)
 
-        self.docgray = tk.PhotoImage(file=os.path.join('textures', 'docgray.png'))
-        self.docgreen = tk.PhotoImage(file=os.path.join('textures', 'docgreen.png'))
-        self.imggray = tk.PhotoImage(file=os.path.join('textures', 'imggray.png'))
-        self.imggreen = tk.PhotoImage(file=os.path.join('textures', 'imggreen.png'))
-        self.audgray = tk.PhotoImage(file=os.path.join('textures', 'audgray.png'))
-        self.audgreen = tk.PhotoImage(file=os.path.join('textures', 'audgreen.png'))
-        self.devgray = tk.PhotoImage(file=os.path.join('textures', 'devgray.png'))
-        self.devgreen = tk.PhotoImage(file=os.path.join('textures', 'devgreen.png'))
-        self.vidgray = tk.PhotoImage(file=os.path.join('textures', 'vidgray.png'))
-        self.vidgreen = tk.PhotoImage(file=os.path.join('textures', 'vidgreen.png'))
-        self.buttonframe = tk.PhotoImage(file=os.path.join('textures', 'buttonframe.png'))
-        self.titleimg = tk.PhotoImage(file=os.path.join('textures', 'titleimg.png'))
-        self.pasteimg = tk.PhotoImage(file=os.path.join('textures', 'pasteimg.png'))
-        self.delimg = tk.PhotoImage(file=os.path.join('textures', 'delimg.png'))
-        self.buttonimg = tk.PhotoImage(file=os.path.join('textures', 'button.png'))
+        self.docgray = ImageTk.PhotoImage(Image.open(os.path.join('textures', 'docgray.png')))
+        self.docgreen = ImageTk.PhotoImage(Image.open(os.path.join('textures', 'docgreen.png')))
+        self.imggray = ImageTk.PhotoImage(Image.open(os.path.join('textures', 'imggray.png')))
+        self.imggreen = ImageTk.PhotoImage(Image.open(os.path.join('textures', 'imggreen.png')))
+        self.audgray = ImageTk.PhotoImage(Image.open(os.path.join('textures', 'audgray.png')))
+        self.audgreen = ImageTk.PhotoImage(Image.open(os.path.join('textures', 'audgreen.png')))
+        self.devgray = ImageTk.PhotoImage(Image.open(os.path.join('textures', 'devgray.png')))
+        self.devgreen = ImageTk.PhotoImage(Image.open(os.path.join('textures', 'devgreen.png')))
+        self.vidgray = ImageTk.PhotoImage(Image.open(os.path.join('textures', 'vidgray.png')))
+        self.vidgreen = ImageTk.PhotoImage(Image.open(os.path.join('textures', 'vidgreen.png')))
+        self.buttonframe = ImageTk.PhotoImage(Image.open(os.path.join('textures', 'buttonframe.png')))
+        self.titleimg = ImageTk.PhotoImage(Image.open(os.path.join('textures', 'titleimg.png')))
+        self.pasteimg = ImageTk.PhotoImage(Image.open(os.path.join('textures', 'pasteimg.png')))
+        self.delimg = ImageTk.PhotoImage(Image.open(os.path.join('textures', 'delimg.png')))
+        self.buttonimg = ImageTk.PhotoImage(Image.open(os.path.join('textures', 'button.png')))
 
         self.start_frame = tk.Frame(self.root, bg=self.bg_color)
         self.start_frame2 = tk.Frame(self.root, bg=self.bg_color)

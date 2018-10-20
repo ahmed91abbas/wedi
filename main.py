@@ -189,25 +189,13 @@ class GUI:
         pickle.dump(settings, open('settings.sav', 'wb'))
         return settings
 
-    def test(self):
-        r = runGUI.runGUI()
-        r.cycleImages()
-        def stop():
-            r.set_stopevent(True)
-        #self.root.after(2500, stop)
-
     def on_run(self):
         site = self.siteEntry.get()
         if len(site) > 10 and site[:4] == 'http':
             pickle.dump(self.settings, open('settings.sav', 'wb'))
-            thread = threading.Thread(target= services, args=(site, self.settings, ))
-            thread.daemon = True
-            thread.start()
+            runGUI.runGUI(site, self.settings)
         else:
-            thread = threading.Thread(target= self.test)
-            thread.daemon = True
-            thread.start()
-            print("Enter site!")
+            print("Enter the webpage url!")
 
 if __name__ == '__main__':
     GUI()

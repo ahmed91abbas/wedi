@@ -10,13 +10,14 @@ class runGUI:
     def __init__(self, site, settings):
         self.createGUI()
         self.cycleImages()
-        t = threading.Thread(target=self.run_services, args=(site, settings, ))
+        self.services = services(site, settings, self)
+        t = threading.Thread(target=self.run_services)
         t.daemon = True
         t.start()
         self.mainloop()
 
-    def run_services(self, site, settings):
-        services(site, settings, self)
+    def run_services(self):
+        self.services.run()
 
     def createGUI(self):
         self.stopevent = False
@@ -54,8 +55,8 @@ class runGUI:
         w1 = width - w2
         self.actionLabel = tk.Label(self.dFrame1, text='Now downloading...', bg=self.bg_color, width=w1)
         self.actionLabel.pack(side='left')
-        openfolder = IntVar()
-        tk.Checkbutton(self.dFrame1, text="Open download folder when done", variable=openfolder, width=w2).pack(side='right')
+        self.openfolder = IntVar()
+        tk.Checkbutton(self.dFrame1, text="Open download folder when done", variable=self.openfolder, width=w2).pack(side='right')
 
         self.urlLabel = tk.Label(self.dFrame2, borderwidth= 2, relief='solid', text='URL goes here', bg=self.bg_color, width=width)
         self.urlLabel.pack(side='left')
@@ -118,6 +119,8 @@ class runGUI:
 
     def set_stopevent(self):
         self.stopevent = True
+        if self.openfolder.get() == 1:
+            self.services.open_path()
 
     def nextImg(self):
         self.imgIndex = self.imgIndex + 1
@@ -155,8 +158,8 @@ if __name__ == '__main__':
     doc_types = ['py', 'txt', 'java', 'php', 'pdf', 'md', 'gitignore', 'c']
     vid_types = ['mp4', 'avi', 'mpeg', 'mpg', 'wmv', 'mov', 'flv', 'swf', 'mkv', '3gp', 'webm', 'ogg']
     aud_types = ['mp3', 'aac', 'wma', 'wav', 'm4a']
-    img_settings = {'run':False, 'img_types':img_types}
-    doc_settings = {'run':True, 'doc_types':doc_types}
+    img_settings = {'run':True, 'img_types':img_types}
+    doc_settings = {'run':False, 'doc_types':doc_types}
     vid_settings = {'run':False, 'vid_types':vid_types, 'format':'best'}
     aud_settings = {'run':False, 'aud_types':aud_types}
     dev_settings = {'run':False}

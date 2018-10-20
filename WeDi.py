@@ -53,11 +53,11 @@ class services:
         self.aud_folder = ""
         self.dev_run = settings['dev']['run']
         self.dev_folder = ""
+
+    def run(self):
         self.connect()
         self.urls = self.extract_urls()
         self.output_results()
-        if settings['openfolder']:
-            self.open_path()
 
     def my_hook(self, d):
         if d['status'] == 'finished' or d['_percent_str'] == '100.0%':
@@ -411,4 +411,5 @@ if __name__ == "__main__":
     dev_settings = {'run':False}
     settings = {'path':path, 'openfolder':False, 'images':img_settings, 'documents':doc_settings, 'videos':vid_settings, 'audios':aud_settings, 'dev':dev_settings}
     services = services(site, settings)
+    services.run()
 

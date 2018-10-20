@@ -6,6 +6,7 @@ import os, sys, shutil
 import youtube_dl
 import platform
 import subprocess
+import time
 
 class MyLogger(object):
     def debug(self, msg):
@@ -18,7 +19,9 @@ class MyLogger(object):
 class dummy:
     def __init__(self):
         pass
-    def update_values(self, url='', perc='', size='', eta='', speed='', action=''):
+    def update_values(self, url='', dl='', perc='', size='', eta='', speed='', action=''):
+        pass
+    def set_stopevent(self):
         pass
 
 class services:
@@ -58,10 +61,12 @@ class services:
 
     def my_hook(self, d):
         if d['status'] == 'finished':
-            self.gui.update_values(url=self.site, perc='100%', size=d['_total_bytes_str'], action='Done downloading, now converting...')
+            self.gui.update_values(url=d['filename'], perc='100.0%', size=d['_total_bytes_str'],
+                 eta='0 Seconds', speed='0.0 KB/s', action='Done downloading, now converting...')
             print('\nDone downloading, now converting...')
         else:
-            self.gui.update_values(url=self.site, perc=d['_percent_str'], size=d['_total_bytes_str'], eta=d['_eta_str'], speed=d['_speed_str'])
+            self.gui.update_values(url=self.site, dl=d['downloaded_bytes'], perc=d['_percent_str'],
+                 size=d['_total_bytes_str'], eta=d['_eta_str'], speed=d['_speed_str'])
             print("Progress:" + d['_percent_str'], "of ~" + d['_total_bytes_str'],
                 "at " + d['_speed_str'], "ETA " + d['_eta_str'], " "*5, end='\r')
 
@@ -126,26 +131,49 @@ class services:
             os.makedirs(self.dev_folder)
 
     def download_url(self, url, filename):
-        try:
-            with open(filename, "wb") as f:
-                print("\nDownloading %s" % url)
-                response = requests.get(url, stream=True)
-                total_length = response.headers.get('content-length')
+        # try:
+        with open(filename, "wb") as f:
+            print("\nDownloading %s" % url)
+            response = requests.get(url, stream=True)
+            total_length = response.headers.get('content-length')
 
-                if total_length is None: # no content length header
-                    f.write(response.content)
+            if total_length is None: # no content length header
+                f.write(response.content)
+            else:
+                dl = 0
+                start = time.clock()
+                total_length = int(total_length)
+                if total_length > 10**6:
+                    total_length_str = str(round(total_length/10**6, 3)) + ' MB'
                 else:
-                    dl = 0
-                    total_length = int(total_length)
-                    for data in response.iter_content(chunk_size=4096):
-                        dl += len(data)
-                        f.write(data)
-                        done = int(50 * dl / total_length)
-                        sys.stdout.write("\r[%s%s]" % ('=' * done, ' ' * (50-done)) )
-                        sys.stdout.flush()
-                        self.gui.update_values(url=url, perc='', size=len(data), eta='', speed='')
-        except:
-            print("Falied to download!")
+                    total_length_str = str(round(total_length/10**3, 3)) + ' KB'
+                for data in response.iter_content(chunk_size=4096):
+                    dl += len(data)
+                    f.write(data)
+                    done = int(50 * dl / total_length)
+                    sys.stdout.write("\r[%s%s]" % ('=' * done, ' ' * (50-done)) )
+                    sys.stdout.flush()
+                    if dl == total_length:
+                        perc = '100.0%'
+                        speed_str = '0.0 KB/s'
+                        eta_str = '0 Seconds'
+                    else:
+                        perc = str(round(dl*100/total_length, 1)) + '%'
+                        speed = dl/(time.clock() - start)
+                        eta = int((total_length - dl) / speed)
+                        if eta > 3600:
+                            eta_str = str(round(eta / 3600, 2)) + ' Hours'
+                        elif eta > 60:
+                            eta_str = str(round(eta / 60, 2)) + ' Minutes'
+                        else:
+                            eta_str = str(eta) + ' Seconds'
+                        if speed > 10**6:
+                            speed_str = str(round(speed/10**6, 1)) + ' MB/s'
+                        else:
+                            speed_str = str(int(speed/1000)) + ' KB/s'
+                    self.gui.update_values(url=url, dl=dl, perc=perc, size=total_length_str, eta=eta_str, speed=speed_str)
+        # except:
+        #     print("Falied to download!")
 
     def connect(self):
         try:
@@ -333,6 +361,7 @@ class services:
             self.output_dev()
         self.rm_empty_dirs()
         print("Done.")
+        self.gui.set_stopevent()
 
     def open_path(self):
         if platform.system() == "Windows":

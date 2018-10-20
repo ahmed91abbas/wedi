@@ -118,8 +118,8 @@ class runGUI:
         self.downloadingFrame.pack(side='top')
         self.listFrame.pack(side='bottom')
 
-    def set_stopevent(self, value):
-        self.stopevent = value
+    def set_stopevent(self):
+        self.stopevent = True
 
     def nextImg(self):
         self.imgIndex = self.imgIndex + 1
@@ -134,7 +134,7 @@ class runGUI:
         if not self.stopevent:
             self.top.after(1000, self.cycleImages)
 
-    def update_values(self, url='', perc='', size='', eta='', speed='', action='Now downloading...'):
+    def update_values(self, url='',dl='', perc='', size='', eta='', speed='', action='Now downloading...'):
         self.urlLabel['text'] = url
         self.percLabel['text'] = perc
         self.sizeLabel['text'] = size
@@ -151,13 +151,14 @@ class runGUI:
 if __name__ == '__main__':
     site = 'https://www.youtube.com/watch?v=zmr2I8caF0c' #small
     site = 'https://www.stackoverflow.com/'
+    site = 'http://cs.lth.se/edan20/'
     path = "."
     img_types = ['jpg', 'jpeg', 'png', 'gif']
     doc_types = ['py', 'txt', 'java', 'php', 'pdf', 'md', 'gitignore', 'c']
     vid_types = ['mp4', 'avi', 'mpeg', 'mpg', 'wmv', 'mov', 'flv', 'swf', 'mkv', '3gp', 'webm', 'ogg']
     aud_types = ['mp3', 'aac', 'wma', 'wav', 'm4a']
-    img_settings = {'run':True, 'img_types':img_types}
-    doc_settings = {'run':False, 'doc_types':doc_types}
+    img_settings = {'run':False, 'img_types':img_types}
+    doc_settings = {'run':True, 'doc_types':doc_types}
     vid_settings = {'run':False, 'vid_types':vid_types, 'format':'best'}
     aud_settings = {'run':False, 'aud_types':aud_types}
     dev_settings = {'run':False}

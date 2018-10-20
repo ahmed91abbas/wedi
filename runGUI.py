@@ -4,12 +4,19 @@ import threading
 import os
 import sys
 from PIL import Image, ImageTk
+from WeDi import services
 
 class runGUI:
     def __init__(self, site, settings):
         self.createGUI()
         self.cycleImages()
+        t = threading.Thread(target=self.run_services, args=(site, settings, ))
+        t.daemon = True
+        t.start()
         self.mainloop()
+
+    def run_services(self, site, settings):
+        services(site, settings, self)
 
     def createGUI(self):
         self.stopevent = False
@@ -45,7 +52,8 @@ class runGUI:
         #downloadingFrame children
         w2 = int(width / 3)
         w1 = width - w2
-        tk.Label(self.dFrame1, text='Now downloading...', bg=self.bg_color, width=w1).pack(side='left')
+        self.actionLabel = tk.Label(self.dFrame1, text='Now downloading...', bg=self.bg_color, width=w1)
+        self.actionLabel.pack(side='left')
         openfolder = IntVar()
         tk.Checkbutton(self.dFrame1, text="Open download folder when done", variable=openfolder, width=w2).pack(side='right')
 
@@ -65,7 +73,7 @@ class runGUI:
         w12 = w1 - w11
         self.percLabel = tk.Label(self.dFrame4, borderwidth= 2, relief='solid', text='00.00%', bg=self.bg_color, width=w11)
         self.percLabel.pack(side='left')
-        self.barLabel = tk.Label(self.dFrame4, borderwidth= 2, relief='solid', text='baaaaaaaaaar', bg=self.bg_color, width=w12)
+        self.barLabel = tk.Label(self.dFrame4, borderwidth= 2, relief='solid', text='=============', bg=self.bg_color, width=w12)
         self.barLabel.pack(side='left')
         self.etaLabel = tk.Label(self.dFrame4, borderwidth= 2, relief='solid', text='ETA', bg=self.bg_color, width=w2)
         self.etaLabel.pack(side='left')
@@ -126,8 +134,13 @@ class runGUI:
         if not self.stopevent:
             self.top.after(1000, self.cycleImages)
 
-    def update_values(self, info):
-        self.urlLabel['text'] = "SAaaaaaaaaaaaaaaaaaaaaaaa"
+    def update_values(self, url='', perc='', size='', eta='', speed='', action='Now downloading...'):
+        self.urlLabel['text'] = url
+        self.percLabel['text'] = perc
+        self.sizeLabel['text'] = size
+        self.etaLabel['text'] = eta
+        self.speedLabel['text'] = speed
+        self.actionLabel['text'] = action
 
     def on_close(self):
         self.top.destroy()
@@ -136,4 +149,17 @@ class runGUI:
         tk.mainloop()
 
 if __name__ == '__main__':
-    runGUI(None, None)
+    site = 'https://www.youtube.com/watch?v=zmr2I8caF0c' #small
+    site = 'https://www.stackoverflow.com/'
+    path = "."
+    img_types = ['jpg', 'jpeg', 'png', 'gif']
+    doc_types = ['py', 'txt', 'java', 'php', 'pdf', 'md', 'gitignore', 'c']
+    vid_types = ['mp4', 'avi', 'mpeg', 'mpg', 'wmv', 'mov', 'flv', 'swf', 'mkv', '3gp', 'webm', 'ogg']
+    aud_types = ['mp3', 'aac', 'wma', 'wav', 'm4a']
+    img_settings = {'run':True, 'img_types':img_types}
+    doc_settings = {'run':False, 'doc_types':doc_types}
+    vid_settings = {'run':False, 'vid_types':vid_types, 'format':'best'}
+    aud_settings = {'run':False, 'aud_types':aud_types}
+    dev_settings = {'run':False}
+    settings = {'path':path, 'openfolder':False, 'images':img_settings, 'documents':doc_settings, 'videos':vid_settings, 'audios':aud_settings, 'dev':dev_settings}
+    runGUI(site, settings)

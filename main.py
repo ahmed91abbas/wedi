@@ -1,6 +1,5 @@
 import tkinter as tk
 from tkinter import messagebox
-from WeDi import services
 import sys
 import pickle
 import os

@@ -15,18 +15,21 @@ class MyLogger(object):
     def error(self, msg):
         print(msg)
 
-def my_hook(d):
-    if d['status'] == 'finished':
-        print('\nDone downloading, now converting ...')
-    else:
-        print("Progress:" + d['_percent_str'], "of ~" + d['_total_bytes_str'],
-            "at " + d['_speed_str'], "ETA " + d['_eta_str'], " "*5, end='\r')
+class dummy:
+    def __init__(self):
+        pass
+    def update_values(self, url='', perc='', size='', eta='', speed='', action=''):
+        pass
 
 class services:
     def __init__(self, site, settings, GUI=None):
         self.site = site
         self.domain = self.extract_domain(site)
         self.path = settings['path']
+        if GUI:
+            self.gui = GUI
+        else:
+            self.gui = dummy()
         self.clean_up() #TODO remove
         self.img_urls = []
         self.img_run = settings['images']['run']
@@ -52,6 +55,15 @@ class services:
         self.output_results()
         if settings['openfolder']:
             self.open_path()
+
+    def my_hook(self, d):
+        if d['status'] == 'finished':
+            self.gui.update_values(url=self.site, perc='100%', size=d['_total_bytes_str'], action='Done downloading, now converting...')
+            print('\nDone downloading, now converting...')
+        else:
+            self.gui.update_values(url=self.site, perc=d['_percent_str'], size=d['_total_bytes_str'], eta=d['_eta_str'], speed=d['_speed_str'])
+            print("Progress:" + d['_percent_str'], "of ~" + d['_total_bytes_str'],
+                "at " + d['_speed_str'], "ETA " + d['_eta_str'], " "*5, end='\r')
 
     def extract_domain(self, site):
         domain = re.search('(http|ftp)s?[:\/\/]+[A-Za-z0-9\.]+\/', site)
@@ -131,6 +143,7 @@ class services:
                         done = int(50 * dl / total_length)
                         sys.stdout.write("\r[%s%s]" % ('=' * done, ' ' * (50-done)) )
                         sys.stdout.flush()
+                        self.gui.update_values(url=url, perc='', size=len(data), eta='', speed='')
         except:
             print("Falied to download!")
 
@@ -261,7 +274,7 @@ class services:
                 'format': 'bestaudio/best',
                 'outtmpl': self.aud_folder + '\%(title)s.%(ext)s',
                 'logger': MyLogger(),
-                'progress_hooks': [my_hook],
+                'progress_hooks': [self.my_hook],
                 'postprocessors': [{
                     'key': 'FFmpegExtractAudio',
                     'preferredcodec': 'mp3',
@@ -278,13 +291,13 @@ class services:
             'outtmpl': self.vid_folder + '\%(title)s.%(ext)s',
             'format': self.vid_format,
             'logger': MyLogger(),
-            'progress_hooks': [my_hook],
+            'progress_hooks': [self.my_hook],
         }
         try:
             with youtube_dl.YoutubeDL(ydl_opts) as ydl:
                 ydl.download([self.site])
         except:
-            pass
+           pass
 
     def rm_empty_dirs(self):
         if not os.listdir(self.vid_folder):
@@ -343,6 +356,7 @@ if __name__ == "__main__":
     site = 'https://www.dplay.se/videos/stories-from-norway/stories-from-norway-102'
     site = 'https://www1.gogoanime.sh/boruto-naruto-next-generations-episode-77'
     site = 'https://www.youtube.com/watch?v=bugktEHP1n0'
+    site = 'https://www.stackoverflow.com' #error
     site = 'http://cs.lth.se/edan20/'
     site = 'https://www.youtube.com/watch?v=zmr2I8caF0c' #small
     path = "."
@@ -350,9 +364,9 @@ if __name__ == "__main__":
     doc_types = ['py', 'txt', 'java', 'php', 'pdf', 'md', 'gitignore', 'c']
     vid_types = ['mp4', 'avi', 'mpeg', 'mpg', 'wmv', 'mov', 'flv', 'swf', 'mkv', '3gp', 'webm', 'ogg']
     aud_types = ['mp3', 'aac', 'wma', 'wav', 'm4a']
-    img_settings = {'run':True, 'img_types':img_types}
-    doc_settings = {'run':True, 'doc_types':doc_types}
-    vid_settings = {'run':False, 'vid_types':vid_types, 'format':'best'}
+    img_settings = {'run':False, 'img_types':img_types}
+    doc_settings = {'run':False, 'doc_types':doc_types}
+    vid_settings = {'run':True, 'vid_types':vid_types, 'format':'best'}
     aud_settings = {'run':False, 'aud_types':aud_types}
     dev_settings = {'run':False}
     settings = {'path':path, 'openfolder':False, 'images':img_settings, 'documents':doc_settings, 'videos':vid_settings, 'audios':aud_settings, 'dev':dev_settings}

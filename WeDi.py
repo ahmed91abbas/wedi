@@ -18,10 +18,11 @@ class MyLogger(object):
         print(msg)
 
 def my_hook(d):
-    print("Progress:" + d['_percent_str'], "of ~" + d['_total_bytes_str'],
-         "at " + d['_speed_str'], "ETA " + d['_eta_str'], " "*5, end='\r')
     if d['status'] == 'finished':
         print('\nDone downloading, now converting ...')
+    else:
+        print("Progress:" + d['_percent_str'], "of ~" + d['_total_bytes_str'],
+            "at " + d['_speed_str'], "ETA " + d['_eta_str'], " "*5, end='\r')
 
 class services:
     def __init__(self, site, settings):
@@ -242,18 +243,18 @@ class services:
                     f.write(url + "\n")
 
     def ydl_audios(self):
-        ydl_opts = {
-            'format': 'bestaudios/best',
-            'outtmpl': self.aud_folder + '\%(title)s.%(ext)s',
-            'postprocessors': [{
-                'key': 'FFmpegExtractaudios',
-                'preferredcodec': 'mp3',
-                'preferredquality': '192',
-            }],
-            'logger': MyLogger(),
-            'progress_hooks': [my_hook],
-        }
         try:
+            ydl_opts = {
+                'format': 'bestaudio/best',
+                'outtmpl': self.aud_folder + '\%(title)s.%(ext)s',
+                'logger': MyLogger(),
+                'progress_hooks': [my_hook],
+                'postprocessors': [{
+                    'key': 'FFmpegExtractAudio',
+                    'preferredcodec': 'mp3',
+                    'preferredquality': '192',
+                }],
+            }
             with youtube_dl.YoutubeDL(ydl_opts) as ydl:
                 ydl.download([self.site])
         except:
@@ -328,16 +329,13 @@ class services:
 if __name__ == "__main__":
     site = 'https://www.dplay.se/videos/stories-from-norway/stories-from-norway-102'
     site = 'https://www1.gogoanime.sh/boruto-naruto-next-generations-episode-77'
-    site = 'https://www.youtube.com/watch?v=zmr2I8caF0c' #small
     site = 'https://www.youtube.com/watch?v=bugktEHP1n0'
-    site = 'https://www.youtube.com/watch?v=zkNzxsaCunU' #weird file name not installing
-    site = 'https://stackoverflow.com/' #error domain name
-    site = 'https://stackoverflow.com/' #failing images
+    site = 'https://www.youtube.com/watch?v=zmr2I8caF0c' #small
     path = "."
     img_types = ['jpg', 'jpeg', 'png', 'gif']
     doc_types = ['py', 'txt', 'java', 'php', 'pdf', 'md', 'gitignore', 'c']
-    vid_types = ['mp4', 'avi', 'mpeg', 'mpg', 'wmv', 'mov', 'flv', 'swf', 'mkv', '3gp']
-    aud_types = ['mp3', 'aac', 'wma', 'wav']
+    vid_types = ['mp4', 'avi', 'mpeg', 'mpg', 'wmv', 'mov', 'flv', 'swf', 'mkv', '3gp', 'webm', 'ogg']
+    aud_types = ['mp3', 'aac', 'wma', 'wav', 'm4a']
     img_settings = {'run':False, 'img_types':img_types}
     doc_settings = {'run':False, 'doc_types':doc_types}
     vid_settings = {'run':False, 'vid_types':vid_types, 'format':'best'}

@@ -63,26 +63,30 @@ class runGUI:
         self.urlLabel = tk.Label(self.dFrame2, borderwidth= 0, relief='solid', text='URL goes here', bg=self.bg_color, width=width, anchor='w')
         self.urlLabel.pack(side='left')
 
-        w1 = int(width/2)
-        w2 = int(w1/3)
-        w3 = w2
-        w4 = width - w1 - w2 - w3
-        tk.Label(self.dFrame3, borderwidth= 0, relief='solid', text='', bg=self.bg_color, width=w1+1).pack(side='left')
+        w1 = int(width/3)
+        w11 = int(w1/2)
+        w12 = w1 - w11
+        w2 = int((width-w1)/4)
+        w3 = w4 = w2
+        w5 = width - w1 - w2 - w3 -w4
+        tk.Label(self.dFrame3, borderwidth= 0, relief='solid', text='Progress:', bg=self.bg_color, width=w11, anchor='w').pack(side='left')
+        self.percLabel = tk.Label(self.dFrame3, borderwidth= 0, relief='solid', text='00.0%', bg=self.bg_color, width=w12, anchor='e')
+        self.percLabel.pack(side='left')
         tk.Label(self.dFrame3, borderwidth= 0, relief='solid', text='ETA', bg=self.bg_color, width=w2).pack(side='left')
         tk.Label(self.dFrame3, borderwidth= 0, relief='solid', text='Speed', bg=self.bg_color, width=w3).pack(side='left')
-        tk.Label(self.dFrame3, borderwidth= 0, relief='solid', text='Total size', bg=self.bg_color, width=w4).pack(side='left')
+        tk.Label(self.dFrame3, borderwidth= 0, relief='solid', text='Downloaded', bg=self.bg_color, width=w4).pack(side='left')
+        tk.Label(self.dFrame3, borderwidth= 0, relief='solid', text='Total size', bg=self.bg_color, width=w5).pack(side='left')
 
-        w11 = int(w1/3)
-        w12 = math.floor((w1 - w11)*7.17) #convert width to progress length
-        self.percLabel = tk.Label(self.dFrame4, borderwidth= 0, relief='solid', text='00.0%', bg=self.bg_color, width=w11)
-        self.percLabel.pack(side='left')
+        w1 = math.floor(w1*7.17) #convert width to progress length
         self.progress = IntVar()
-        Progressbar(self.dFrame4, orient=tk.HORIZONTAL, length=w12, mode='determinate', variable=self.progress).pack(side='left')
-        self.etaLabel = tk.Label(self.dFrame4, borderwidth= 0, relief='solid', text='ETA', bg=self.bg_color, width=w2)
+        Progressbar(self.dFrame4, orient=tk.HORIZONTAL, length=w1, mode='determinate', variable=self.progress).pack(side='left')
+        self.etaLabel = tk.Label(self.dFrame4, borderwidth= 0, relief='solid', text='0 Seconds', bg=self.bg_color, width=w2)
         self.etaLabel.pack(side='left')
-        self.speedLabel = tk.Label(self.dFrame4, borderwidth= 0, relief='solid', text='Speed', bg=self.bg_color, width=w3)
+        self.speedLabel = tk.Label(self.dFrame4, borderwidth= 0, relief='solid', text='0.0 KB/s', bg=self.bg_color, width=w3)
         self.speedLabel.pack(side='left')
-        self.sizeLabel = tk.Label(self.dFrame4, borderwidth= 0, relief='solid', text='Total size', bg=self.bg_color, width=w4)
+        self.downloadedLabel = tk.Label(self.dFrame4, borderwidth= 0, relief='solid', text='0.0 KB', bg=self.bg_color, width=w4)
+        self.downloadedLabel.pack(side='left')
+        self.sizeLabel = tk.Label(self.dFrame4, borderwidth= 0, relief='solid', text='Total size', bg=self.bg_color, width=w5)
         self.sizeLabel.pack(side='left')
 
         #listFrame children
@@ -103,8 +107,8 @@ class runGUI:
         self.rightAnimationLabel.pack(side='left')
 
         def openimg(path):
-            width = int(wimg*7)
-            height = int(hlist*7)
+            width = int(wimg*7.17)
+            height = int(hlist*7.17)
             image = Image.open(path)
             image = image.resize((width, height), Image.ANTIALIAS)
             return ImageTk.PhotoImage(image)
@@ -151,9 +155,14 @@ class runGUI:
             size_str = str(round(size/10**6, 2)) + ' MB'
         else:
             size_str = str(round(size/10**3, 2)) + ' KB'
+        if dl > 10**6:
+            dl_str = str(round(dl/10**6, 2)) + ' MB'
+        else:
+            dl_str = str(round(dl/10**3, 2)) + ' KB'
         self.urlLabel['text'] = url
         self.percLabel['text'] = perc
         self.sizeLabel['text'] = size_str
+        self.downloadedLabel['text'] = dl_str
         self.etaLabel['text'] = eta
         self.speedLabel['text'] = speed
         self.actionLabel['text'] = action
@@ -167,6 +176,8 @@ class runGUI:
         w = event.widget
         index = int(w.curselection()[0])
         name = w.get(index)
+        if index == 0:
+            self.services.open_path()
         try:
             path = self.downloaded[name]
             if sys.platform.startswith('darwin'):
@@ -186,16 +197,16 @@ class runGUI:
 
 if __name__ == '__main__':
     site = 'https://www.stackoverflow.com/'
-    site = 'http://cs.lth.se/edan20/'
     site = 'https://www.youtube.com/watch?v=zmr2I8caF0c' #small
+    site = 'http://cs.lth.se/edan20/'
     path = "."
     img_types = ['jpg', 'jpeg', 'png', 'gif']
     doc_types = ['py', 'txt', 'java', 'php', 'pdf', 'md', 'gitignore', 'c']
     vid_types = ['mp4', 'avi', 'mpeg', 'mpg', 'wmv', 'mov', 'flv', 'swf', 'mkv', '3gp', 'webm', 'ogg']
     aud_types = ['mp3', 'aac', 'wma', 'wav', 'm4a']
-    img_settings = {'run':True, 'img_types':img_types}
-    doc_settings = {'run':False, 'doc_types':doc_types}
-    vid_settings = {'run':True, 'vid_types':vid_types, 'format':'best'}
+    img_settings = {'run':False, 'img_types':img_types}
+    doc_settings = {'run':True, 'doc_types':doc_types}
+    vid_settings = {'run':False, 'vid_types':vid_types, 'format':'best'}
     aud_settings = {'run':False, 'aud_types':aud_types}
     dev_settings = {'run':False}
     settings = {'path':path, 'openfolder':False, 'images':img_settings, 'documents':doc_settings, 'videos':vid_settings, 'audios':aud_settings, 'dev':dev_settings}

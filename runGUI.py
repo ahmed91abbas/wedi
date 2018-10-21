@@ -1,8 +1,7 @@
 import tkinter as tk
 from tkinter import IntVar
 import threading
-import os
-import sys
+import subprocess, os, sys
 from PIL import Image, ImageTk
 from WeDi import services
 from tkinter.ttk import Progressbar
@@ -10,6 +9,7 @@ import math
 
 class runGUI:
     def __init__(self, site, settings):
+        self.downloaded = {}
         self.createGUI()
         self.cycleImages()
         self.services = services(site, settings, self)
@@ -23,32 +23,32 @@ class runGUI:
 
     def createGUI(self):
         self.stopevent = False
-        self.top = tk.Toplevel()
+        self.bg_color = '#e6e6ff'
+        self.top = tk.Toplevel(bg=self.bg_color)
         self.top.title("Run status")
         self.top.wm_protocol("WM_DELETE_WINDOW", self.on_close)
-
-        self.bg_color = '#e6e6ff'
 
         self.downloadingFrame = tk.Frame(self.top, bg=self.bg_color)
         self.listFrame = tk.Frame(self.top, bg=self.bg_color)
 
+        pady = 10
         self.dFrame1 = tk.Frame(self.downloadingFrame, bg=self.bg_color)
         self.dFrame2 = tk.Frame(self.downloadingFrame, bg=self.bg_color)
         self.dFrame3 = tk.Frame(self.downloadingFrame, bg=self.bg_color)
         self.dFrame4 = tk.Frame(self.downloadingFrame, bg=self.bg_color)
 
-        self.dFrame1.pack()
-        self.dFrame2.pack()
-        self.dFrame3.pack()
-        self.dFrame4.pack()
+        self.dFrame1.pack(pady=pady)
+        self.dFrame2.pack(pady=pady)
+        self.dFrame3.pack(pady=pady)
+        self.dFrame4.pack(pady=pady)
 
         self.lFrame1 = tk.Frame(self.listFrame, bg=self.bg_color)
         self.lFrame2 = tk.Frame(self.listFrame, bg=self.bg_color)
         self.lFrame3 = tk.Frame(self.listFrame, bg=self.bg_color)
 
-        self.lFrame1.pack(side='left')
-        self.lFrame2.pack(side='left')
-        self.lFrame3.pack(side='left')
+        self.lFrame1.pack(side='left', pady=pady)
+        self.lFrame2.pack(side='left', pady=pady)
+        self.lFrame3.pack(side='left',pady=pady)
 
 
         width = 110
@@ -91,8 +91,14 @@ class runGUI:
         hlist = int(width/4)
         self.leftAnimationLabel = tk.Label(self.lFrame1, bg=self.bg_color)
         self.leftAnimationLabel.pack(side='left')
-        self.listLabel = tk.Label(self.lFrame2, text='list goes here', width=wlist, height=hlist)
-        self.listLabel.pack(side='left')
+        scrollbar = tk.Scrollbar(self.lFrame2)
+        scrollbar.pack(side='right', fill=tk.Y)
+        self.listbox = tk.Listbox(self.lFrame2, width=wlist, height=hlist)
+        self.listbox.insert(tk.END, "List of downloaded files:")
+        self.listbox.pack(side='left')
+        self.listbox.config(yscrollcommand=scrollbar.set)
+        self.listbox.bind('<Double-Button-1>', self.mouse_click)
+        scrollbar.config(command=self.listbox.yview)
         self.rightAnimationLabel = tk.Label(self.lFrame3, bg=self.bg_color)
         self.rightAnimationLabel.pack(side='left')
 
@@ -152,6 +158,26 @@ class runGUI:
         self.speedLabel['text'] = speed
         self.actionLabel['text'] = action
 
+    def add_to_list(self, path):
+        name = os.path.basename(path)
+        self.downloaded[name] = path
+        self.listbox.insert(tk.END, name)
+
+    def mouse_click(self, event):
+        w = event.widget
+        index = int(w.curselection()[0])
+        name = w.get(index)
+        try:
+            path = self.downloaded[name]
+            if sys.platform.startswith('darwin'):
+                 subprocess.call(('open', path))
+            elif os.name == 'nt': # For Windows
+                os.startfile(path)
+            elif os.name == 'posix': # For Linux, Mac, etc.
+                subprocess.call(('xdg-open', path))
+        except:
+            pass
+
     def on_close(self):
         self.top.destroy()
 
@@ -160,16 +186,16 @@ class runGUI:
 
 if __name__ == '__main__':
     site = 'https://www.stackoverflow.com/'
-    site = 'https://www.youtube.com/watch?v=zmr2I8caF0c' #small
     site = 'http://cs.lth.se/edan20/'
+    site = 'https://www.youtube.com/watch?v=zmr2I8caF0c' #small
     path = "."
     img_types = ['jpg', 'jpeg', 'png', 'gif']
     doc_types = ['py', 'txt', 'java', 'php', 'pdf', 'md', 'gitignore', 'c']
     vid_types = ['mp4', 'avi', 'mpeg', 'mpg', 'wmv', 'mov', 'flv', 'swf', 'mkv', '3gp', 'webm', 'ogg']
     aud_types = ['mp3', 'aac', 'wma', 'wav', 'm4a']
-    img_settings = {'run':False, 'img_types':img_types}
-    doc_settings = {'run':True, 'doc_types':doc_types}
-    vid_settings = {'run':False, 'vid_types':vid_types, 'format':'best'}
+    img_settings = {'run':True, 'img_types':img_types}
+    doc_settings = {'run':False, 'doc_types':doc_types}
+    vid_settings = {'run':True, 'vid_types':vid_types, 'format':'best'}
     aud_settings = {'run':False, 'aud_types':aud_types}
     dev_settings = {'run':False}
     settings = {'path':path, 'openfolder':False, 'images':img_settings, 'documents':doc_settings, 'videos':vid_settings, 'audios':aud_settings, 'dev':dev_settings}

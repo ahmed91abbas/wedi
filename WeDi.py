@@ -23,6 +23,8 @@ class dummy:
         pass
     def set_stopevent(self):
         pass
+    def add_to_list(self, name):
+        pass
 
 class services:
     def __init__(self, site, settings, GUI=None):
@@ -60,10 +62,11 @@ class services:
         self.output_results()
 
     def my_hook(self, d):
-        if d['status'] == 'finished' or d['_percent_str'] == '100.0%':
+        if d['status'] == 'finished':
             self.gui.update_values(url=d['filename'], dl=d['total_bytes'], perc='100.0%',
                 size=d['total_bytes'], eta='0 Seconds', speed='0.0 KB/s',
                 action='Done downloading, now converting...')
+            self.gui.add_to_list(d['filename'])
             print('\nDone downloading, now converting...')
         else:
             self.gui.update_values(url=self.site, dl=d['downloaded_bytes'], perc=d['_percent_str'],
@@ -132,45 +135,46 @@ class services:
             os.makedirs(self.dev_folder)
 
     def download_url(self, url, filename):
-        # try:
-        with open(filename, "wb") as f:
-            print("\nDownloading %s" % url)
-            response = requests.get(url, stream=True)
-            total_length = response.headers.get('content-length')
+        try:
+            with open(filename, "wb") as f:
+                print("\nDownloading %s" % url)
+                response = requests.get(url, stream=True)
+                total_length = response.headers.get('content-length')
 
-            if total_length is None: # no content length header
-                f.write(response.content)
-            else:
-                dl = 0
-                start = time.clock()
-                total_length = int(total_length)
-                for data in response.iter_content(chunk_size=4096):
-                    dl += len(data)
-                    f.write(data)
-                    done = int(50 * dl / total_length)
-                    sys.stdout.write("\r[%s%s]" % ('=' * done, ' ' * (50-done)) )
-                    sys.stdout.flush()
-                    if dl == total_length:
-                        perc_str = '100.0%'
-                        speed_str = '0.0 KB/s'
-                        eta_str = '0 Seconds'
-                    else:
-                        perc_str = str(round(dl*100/total_length, 1)) + '%'
-                        speed = dl/(time.clock() - start)
-                        eta = int((total_length - dl) / speed)
-                        if eta > 3600:
-                            eta_str = str(round(eta / 3600, 2)) + ' Hours'
-                        elif eta > 60:
-                            eta_str = str(round(eta / 60, 2)) + ' Minutes'
+                if total_length is None: # no content length header
+                    f.write(response.content)
+                else:
+                    dl = 0
+                    start = time.clock()
+                    total_length = int(total_length)
+                    for data in response.iter_content(chunk_size=4096):
+                        dl += len(data)
+                        f.write(data)
+                        done = int(50 * dl / total_length)
+                        sys.stdout.write("\r[%s%s]" % ('=' * done, ' ' * (50-done)) )
+                        sys.stdout.flush()
+                        if dl == total_length:
+                            perc_str = '100.0%'
+                            speed_str = '0.0 KB/s'
+                            eta_str = '0 Seconds'
                         else:
-                            eta_str = str(eta) + ' Seconds'
-                        if speed > 10**6:
-                            speed_str = str(round(speed/10**6, 1)) + ' MB/s'
-                        else:
-                            speed_str = str(int(speed/1000)) + ' KB/s'
-                    self.gui.update_values(url=url, dl=dl, perc=perc_str, size=total_length, eta=eta_str, speed=speed_str)
-        # except:
-        #     print("Falied to download!")
+                            perc_str = str(round(dl*100/total_length, 1)) + '%'
+                            speed = dl/(time.clock() - start)
+                            eta = int((total_length - dl) / speed)
+                            if eta > 3600:
+                                eta_str = str(round(eta / 3600, 2)) + ' Hours'
+                            elif eta > 60:
+                                eta_str = str(round(eta / 60, 2)) + ' Minutes'
+                            else:
+                                eta_str = str(eta) + ' Seconds'
+                            if speed > 10**6:
+                                speed_str = str(round(speed/10**6, 1)) + ' MB/s'
+                            else:
+                                speed_str = str(int(speed/1000)) + ' KB/s'
+                        self.gui.update_values(url=url, dl=dl, perc=perc_str, size=total_length, eta=eta_str, speed=speed_str)
+            self.gui.add_to_list(filename)
+        except:
+            print("Falied to download!")
 
     def connect(self):
         try:

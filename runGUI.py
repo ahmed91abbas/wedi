@@ -58,7 +58,7 @@ class runGUI:
         self.actionLabel = tk.Label(self.dFrame1, text='Now downloading...', bg=self.bg_color, width=w1)
         self.actionLabel.pack(side='left')
         self.openfolder = IntVar()
-        tk.Checkbutton(self.dFrame1, text="Open download folder when done", variable=self.openfolder, width=w2).pack(side='right')
+        tk.Checkbutton(self.dFrame1, text="Open download folder when done", bg=self.bg_color, variable=self.openfolder, width=w2).pack(side='right')
 
         self.urlLabel = tk.Label(self.dFrame2, borderwidth= 0, relief='solid', text='URL goes here', bg=self.bg_color, width=width, anchor='w')
         self.urlLabel.pack(side='left')
@@ -106,28 +106,22 @@ class runGUI:
         self.rightAnimationLabel = tk.Label(self.lFrame3, bg=self.bg_color)
         self.rightAnimationLabel.pack(side='left')
 
-        def openimg(path):
-            width = int(wimg*7.17)
-            height = int(hlist*7.17)
-            image = Image.open(path)
-            image = image.resize((width, height), Image.ANTIALIAS)
-            return ImageTk.PhotoImage(image)
-
-        docgray = openimg(os.path.join('textures', 'docgray.png'))
-        docgreen = openimg(os.path.join('textures', 'docgreen.png'))
-        imggray = openimg(os.path.join('textures', 'imggray.png'))
-        imggreen = openimg(os.path.join('textures', 'imggreen.png'))
-        audgray = openimg(os.path.join('textures', 'audgray.png'))
-        audgreen = openimg(os.path.join('textures', 'audgreen.png'))
-        devgray = openimg(os.path.join('textures', 'devgray.png'))
-        devgreen = openimg(os.path.join('textures', 'devgreen.png'))
-        vidgray = openimg(os.path.join('textures', 'vidgray.png'))
-        vidgreen = openimg(os.path.join('textures', 'vidgreen.png'))
-        self.imgIndex = 0
-        self.images = [docgray, docgreen, imggray, imggreen, audgray, audgreen, devgray, devgreen, vidgray, vidgreen]
+        self.load_animation(wimg, hlist)
 
         self.downloadingFrame.pack(side='top')
         self.listFrame.pack(side='bottom')
+
+    def load_animation(self, width, height):
+        self.images = []
+        self.imgIndex = 0
+        width = int(width*7.17)
+        height = int(height*7.17)
+        path = os.path.join('textures', 'animation')
+        files = [os.path.join(path,f) for f in os.listdir(path) if os.path.isfile(os.path.join(path, f))]
+        for file in files:
+            image = Image.open(file)
+            image = image.resize((width, height), Image.ANTIALIAS)
+            self.images.append(ImageTk.PhotoImage(image))
 
     def set_stopevent(self):
         self.stopevent = True
@@ -145,7 +139,7 @@ class runGUI:
         self.leftAnimationLabel.config(image=img)
         self.rightAnimationLabel.config(image=img)
         if not self.stopevent:
-            self.top.after(1000, self.cycleImages)
+            self.top.after(200, self.cycleImages)
 
     def update_values(self, url='',dl='0.0', perc='', size='0.0', eta='', speed='', action='Now downloading...'):
         dl = float(dl)

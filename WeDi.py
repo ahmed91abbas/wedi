@@ -301,6 +301,7 @@ class services:
         try:
             ydl_opts = {
                 'format': 'bestaudio/best',
+                'noplaylist':True,
                 'outtmpl': self.aud_folder + '\%(title)s.%(ext)s',
                 'logger': MyLogger(),
                 'progress_hooks': [self.my_hook],

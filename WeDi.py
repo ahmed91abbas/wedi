@@ -61,18 +61,13 @@ class services:
 
     def my_hook(self, d):
         if d['status'] == 'finished' or d['_percent_str'] == '100.0%':
-            total_length = d['_total_bytes_str']
-            if total_length > 10**6:
-                total_length = str(round(total_length/10**6, 3)) + ' MB'
-            else:
-                total_length = str(round(total_length/10**3, 3)) + ' KB'
-            self.gui.update_values(url=d['filename'], dl=total_length, perc='100.0%',
-                size=total_length, eta='0 Seconds', speed='0.0 KB/s',
+            self.gui.update_values(url=d['filename'], dl=d['total_bytes'], perc='100.0%',
+                size=d['total_bytes'], eta='0 Seconds', speed='0.0 KB/s',
                 action='Done downloading, now converting...')
             print('\nDone downloading, now converting...')
         else:
             self.gui.update_values(url=self.site, dl=d['downloaded_bytes'], perc=d['_percent_str'],
-                 size=d['_total_bytes_str'], eta=d['_eta_str'], speed=d['_speed_str'])
+                 size=d['total_bytes'], eta=d['_eta_str'], speed=d['_speed_str'])
             print("Progress:" + d['_percent_str'], "of ~" + d['_total_bytes_str'],
                 "at " + d['_speed_str'], "ETA " + d['_eta_str'], " "*5, end='\r')
 
@@ -149,10 +144,6 @@ class services:
                 dl = 0
                 start = time.clock()
                 total_length = int(total_length)
-                if total_length > 10**6:
-                    total_length_str = str(round(total_length/10**6, 3)) + ' MB'
-                else:
-                    total_length_str = str(round(total_length/10**3, 3)) + ' KB'
                 for data in response.iter_content(chunk_size=4096):
                     dl += len(data)
                     f.write(data)
@@ -163,9 +154,7 @@ class services:
                         perc_str = '100.0%'
                         speed_str = '0.0 KB/s'
                         eta_str = '0 Seconds'
-                        dl_str = total_length_str = total_length
                     else:
-                        dl_str = str(dl)
                         perc_str = str(round(dl*100/total_length, 1)) + '%'
                         speed = dl/(time.clock() - start)
                         eta = int((total_length - dl) / speed)
@@ -179,7 +168,7 @@ class services:
                             speed_str = str(round(speed/10**6, 1)) + ' MB/s'
                         else:
                             speed_str = str(int(speed/1000)) + ' KB/s'
-                    self.gui.update_values(url=url, dl=dl_str, perc=perc_str, size=total_length_str, eta=eta_str, speed=speed_str)
+                    self.gui.update_values(url=url, dl=dl, perc=perc_str, size=total_length, eta=eta_str, speed=speed_str)
         # except:
         #     print("Falied to download!")
 
@@ -329,11 +318,11 @@ class services:
             'logger': MyLogger(),
             'progress_hooks': [self.my_hook],
         }
-        try:
-            with youtube_dl.YoutubeDL(ydl_opts) as ydl:
-                ydl.download([self.site])
-        except:
-           pass
+        #try:
+        with youtube_dl.YoutubeDL(ydl_opts) as ydl:
+            ydl.download([self.site])
+ #       except:
+  #         pass
 
     def rm_empty_dirs(self):
         if not os.listdir(self.vid_folder):

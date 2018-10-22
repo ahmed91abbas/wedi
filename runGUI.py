@@ -58,9 +58,11 @@ class runGUI:
         self.actionLabel = tk.Label(self.dFrame1, text='Now downloading...', bg=self.bg_color, width=w1)
         self.actionLabel.pack(side='left')
         self.openfolder = IntVar()
-        tk.Checkbutton(self.dFrame1, text="Open download folder when done", bg=self.bg_color, variable=self.openfolder, width=w2).pack(side='right')
+        tk.Checkbutton(self.dFrame1, text="Open download folder when done", bg=self.bg_color,
+            activebackground=self.bg_color, variable=self.openfolder, width=w2).pack(side='right')
 
-        self.urlLabel = tk.Label(self.dFrame2, borderwidth= 0, relief='solid', text='URL goes here', bg=self.bg_color, width=width, anchor='w')
+        self.urlLabel = tk.Label(self.dFrame2, borderwidth= 0, relief='solid', text='URL goes here',
+            bg=self.bg_color, width=width, anchor='w')
         self.urlLabel.pack(side='left')
 
         w1 = int(width/3)
@@ -115,13 +117,20 @@ class runGUI:
         self.images = []
         self.imgIndex = 0
         width = int(width*7.17)
-        height = int(height*7.17)
-        path = os.path.join('textures', 'animation')
-        files = [os.path.join(path,f) for f in os.listdir(path) if os.path.isfile(os.path.join(path, f))]
+        #height = int(height*7.17)
+        height = width*2
+        path = os.path.join('textures', 'leftAnimation')
+        left = [os.path.join(path,f) for f in os.listdir(path) if os.path.isfile(os.path.join(path, f))]
+        path = os.path.join('textures', 'rightAnimation')
+        right = [os.path.join(path,f) for f in os.listdir(path) if os.path.isfile(os.path.join(path, f))]
+        files = left + right
         for file in files:
             image = Image.open(file)
             image = image.resize((width, height), Image.ANTIALIAS)
             self.images.append(ImageTk.PhotoImage(image))
+        #Add first (empty) pic so that both sides start with the same width
+        self.leftAnimationLabel.config(image=self.images[0])
+        self.rightAnimationLabel.config(image=self.images[0])
 
     def set_stopevent(self):
         self.stopevent = True
@@ -136,10 +145,12 @@ class runGUI:
 
     def cycleImages(self):
         img = self.nextImg()
-        self.leftAnimationLabel.config(image=img)
-        self.rightAnimationLabel.config(image=img)
+        if self.imgIndex <= int(len(self.images)/2):
+            self.leftAnimationLabel.config(image=img)
+        else:
+            self.rightAnimationLabel.config(image=img)
         if not self.stopevent:
-            self.top.after(200, self.cycleImages)
+            self.top.after(170, self.cycleImages)
 
     def update_values(self, url='',dl='0.0', perc='', size='0.0', eta='', speed='', action='Now downloading...'):
         dl = float(dl)

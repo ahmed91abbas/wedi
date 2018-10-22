@@ -5,4 +5,5 @@ audios/
 dev/
 *.pyc
 settings.sav
-textures/animation/
+textures/leftAnimation/
+textures/rightAnimation/

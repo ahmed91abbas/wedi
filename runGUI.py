@@ -179,7 +179,7 @@ class runGUI:
             self.urlslistbox.insert(tk.END, url)
 
     def remove_from_urls(self, url):
-        print("remove")
+        self.urlslistbox.delete(1)
 
     def mouse_click(self, event):
         w = event.widget

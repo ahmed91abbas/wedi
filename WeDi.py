@@ -64,13 +64,13 @@ class services:
         self.connect()
         self.urls = self.extract_urls()
         if self.img_run:
-            self.gui.add_to_urls(self.img_urls)
+            self.gui.add_to_urls(set(self.img_urls))
         if self.doc_run:
-            self.gui.add_to_urls(self.doc_urls)
+            self.gui.add_to_urls(set(self.doc_urls))
         if self.vid_run:
-            self.gui.add_to_urls(self.vid_urls)
+            self.gui.add_to_urls(set(self.vid_urls))
         if self.aud_run:
-            self.gui.add_to_urls(self.aud_urls)
+            self.gui.add_to_urls(set(self.aud_urls))
         self.output_results()
 
     def my_hook(self, d):

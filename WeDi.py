@@ -313,13 +313,19 @@ class services:
                 self.download_url(url, filename)
 
     def output_dev(self):
+        #General information about main url
         with open(os.path.join(self.dev_folder, 'mainURL.txt'), 'w') as f:
             f.write(self.site + "\n\n")
             f.write("Headers:\n")
             for head in self.response.headers:
                 f.write(head + ": " + str(self.response.headers[head]) + "\n")
+        #Dump of the source code
         with open(os.path.join(self.dev_folder, 'source.html'), 'wb') as f:
             f.write(self.soup.prettify().encode("utf-8"))
+        #All the found urls
+        with open(os.path.join(self.dev_folder, 'allURLs.txt'), 'w') as f:
+            for url in set(self.urls):
+                f.write(url[0] + "\n")
         if (len(self.img_urls) != 0):
             with open(os.path.join(self.dev_folder, 'imgURLs.txt'), 'w') as f:
                 for url in set(self.img_urls):
@@ -336,6 +342,12 @@ class services:
             with open(os.path.join(self.dev_folder, 'audURLs.txt'), 'w') as f:
                 for url in set(self.aud_urls):
                     f.write(url + "\n")
+        scripts = self.soup.find('script', self.response.text)#TODO
+        print(scripts)
+        if scripts:
+            with open(os.path.join(self.dev_folder, 'scripts.txt'), 'w') as f:
+                for script in scripts:
+                    f.write(script+ "\n" + "#"*20)
 
     def ydl_audios(self):
         try:
@@ -442,7 +454,7 @@ if __name__ == "__main__":
     doc_types = ['txt', 'py', 'java', 'php', 'pdf', 'md', 'gitignore', 'c']
     vid_types = ['mp4', 'avi', 'mpeg', 'mpg', 'wmv', 'mov', 'flv', 'swf', 'mkv', '3gp', 'webm', 'ogg']
     aud_types = ['mp3', 'aac', 'wma', 'wav', 'm4a']
-    img_settings = {'run':True, 'img_types':img_types}
+    img_settings = {'run':False, 'img_types':img_types}
     doc_settings = {'run':False, 'doc_types':doc_types}
     vid_settings = {'run':False, 'vid_types':vid_types, 'format':'best'}
     aud_settings = {'run':False, 'aud_types':aud_types}

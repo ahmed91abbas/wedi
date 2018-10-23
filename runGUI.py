@@ -181,6 +181,9 @@ class runGUI:
         self.speedLabel['text'] = speed
         self.actionLabel['text'] = action
 
+    def update_action(self, text):
+        self.actionLabel['text'] = text
+
     def add_to_list(self, path):
         name = os.path.basename(path)
         self.downloaded[name] = path

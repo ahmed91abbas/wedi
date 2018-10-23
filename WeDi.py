@@ -14,7 +14,7 @@ class MyLogger(object):
     def warning(self, msg):
         pass
     def error(self, msg):
-        print(msg)
+        pass
 
 class dummy:
     def __init__(self):
@@ -28,6 +28,8 @@ class dummy:
     def add_to_urls(self, urls):
         pass
     def remove_from_urls(self, url):
+        pass
+    def update_action(self, text):
         pass
 
 class services:
@@ -87,12 +89,15 @@ class services:
                 "at " + d['_speed_str'], "ETA " + d['_eta_str'], " "*5, end='\r')
 
     def extract_domain(self, site):
+        print(site)
         domain = re.search('(http|ftp)s?[:\/\/]+[A-Za-z0-9\.]+\/', site)
+        print(domain)
         if not domain:
             return ""
         res = domain.group(0).split('://')
         protocol = res[0]
         domain = res[1]
+        print(protocol, domain)
         return (protocol, domain)
 
     def fix_url(self, url):
@@ -148,58 +153,60 @@ class services:
 
     def download_url(self, url, filename):
         self.gui.remove_from_urls(url)
-        #try:
-        with open(filename, "wb") as f:
-            print("\nDownloading %s" % url)
-            response = requests.get(url, stream=True)
-            total_length = response.headers.get('content-length')
+        try:
+            with open(filename, "wb") as f:
+                print("\nDownloading %s" % url)
+                response = requests.get(url, stream=True)
+                total_length = response.headers.get('content-length')
 
-            if total_length is None: # no content length header
-                f.write(response.content)
-            else:
-                dl = 0
-                start = time.clock()
-                total_length = int(total_length)
-                for data in response.iter_content(chunk_size=4096):
-                    dl += len(data)
-                    f.write(data)
-                    done = int(50 * dl / total_length)
-                    sys.stdout.write("\r[%s%s]" % ('=' * done, ' ' * (50-done)) )
-                    sys.stdout.flush()
-                    if dl == total_length:
-                        perc_str = '100.0%'
-                        speed_str = '0.0 KB/s'
-                        eta_str = '0 Seconds'
-                    else:
-                        perc_str = str(round(dl*100/total_length, 1)) + '%'
-                        speed = dl/(time.clock() - start)
-                        eta = int((total_length - dl) / speed)
-                        if eta > 3600:
-                            eta_str = str(round(eta / 3600, 2)) + ' Hours'
-                        elif eta > 60:
-                            eta_str = str(round(eta / 60, 2)) + ' Minutes'
+                if total_length is None: # no content length header
+                    f.write(response.content)
+                else:
+                    dl = 0
+                    start = time.clock()
+                    total_length = int(total_length)
+                    for data in response.iter_content(chunk_size=4096):
+                        dl += len(data)
+                        f.write(data)
+                        done = int(50 * dl / total_length)
+                        sys.stdout.write("\r[%s%s]" % ('=' * done, ' ' * (50-done)) )
+                        sys.stdout.flush()
+                        if dl == total_length:
+                            perc_str = '100.0%'
+                            speed_str = '0.0 KB/s'
+                            eta_str = '0 Seconds'
                         else:
-                            eta_str = str(eta) + ' Seconds'
-                        if speed > 10**6:
-                            speed_str = str(round(speed/10**6, 1)) + ' MB/s'
-                        else:
-                            speed_str = str(int(speed/1000)) + ' KB/s'
-                    self.gui.update_values(url=url, dl=dl, perc=perc_str, size=total_length, eta=eta_str, speed=speed_str)
-        self.gui.add_to_list(filename)
-        # except:
-        #     print("Falied to download!")
+                            perc_str = str(round(dl*100/total_length, 1)) + '%'
+                            speed = dl/(time.clock() - start)
+                            eta = int((total_length - dl) / speed)
+                            if eta > 3600:
+                                eta_str = str(round(eta / 3600, 2)) + ' Hours'
+                            elif eta > 60:
+                                eta_str = str(round(eta / 60, 2)) + ' Minutes'
+                            else:
+                                eta_str = str(eta) + ' Seconds'
+                            if speed > 10**6:
+                                speed_str = str(round(speed/10**6, 1)) + ' MB/s'
+                            else:
+                                speed_str = str(int(speed/1000)) + ' KB/s'
+                        self.gui.update_values(url=url, dl=dl, perc=perc_str, size=total_length, eta=eta_str, speed=speed_str)
+            self.gui.add_to_list(filename)
+        except:
+            self.gui.update_action('Failed to download ' + url)
+            print("Falied to download!")
 
     def connect(self):
         try:
+            self.gui.update_action('Establishing connection to' + self.site)
             self.response = requests.get(self.site, allow_redirects=True)
-            # print(self.response.text)
-            #print(self.response.headers)
             self.soup = BeautifulSoup(self.response.text, 'html.parser')
         except:
+            self.gui.update_action("Couldn't establish a connection to: " + self.site)
             print("Couldn't establish a connection to: " + self.site)
             exit()
 
     def extract_urls(self):
+        self.gui.update_action("Extracting the urls from the website...")
         urls = re.findall('["\']((http|ftp)s?://.*?)["\']', self.response.text)
         for link in self.soup.find_all('a'):
             if 'href' in str(link):
@@ -346,8 +353,9 @@ class services:
             }
             with youtube_dl.YoutubeDL(ydl_opts) as ydl:
                 ydl.download([self.site])
-        except:
-            pass
+        except Exception as e:
+            self.gui.update_action(str(e))
+            print(str(e))
 
     def ydl_video(self):
         ydl_opts = {
@@ -356,11 +364,12 @@ class services:
             'logger': MyLogger(),
             'progress_hooks': [self.my_hook],
         }
-        #try:
-        with youtube_dl.YoutubeDL(ydl_opts) as ydl:
-            ydl.download([self.site])
- #      except:
-  #         pass
+        try:
+            with youtube_dl.YoutubeDL(ydl_opts) as ydl:
+                ydl.download([self.site])
+        except Exception as e:
+            self.gui.update_action(str(e))
+            print(str(e))
 
     def rm_empty_dirs(self):
         if not os.listdir(self.vid_folder):
@@ -389,16 +398,19 @@ class services:
             self.download_links(self.vid_urls, self.vid_types, self.vid_folder)
             print()
             print("Trying to extract video using youtube_dl...")
+            self.gui.update_action("Trying to extract video using youtube_dl...")
             self.ydl_video()
             print()
         if self.aud_run:
             self.download_links(self.aud_urls, self.aud_types, self.aud_folder)
             print()
             print("Trying to extract audios using youtube_dl...")
+            self.gui.update_action("Trying to extract audio using youtube_dl...")
             self.ydl_audios()
             print()
         self.rm_empty_dirs()
         print("Done.")
+        self.gui.update_action("Done.")
         self.gui.set_stopevent()
 
     def open_path(self):
@@ -423,10 +435,11 @@ if __name__ == "__main__":
     site = 'https://www.dplay.se/videos/stories-from-norway/stories-from-norway-102'
     site = 'https://www1.gogoanime.sh/boruto-naruto-next-generations-episode-77'
     site = 'https://www.youtube.com/watch?v=bugktEHP1n0'
-    site = 'https://www.stackoverflow.com' #error
     site = 'http://cs.lth.se/edan20/'
     site = 'https://www.youtube.com/watch?v=zmr2I8caF0c' #small
     site = 'https://www.bytbil.com/skane-lan/personbil-v50-topp-skick-med-1-arsgaranti-2089-12646959' #cannot find all images
+    site = 'https://www.stackoverflow.com' #error
+    site = 'https://www.ikea.com/se/sv/'
     path = "."
     img_types = ['jpg', 'jpeg', 'png', 'gif']
     doc_types = ['txt', 'py', 'java', 'php', 'pdf', 'md', 'gitignore', 'c']

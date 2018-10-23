@@ -34,8 +34,8 @@ class dummy:
 
 class services:
     def __init__(self, site, settings, GUI=None):
-        self.site = site
-        self.domain = self.extract_domain(site)
+        self.site = self.fix_url(site)
+        self.domain = self.extract_domain(self.site)
         self.path = settings['path']
         if GUI:
             self.gui = GUI
@@ -89,18 +89,17 @@ class services:
                 "at " + d['_speed_str'], "ETA " + d['_eta_str'], " "*5, end='\r')
 
     def extract_domain(self, site):
-        print(site)
         domain = re.search('(http|ftp)s?[:\/\/]+[A-Za-z0-9\.]+\/', site)
-        print(domain)
         if not domain:
             return ""
         res = domain.group(0).split('://')
         protocol = res[0]
         domain = res[1]
-        print(protocol, domain)
         return (protocol, domain)
 
     def fix_url(self, url):
+        if len(url) > 1 and url[-1:] != '/':
+            url = url + '/'
         if 'http' not in url and len(url) > 2:
             protocol = self.domain[0]
             domain_name = self.domain[1]
@@ -439,7 +438,6 @@ if __name__ == "__main__":
     site = 'https://www.youtube.com/watch?v=zmr2I8caF0c' #small
     site = 'https://www.bytbil.com/skane-lan/personbil-v50-topp-skick-med-1-arsgaranti-2089-12646959' #cannot find all images
     site = 'https://www.stackoverflow.com' #error
-    site = 'https://www.ikea.com/se/sv/'
     path = "."
     img_types = ['jpg', 'jpeg', 'png', 'gif']
     doc_types = ['txt', 'py', 'java', 'php', 'pdf', 'md', 'gitignore', 'c']

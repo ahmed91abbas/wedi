@@ -34,7 +34,9 @@ class dummy:
 
 class services:
     def __init__(self, site, settings, GUI=None):
-        self.site = self.fix_url(site)
+        if site[-1:] != '/':
+            site = site + '/'
+        self.site = site
         self.domain = self.extract_domain(self.site)
         self.path = settings['path']
         if GUI:
@@ -98,8 +100,6 @@ class services:
         return (protocol, domain)
 
     def fix_url(self, url):
-        if len(url) > 1 and url[-1:] != '/':
-            url = url + '/'
         if 'http' not in url and len(url) > 2:
             protocol = self.domain[0]
             domain_name = self.domain[1]
@@ -159,6 +159,7 @@ class services:
                 total_length = response.headers.get('content-length')
 
                 if total_length is None: # no content length header
+                    print(response.headers)
                     f.write(response.content)
                 else:
                     dl = 0
@@ -432,12 +433,10 @@ class services:
 
 if __name__ == "__main__":
     site = 'https://www.dplay.se/videos/stories-from-norway/stories-from-norway-102'
-    site = 'https://www1.gogoanime.sh/boruto-naruto-next-generations-episode-77'
     site = 'https://www.youtube.com/watch?v=bugktEHP1n0'
     site = 'http://cs.lth.se/edan20/'
     site = 'https://www.youtube.com/watch?v=zmr2I8caF0c' #small
     site = 'https://www.bytbil.com/skane-lan/personbil-v50-topp-skick-med-1-arsgaranti-2089-12646959' #cannot find all images
-    site = 'https://www.stackoverflow.com' #error
     path = "."
     img_types = ['jpg', 'jpeg', 'png', 'gif']
     doc_types = ['txt', 'py', 'java', 'php', 'pdf', 'md', 'gitignore', 'c']

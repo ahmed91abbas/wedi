@@ -148,46 +148,46 @@ class services:
 
     def download_url(self, url, filename):
         self.gui.remove_from_urls(url)
-        try:
-            with open(filename, "wb") as f:
-                print("\nDownloading %s" % url)
-                response = requests.get(url, stream=True)
-                total_length = response.headers.get('content-length')
+        #try:
+        with open(filename, "wb") as f:
+            print("\nDownloading %s" % url)
+            response = requests.get(url, stream=True)
+            total_length = response.headers.get('content-length')
 
-                if total_length is None: # no content length header
-                    f.write(response.content)
-                else:
-                    dl = 0
-                    start = time.clock()
-                    total_length = int(total_length)
-                    for data in response.iter_content(chunk_size=4096):
-                        dl += len(data)
-                        f.write(data)
-                        done = int(50 * dl / total_length)
-                        sys.stdout.write("\r[%s%s]" % ('=' * done, ' ' * (50-done)) )
-                        sys.stdout.flush()
-                        if dl == total_length:
-                            perc_str = '100.0%'
-                            speed_str = '0.0 KB/s'
-                            eta_str = '0 Seconds'
+            if total_length is None: # no content length header
+                f.write(response.content)
+            else:
+                dl = 0
+                start = time.clock()
+                total_length = int(total_length)
+                for data in response.iter_content(chunk_size=4096):
+                    dl += len(data)
+                    f.write(data)
+                    done = int(50 * dl / total_length)
+                    sys.stdout.write("\r[%s%s]" % ('=' * done, ' ' * (50-done)) )
+                    sys.stdout.flush()
+                    if dl == total_length:
+                        perc_str = '100.0%'
+                        speed_str = '0.0 KB/s'
+                        eta_str = '0 Seconds'
+                    else:
+                        perc_str = str(round(dl*100/total_length, 1)) + '%'
+                        speed = dl/(time.clock() - start)
+                        eta = int((total_length - dl) / speed)
+                        if eta > 3600:
+                            eta_str = str(round(eta / 3600, 2)) + ' Hours'
+                        elif eta > 60:
+                            eta_str = str(round(eta / 60, 2)) + ' Minutes'
                         else:
-                            perc_str = str(round(dl*100/total_length, 1)) + '%'
-                            speed = dl/(time.clock() - start)
-                            eta = int((total_length - dl) / speed)
-                            if eta > 3600:
-                                eta_str = str(round(eta / 3600, 2)) + ' Hours'
-                            elif eta > 60:
-                                eta_str = str(round(eta / 60, 2)) + ' Minutes'
-                            else:
-                                eta_str = str(eta) + ' Seconds'
-                            if speed > 10**6:
-                                speed_str = str(round(speed/10**6, 1)) + ' MB/s'
-                            else:
-                                speed_str = str(int(speed/1000)) + ' KB/s'
-                        self.gui.update_values(url=url, dl=dl, perc=perc_str, size=total_length, eta=eta_str, speed=speed_str)
-            self.gui.add_to_list(filename)
-        except:
-            print("Falied to download!")
+                            eta_str = str(eta) + ' Seconds'
+                        if speed > 10**6:
+                            speed_str = str(round(speed/10**6, 1)) + ' MB/s'
+                        else:
+                            speed_str = str(int(speed/1000)) + ' KB/s'
+                    self.gui.update_values(url=url, dl=dl, perc=perc_str, size=total_length, eta=eta_str, speed=speed_str)
+        self.gui.add_to_list(filename)
+        # except:
+        #     print("Falied to download!")
 
     def connect(self):
         try:
@@ -222,20 +222,32 @@ class services:
         self.extract_images()
         return urls
 
-    def extract_images(self):
-        img_tags = self.soup.find_all('img')
+    def find_between(self, s, first, last):
+        try:
+            start = s.index( first ) + len( first )
+            end = s.index( last, start )
+            return s[start:end]
+        except ValueError:
+            return ""
 
+    def extract_images(self):
+        res = re.findall(';pic=.*;', str(self.soup))
+        for url in res:
+            url = url[5:-1]
+            url =  self.fix_url(url)
+            url = self.apply_special_rules(url)
+            self.img_urls.append(url)
+
+        img_tags = self.soup.find_all('img')
         for img in img_tags:
             url = ''
             if ' src=' in str(img):
                 url = img['src']
             elif ' data-src=' in str(img):
                 url = img['data-src']
-
             url =  self.fix_url(url)
             url = self.apply_special_rules(url)
-            if (self.is_img_link(url)):
-                self.img_urls.append(url)
+            self.img_urls.append(url)
 
     def is_img_link(self, url):
         for img_type in self.img_types:
@@ -288,6 +300,9 @@ class services:
             if filename != None and len(filename) != 0:
                 filename = filename[len(filename)-1][0]
                 filename = self.create_filename(output_dir, filename)
+                self.download_url(url, filename)
+            else:
+                filename = self.create_filename(output_dir, "noname." + types[0])
                 self.download_url(url, filename)
 
     def output_dev(self):
@@ -344,7 +359,7 @@ class services:
         #try:
         with youtube_dl.YoutubeDL(ydl_opts) as ydl:
             ydl.download([self.site])
- #       except:
+ #      except:
   #         pass
 
     def rm_empty_dirs(self):
@@ -411,16 +426,17 @@ if __name__ == "__main__":
     site = 'https://www.stackoverflow.com' #error
     site = 'http://cs.lth.se/edan20/'
     site = 'https://www.youtube.com/watch?v=zmr2I8caF0c' #small
+    site = 'https://www.bytbil.com/skane-lan/personbil-v50-topp-skick-med-1-arsgaranti-2089-12646959' #cannot find all images
     path = "."
     img_types = ['jpg', 'jpeg', 'png', 'gif']
-    doc_types = ['py', 'txt', 'java', 'php', 'pdf', 'md', 'gitignore', 'c']
+    doc_types = ['txt', 'py', 'java', 'php', 'pdf', 'md', 'gitignore', 'c']
     vid_types = ['mp4', 'avi', 'mpeg', 'mpg', 'wmv', 'mov', 'flv', 'swf', 'mkv', '3gp', 'webm', 'ogg']
     aud_types = ['mp3', 'aac', 'wma', 'wav', 'm4a']
-    img_settings = {'run':False, 'img_types':img_types}
+    img_settings = {'run':True, 'img_types':img_types}
     doc_settings = {'run':False, 'doc_types':doc_types}
-    vid_settings = {'run':True, 'vid_types':vid_types, 'format':'best'}
+    vid_settings = {'run':False, 'vid_types':vid_types, 'format':'best'}
     aud_settings = {'run':False, 'aud_types':aud_types}
-    dev_settings = {'run':False}
+    dev_settings = {'run':True}
     settings = {'path':path, 'openfolder':False, 'images':img_settings, 'documents':doc_settings, 'videos':vid_settings, 'audios':aud_settings, 'dev':dev_settings}
     services = services(site, settings)
     services.run()

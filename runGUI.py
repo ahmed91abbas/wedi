@@ -131,6 +131,9 @@ class runGUI:
             image = image.resize((width, height), Image.ANTIALIAS)
             self.images.append(ImageTk.PhotoImage(image))
         self.animationLabel.config(image=self.images[0])
+        #load the image for completed
+        file = os.path.join('textures', 'completed.png')
+        self.completedImg = ImageTk.PhotoImage(Image.open(file))
 
     def set_stopevent(self):
         self.stopevent = True
@@ -148,6 +151,8 @@ class runGUI:
         self.animationLabel.config(image=img)
         if not self.stopevent:
             self.top.after(170, self.cycleImages)
+        else:
+            self.animationLabel.config(image=self.completedImg)
 
     def update_values(self, url='',dl='0.0', perc='', size='0.0', eta='', speed='', action='Now downloading...'):
         dl = float(dl)

@@ -92,21 +92,26 @@ class runGUI:
         self.sizeLabel.pack(side='left')
 
         #listFrame children
-        wimg = int(width/3.5)
-        wlist = width - 2*wimg
-        hlist = int(width/4)
-        self.leftAnimationLabel = tk.Label(self.lFrame1, bg=self.bg_color)
-        self.leftAnimationLabel.pack(side='left')
-        scrollbar = tk.Scrollbar(self.lFrame2)
+        wlist = int(width/2.5)
+        wimg = width - 2*wlist
+        hlist = int(width/5)
+        scrollbar = tk.Scrollbar(self.lFrame1)
         scrollbar.pack(side='right', fill=tk.Y)
-        self.listbox = tk.Listbox(self.lFrame2, width=wlist, height=hlist)
+        self.urlslistbox = tk.Listbox(self.lFrame1, width=wlist, height=hlist)
+        self.urlslistbox.insert(tk.END, "List of urls to download:")
+        self.urlslistbox.pack(side='left')
+        self.urlslistbox.config(yscrollcommand=scrollbar.set)
+        scrollbar.config(command=self.urlslistbox.yview)
+        self.animationLabel = tk.Label(self.lFrame2, bg=self.bg_color)
+        self.animationLabel.pack(side='left')
+        scrollbar = tk.Scrollbar(self.lFrame3)
+        scrollbar.pack(side='right', fill=tk.Y)
+        self.listbox = tk.Listbox(self.lFrame3, width=wlist, height=hlist)
         self.listbox.insert(tk.END, "List of downloaded files:")
         self.listbox.pack(side='left')
         self.listbox.config(yscrollcommand=scrollbar.set)
         self.listbox.bind('<Double-Button-1>', self.mouse_click)
         scrollbar.config(command=self.listbox.yview)
-        self.rightAnimationLabel = tk.Label(self.lFrame3, bg=self.bg_color)
-        self.rightAnimationLabel.pack(side='left')
 
         self.load_animation(wimg, hlist)
 
@@ -116,21 +121,16 @@ class runGUI:
     def load_animation(self, width, height):
         self.images = []
         self.imgIndex = 0
-        width = int(width*7.17)
+        width = int(width*7.17) +50
         #height = int(height*7.17)
         height = width*2
         path = os.path.join('textures', 'leftAnimation')
-        left = [os.path.join(path,f) for f in os.listdir(path) if os.path.isfile(os.path.join(path, f))]
-        path = os.path.join('textures', 'rightAnimation')
-        right = [os.path.join(path,f) for f in os.listdir(path) if os.path.isfile(os.path.join(path, f))]
-        files = left + right
+        files = [os.path.join(path,f) for f in os.listdir(path) if os.path.isfile(os.path.join(path, f))]
         for file in files:
             image = Image.open(file)
             image = image.resize((width, height), Image.ANTIALIAS)
             self.images.append(ImageTk.PhotoImage(image))
-        #Add first (empty) pic so that both sides start with the same width
-        self.leftAnimationLabel.config(image=self.images[0])
-        self.rightAnimationLabel.config(image=self.images[0])
+        self.animationLabel.config(image=self.images[0])
 
     def set_stopevent(self):
         self.stopevent = True
@@ -145,10 +145,7 @@ class runGUI:
 
     def cycleImages(self):
         img = self.nextImg()
-        if self.imgIndex <= int(len(self.images)/2):
-            self.leftAnimationLabel.config(image=img)
-        else:
-            self.rightAnimationLabel.config(image=img)
+        self.animationLabel.config(image=img)
         if not self.stopevent:
             self.top.after(170, self.cycleImages)
 
@@ -176,6 +173,13 @@ class runGUI:
         name = os.path.basename(path)
         self.downloaded[name] = path
         self.listbox.insert(tk.END, name)
+
+    def add_to_urls(self, urls):
+        for url in urls:
+            self.urlslistbox.insert(tk.END, url)
+
+    def remove_from_urls(self, url):
+        print("remove")
 
     def mouse_click(self, event):
         w = event.widget

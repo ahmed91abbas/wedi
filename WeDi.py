@@ -25,6 +25,10 @@ class dummy:
         pass
     def add_to_list(self, name):
         pass
+    def add_to_urls(self, urls):
+        pass
+    def remove_from_urls(self, url):
+        pass
 
 class services:
     def __init__(self, site, settings, GUI=None):
@@ -59,6 +63,14 @@ class services:
     def run(self):
         self.connect()
         self.urls = self.extract_urls()
+        if self.img_run:
+            self.gui.add_to_urls(self.img_urls)
+        if self.doc_run:
+            self.gui.add_to_urls(self.doc_urls)
+        if self.vid_run:
+            self.gui.add_to_urls(self.vid_urls)
+        if self.aud_run:
+            self.gui.add_to_urls(self.aud_urls)
         self.output_results()
 
     def my_hook(self, d):
@@ -135,6 +147,7 @@ class services:
             os.makedirs(self.dev_folder)
 
     def download_url(self, url, filename):
+        self.gui.remove_from_urls(url)
         try:
             with open(filename, "wb") as f:
                 print("\nDownloading %s" % url)
@@ -199,8 +212,12 @@ class services:
                 link = self.apply_special_rules(link)
                 if (self.is_img_link(link)):
                     self.img_urls.append(link)
-                if (self.is_doc_link(link)):
+                elif (self.is_doc_link(link)):
                     self.doc_urls.append(link)
+                elif (self.is_vid_link(link)):
+                    self.vid_urls.append(link)
+                elif (self.is_aud_link(link)):
+                    self.aud_urls.append(link)
         self.extract_images()
         return urls
 

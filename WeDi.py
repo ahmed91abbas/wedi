@@ -204,6 +204,7 @@ class services:
         for link in self.soup.find_all('a'):
             if 'href' in str(link):
                 urls.append((link['href'], ""))
+        urls.append((self.site, ""))
         urls = set(urls)
         for url in urls:
             url = url[0]

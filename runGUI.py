@@ -24,6 +24,7 @@ class runGUI:
     def createGUI(self):
         self.stopevent = False
         self.bg_color = '#e6e6ff'
+        font = ('calibri', 13)
         self.top = tk.Toplevel(bg=self.bg_color)
         self.top.title("Run status")
         self.top.wm_protocol("WM_DELETE_WINDOW", self.on_close)
@@ -63,7 +64,7 @@ class runGUI:
 
         self.urlLabel = tk.Label(self.dFrame2, borderwidth= 0, relief='solid', text='URL goes here',
             bg=self.bg_color, width=width, anchor='w')
-        self.urlLabel.pack(side='left')
+        self.urlLabel.pack()
 
         w1 = int(width/3)
         w11 = int(w1/2)
@@ -95,19 +96,19 @@ class runGUI:
         wlist = int(width/2.5)
         wimg = width - 2*wlist
         hlist = int(width/5)
-        tk.Label(self.lFrame1, text='List of urls to download:', bg=self.bg_color).pack()
+        tk.Label(self.lFrame1, text='List of urls to download:', font=font, bg=self.bg_color).pack()
         scrollbar = tk.Scrollbar(self.lFrame1)
         scrollbar.pack(side='right', fill=tk.Y)
         self.urlslistbox = tk.Listbox(self.lFrame1, width=wlist, height=hlist)
         self.urlslistbox.pack()
         self.urlslistbox.config(yscrollcommand=scrollbar.set)
         scrollbar.config(command=self.urlslistbox.yview)
-        self.openfolderLabel = tk.Label(self.lFrame2, text='Open download folder', bg=self.bg_color)#pack on complete
+        self.openfolderLabel = tk.Label(self.lFrame2, text='Open download folder', font=font, bg=self.bg_color)#pack on complete
         self.openfolderButton = tk.Button(self.lFrame2, bg=self.bg_color,
             activebackground=self.bg_color, command=self.openDownloadPath)#pack on complete
         self.animationLabel = tk.Label(self.lFrame2, bg=self.bg_color)
         self.animationLabel.pack()
-        tk.Label(self.lFrame3, text='List of downloaded files:', bg=self.bg_color).pack()
+        tk.Label(self.lFrame3, text='List of downloaded files:', font=font, bg=self.bg_color).pack()
         scrollbar = tk.Scrollbar(self.lFrame3)
         scrollbar.pack(side='right', fill=tk.Y)
         self.listbox = tk.Listbox(self.lFrame3, width=wlist, height=hlist)

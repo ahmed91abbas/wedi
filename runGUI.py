@@ -95,20 +95,23 @@ class runGUI:
         wlist = int(width/2.5)
         wimg = width - 2*wlist
         hlist = int(width/5)
+        tk.Label(self.lFrame1, text='List of urls to download:', bg=self.bg_color).pack()
         scrollbar = tk.Scrollbar(self.lFrame1)
         scrollbar.pack(side='right', fill=tk.Y)
         self.urlslistbox = tk.Listbox(self.lFrame1, width=wlist, height=hlist)
-        self.urlslistbox.insert(tk.END, "List of urls to download:")
-        self.urlslistbox.pack(side='left')
+        self.urlslistbox.pack()
         self.urlslistbox.config(yscrollcommand=scrollbar.set)
         scrollbar.config(command=self.urlslistbox.yview)
+        self.openfolderLabel = tk.Label(self.lFrame2, text='Open download folder', bg=self.bg_color)#pack on complete
+        self.openfolderButton = tk.Button(self.lFrame2, bg=self.bg_color,
+            activebackground=self.bg_color, command=self.openDownloadPath)#pack on complete
         self.animationLabel = tk.Label(self.lFrame2, bg=self.bg_color)
-        self.animationLabel.pack(side='left')
+        self.animationLabel.pack()
+        tk.Label(self.lFrame3, text='List of downloaded files:', bg=self.bg_color).pack()
         scrollbar = tk.Scrollbar(self.lFrame3)
         scrollbar.pack(side='right', fill=tk.Y)
         self.listbox = tk.Listbox(self.lFrame3, width=wlist, height=hlist)
-        self.listbox.insert(tk.END, "List of downloaded files:")
-        self.listbox.pack(side='left')
+        self.listbox.pack()
         self.listbox.config(yscrollcommand=scrollbar.set)
         self.listbox.bind('<Double-Button-1>', self.mouse_click)
         scrollbar.config(command=self.listbox.yview)
@@ -138,7 +141,7 @@ class runGUI:
     def set_stopevent(self):
         self.stopevent = True
         if self.openfolder.get() == 1:
-            self.services.open_path()
+            self.openDownloadPath()
 
     def nextImg(self):
         self.imgIndex = self.imgIndex + 1
@@ -152,7 +155,10 @@ class runGUI:
         if not self.stopevent:
             self.top.after(170, self.cycleImages)
         else:
-            self.animationLabel.config(image=self.completedImg)
+            self.animationLabel.pack_forget()
+            self.openfolderButton.pack()
+            self.openfolderLabel.pack()
+            self.openfolderButton.config(image=self.completedImg)
 
     def update_values(self, url='',dl='0.0', perc='', size='0.0', eta='', speed='', action='Now downloading...'):
         dl = float(dl)
@@ -184,14 +190,12 @@ class runGUI:
             self.urlslistbox.insert(tk.END, url)
 
     def remove_from_urls(self, url):
-        self.urlslistbox.delete(1)
+        self.urlslistbox.delete(0)
 
     def mouse_click(self, event):
         w = event.widget
         index = int(w.curselection()[0])
         name = w.get(index)
-        if index == 0:
-            self.services.open_path()
         try:
             path = self.downloaded[name]
             if sys.platform.startswith('darwin'):
@@ -202,6 +206,9 @@ class runGUI:
                 subprocess.call(('xdg-open', path))
         except:
             pass
+
+    def openDownloadPath(self):
+        self.services.open_path()
 
     def on_close(self):
         self.top.destroy()
@@ -218,8 +225,8 @@ if __name__ == '__main__':
     doc_types = ['py', 'txt', 'java', 'php', 'pdf', 'md', 'gitignore', 'c']
     vid_types = ['mp4', 'avi', 'mpeg', 'mpg', 'wmv', 'mov', 'flv', 'swf', 'mkv', '3gp', 'webm', 'ogg']
     aud_types = ['mp3', 'aac', 'wma', 'wav', 'm4a']
-    img_settings = {'run':False, 'img_types':img_types}
-    doc_settings = {'run':True, 'doc_types':doc_types}
+    img_settings = {'run':True, 'img_types':img_types}
+    doc_settings = {'run':False, 'doc_types':doc_types}
     vid_settings = {'run':False, 'vid_types':vid_types, 'format':'best'}
     aud_settings = {'run':False, 'aud_types':aud_types}
     dev_settings = {'run':False}

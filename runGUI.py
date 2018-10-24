@@ -161,6 +161,7 @@ class runGUI:
         elif self.error:
             self.animationLabel.config(image=self.errorImg)
         else:
+            #self.downloadingFrame.pack_forget()
             self.animationLabel.pack_forget()
             self.openfolderButton.pack()
             self.openfolderLabel.pack()
@@ -232,17 +233,17 @@ class runGUI:
 
 if __name__ == '__main__':
     site = 'https://www.stackoverflow.com/'
-    site = 'https://www.youtube.com/watch?v=zmr2I8caF0c' #small
     site = 'http://cs.lth.se/edan20/'
+    site = 'https://www.youtube.com/watch?v=zmr2I8caF0c' #small
     path = "."
     img_types = ['jpg', 'jpeg', 'png', 'gif']
     doc_types = ['py', 'txt', 'java', 'php', 'pdf', 'md', 'gitignore', 'c']
     vid_types = ['mp4', 'avi', 'mpeg', 'mpg', 'wmv', 'mov', 'flv', 'swf', 'mkv', '3gp', 'webm', 'ogg']
     aud_types = ['mp3', 'aac', 'wma', 'wav', 'm4a']
-    img_settings = {'run':True, 'img_types':img_types}
+    img_settings = {'run':False, 'img_types':img_types}
     doc_settings = {'run':False, 'doc_types':doc_types}
     vid_settings = {'run':False, 'vid_types':vid_types, 'format':'best'}
     aud_settings = {'run':False, 'aud_types':aud_types}
-    dev_settings = {'run':False}
-    settings = {'path':path, 'openfolder':False, 'images':img_settings, 'documents':doc_settings, 'videos':vid_settings, 'audios':aud_settings, 'dev':dev_settings}
+    dev_settings = {'run':True}
+    settings = {'path':path, 'images':img_settings, 'documents':doc_settings, 'videos':vid_settings, 'audios':aud_settings, 'dev':dev_settings}
     runGUI(site, settings)

@@ -10,6 +10,7 @@ import math
 class runGUI:
     def __init__(self, site, settings):
         self.downloaded = {}
+        self.error = False
         self.createGUI()
         self.cycleImages()
         self.services = services(site, settings, self)
@@ -31,6 +32,9 @@ class runGUI:
 
         self.downloadingFrame = tk.Frame(self.top, bg=self.bg_color)
         self.listFrame = tk.Frame(self.top, bg=self.bg_color)
+
+        self.downloadingFrame.pack(side='top')
+        self.listFrame.pack(side='bottom')
 
         pady = 10
         self.dFrame1 = tk.Frame(self.downloadingFrame, bg=self.bg_color)
@@ -62,8 +66,7 @@ class runGUI:
         tk.Checkbutton(self.dFrame1, text="Open download folder when done", bg=self.bg_color,
             activebackground=self.bg_color, variable=self.openfolder, width=w2).pack(side='right')
 
-        self.urlLabel = tk.Label(self.dFrame2, borderwidth= 0, relief='solid', text='URL goes here',
-            bg=self.bg_color, width=width, anchor='w')
+        self.urlLabel = tk.Label(self.dFrame2, borderwidth= 0, relief='solid', bg=self.bg_color, width=width, anchor='w')
         self.urlLabel.pack()
 
         w1 = int(width/3)
@@ -89,7 +92,7 @@ class runGUI:
         self.speedLabel.pack(side='left')
         self.downloadedLabel = tk.Label(self.dFrame4, borderwidth= 0, relief='solid', text='0.0 KB', bg=self.bg_color, width=w4)
         self.downloadedLabel.pack(side='left')
-        self.sizeLabel = tk.Label(self.dFrame4, borderwidth= 0, relief='solid', text='Total size', bg=self.bg_color, width=w5)
+        self.sizeLabel = tk.Label(self.dFrame4, borderwidth= 0, relief='solid', text='0.0 KB', bg=self.bg_color, width=w5)
         self.sizeLabel.pack(side='left')
 
         #listFrame children
@@ -119,16 +122,13 @@ class runGUI:
 
         self.load_animation(wimg, hlist)
 
-        self.downloadingFrame.pack(side='top')
-        self.listFrame.pack(side='bottom')
-
     def load_animation(self, width, height):
         self.images = []
         self.imgIndex = 0
         width = int(width*7.17) +50
         #height = int(height*7.17)
         height = width*2
-        path = os.path.join('textures', 'leftAnimation')
+        path = os.path.join('textures', 'animation')
         files = [os.path.join(path,f) for f in os.listdir(path) if os.path.isfile(os.path.join(path, f))]
         for file in files:
             image = Image.open(file)
@@ -138,6 +138,9 @@ class runGUI:
         #load the image for completed
         file = os.path.join('textures', 'completed.png')
         self.completedImg = ImageTk.PhotoImage(Image.open(file))
+        #load the image for error
+        file = os.path.join('textures', 'error.png')
+        self.errorImg = ImageTk.PhotoImage(Image.open(file))
 
     def set_stopevent(self):
         self.stopevent = True
@@ -155,6 +158,8 @@ class runGUI:
         self.animationLabel.config(image=img)
         if not self.stopevent:
             self.top.after(170, self.cycleImages)
+        elif self.error:
+            self.animationLabel.config(image=self.errorImg)
         else:
             self.animationLabel.pack_forget()
             self.openfolderButton.pack()
@@ -213,6 +218,11 @@ class runGUI:
 
     def openDownloadPath(self):
         self.services.open_path()
+
+    def show_error(self, msg):
+        self.set_stopevent()
+        self.actionLabel['text'] = msg
+        self.error = True
 
     def on_close(self):
         self.top.destroy()

@@ -31,6 +31,8 @@ class dummy:
         pass
     def update_action(self, text):
         pass
+    def show_error(self, msg):
+        pass
 
 class services:
     def __init__(self, site, settings, GUI=None):
@@ -201,7 +203,7 @@ class services:
             self.response = requests.get(self.site, allow_redirects=True)
             self.soup = BeautifulSoup(self.response.text, 'html.parser')
         except:
-            self.gui.update_action("Couldn't establish a connection to: " + self.site)
+            self.gui.show_error("Couldn't establish a connection to: " + self.site)
             print("Couldn't establish a connection to: " + self.site)
             exit()
 
@@ -385,6 +387,7 @@ class services:
     def output_results(self):
         self.create_dest_folders()
         if self.dev_run:
+            self.gui.update_action("Extracting the webpage information...")
             self.output_dev()
             print()
         if self.img_run:

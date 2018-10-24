@@ -152,51 +152,6 @@ class services:
         if not os.path.isdir(self.dev_folder):
             os.makedirs(self.dev_folder)
 
-    def download_url(self, url, filename):
-        self.gui.remove_from_urls(url)
-        try:
-            with open(filename, "wb") as f:
-                print("\nDownloading %s" % url)
-                response = requests.get(url, stream=True)
-                total_length = response.headers.get('content-length')
-
-                if total_length is None: # no content length header
-                    print(response.headers)
-                    f.write(response.content)
-                else:
-                    dl = 0
-                    start = time.clock()
-                    total_length = int(total_length)
-                    for data in response.iter_content(chunk_size=4096):
-                        dl += len(data)
-                        f.write(data)
-                        done = int(50 * dl / total_length)
-                        sys.stdout.write("\r[%s%s]" % ('=' * done, ' ' * (50-done)) )
-                        sys.stdout.flush()
-                        if dl == total_length:
-                            perc_str = '100.0%'
-                            speed_str = '0.0 KB/s'
-                            eta_str = '0 Seconds'
-                        else:
-                            perc_str = str(round(dl*100/total_length, 1)) + '%'
-                            speed = dl/(time.clock() - start)
-                            eta = int((total_length - dl) / speed)
-                            if eta > 3600:
-                                eta_str = str(round(eta / 3600, 2)) + ' Hours'
-                            elif eta > 60:
-                                eta_str = str(round(eta / 60, 2)) + ' Minutes'
-                            else:
-                                eta_str = str(eta) + ' Seconds'
-                            if speed > 10**6:
-                                speed_str = str(round(speed/10**6, 1)) + ' MB/s'
-                            else:
-                                speed_str = str(int(speed/1000)) + ' KB/s'
-                        self.gui.update_values(url=url, dl=dl, perc=perc_str, size=total_length, eta=eta_str, speed=speed_str)
-            self.gui.add_to_list(filename)
-        except:
-            self.gui.update_action('Failed to download ' + url)
-            print("Falied to download!")
-
     def connect(self):
         try:
             self.gui.update_action('Establishing connection to' + self.site)
@@ -213,7 +168,7 @@ class services:
         for link in self.soup.find_all('a'):
             if 'href' in str(link):
                 urls.append((link['href'], ""))
-        urls.append((self.site, ""))
+        urls.append((self.site[:-1], "")) #remove railing /
         urls = set(urls)
         for url in urls:
             url = url[0]
@@ -230,14 +185,6 @@ class services:
                     self.aud_urls.append(link)
         self.extract_images()
         return urls
-
-    def find_between(self, s, first, last):
-        try:
-            start = s.index( first ) + len( first )
-            end = s.index( last, start )
-            return s[start:end]
-        except ValueError:
-            return ""
 
     def extract_images(self):
         res = re.findall(';pic=.*;', str(self.soup))
@@ -297,6 +244,51 @@ class services:
                 filename = name + '(1).' + ftype
                 filename = os.path.join(path, filename)
         return filename
+
+    def download_url(self, url, filename):
+        self.gui.remove_from_urls(url)
+        try:
+            with open(filename, "wb") as f:
+                print("\nDownloading %s" % url)
+                response = requests.get(url, stream=True)
+                total_length = response.headers.get('content-length')
+
+                if total_length is None: # no content length header
+                    print(response.headers)
+                    f.write(response.content)
+                else:
+                    dl = 0
+                    start = time.clock()
+                    total_length = int(total_length)
+                    for data in response.iter_content(chunk_size=4096):
+                        dl += len(data)
+                        f.write(data)
+                        done = int(50 * dl / total_length)
+                        sys.stdout.write("\r[%s%s]" % ('=' * done, ' ' * (50-done)) )
+                        sys.stdout.flush()
+                        if dl == total_length:
+                            perc_str = '100.0%'
+                            speed_str = '0.0 KB/s'
+                            eta_str = '0 Seconds'
+                        else:
+                            perc_str = str(round(dl*100/total_length, 1)) + '%'
+                            speed = dl/(time.clock() - start)
+                            eta = int((total_length - dl) / speed)
+                            if eta > 3600:
+                                eta_str = str(round(eta / 3600, 2)) + ' Hours'
+                            elif eta > 60:
+                                eta_str = str(round(eta / 60, 2)) + ' Minutes'
+                            else:
+                                eta_str = str(eta) + ' Seconds'
+                            if speed > 10**6:
+                                speed_str = str(round(speed/10**6, 1)) + ' MB/s'
+                            else:
+                                speed_str = str(int(speed/1000)) + ' KB/s'
+                        self.gui.update_values(url=url, dl=dl, perc=perc_str, size=total_length, eta=eta_str, speed=speed_str)
+            self.gui.add_to_list(filename)
+        except:
+            self.gui.update_action('Failed to download ' + url)
+            print("Falied to download!")
 
     def download_links(self, urls, types, output_dir):
         urls = set(urls)

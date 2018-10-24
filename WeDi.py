@@ -312,43 +312,6 @@ class services:
                 filename = self.create_filename(output_dir, "noname." + types[0])
                 self.download_url(url, filename)
 
-    def output_dev(self):
-        #General information about main url
-        with open(os.path.join(self.dev_folder, 'mainURL.txt'), 'w') as f:
-            f.write(self.site + "\n\n")
-            f.write("Headers:\n")
-            for head in self.response.headers:
-                f.write(head + ": " + str(self.response.headers[head]) + "\n")
-        #Dump of the source code
-        with open(os.path.join(self.dev_folder, 'source.html'), 'wb') as f:
-            f.write(self.soup.prettify().encode("utf-8"))
-        #All the found urls
-        with open(os.path.join(self.dev_folder, 'allURLs.txt'), 'w') as f:
-            for url in set(self.urls):
-                f.write(url[0] + "\n")
-        if (len(self.img_urls) != 0):
-            with open(os.path.join(self.dev_folder, 'imgURLs.txt'), 'w') as f:
-                for url in set(self.img_urls):
-                    f.write(url + "\n")
-        if (len(self.doc_urls) != 0):
-            with open(os.path.join(self.dev_folder, 'docURLs.txt'), 'w') as f:
-                for url in set(self.doc_urls):
-                    f.write(url + "\n")
-        if (len(self.vid_urls) != 0):
-            with open(os.path.join(self.dev_folder, 'vidURLs.txt'), 'w') as f:
-                for url in set(self.vid_urls):
-                    f.write(url + "\n")
-        if (len(self.aud_urls) != 0):
-            with open(os.path.join(self.dev_folder, 'audURLs.txt'), 'w') as f:
-                for url in set(self.aud_urls):
-                    f.write(url + "\n")
-        scripts = self.soup.find('script', self.response.text)#TODO
-        print(scripts)
-        if scripts:
-            with open(os.path.join(self.dev_folder, 'scripts.txt'), 'w') as f:
-                for script in scripts:
-                    f.write(script+ "\n" + "#"*20)
-
     def ydl_audios(self):
         try:
             ydl_opts = {
@@ -383,17 +346,41 @@ class services:
             self.gui.update_action(str(e))
             print(str(e))
 
-    def rm_empty_dirs(self):
-        if not os.listdir(self.vid_folder):
-            os.rmdir(self.vid_folder)
-        if not os.listdir(self.aud_folder):
-            os.rmdir(self.aud_folder)
-        if not os.listdir(self.doc_folder):
-            os.rmdir(self.doc_folder)
-        if not os.listdir(self.img_folder):
-            os.rmdir(self.img_folder)
-        if not os.listdir(self.dev_folder):
-            os.rmdir(self.dev_folder)
+    def output_dev(self):
+        #General information about main url
+        with open(os.path.join(self.dev_folder, 'mainURL.txt'), 'w') as f:
+            f.write(self.site + "\n\n")
+            f.write("Headers:\n")
+            for head in self.response.headers:
+                f.write(head + ": " + str(self.response.headers[head]) + "\n")
+        #Dump of the source code
+        with open(os.path.join(self.dev_folder, 'source.html'), 'wb') as f:
+            f.write(self.soup.prettify().encode("utf-8"))
+        #All the found urls
+        with open(os.path.join(self.dev_folder, 'allURLs.txt'), 'w') as f:
+            for url in set(self.urls):
+                f.write(url[0] + "\n")
+        if (len(self.img_urls) != 0):
+            with open(os.path.join(self.dev_folder, 'imgURLs.txt'), 'w') as f:
+                for url in set(self.img_urls):
+                    f.write(url + "\n")
+        if (len(self.doc_urls) != 0):
+            with open(os.path.join(self.dev_folder, 'docURLs.txt'), 'w') as f:
+                for url in set(self.doc_urls):
+                    f.write(url + "\n")
+        if (len(self.vid_urls) != 0):
+            with open(os.path.join(self.dev_folder, 'vidURLs.txt'), 'w') as f:
+                for url in set(self.vid_urls):
+                    f.write(url + "\n")
+        if (len(self.aud_urls) != 0):
+            with open(os.path.join(self.dev_folder, 'audURLs.txt'), 'w') as f:
+                for url in set(self.aud_urls):
+                    f.write(url + "\n")
+        scripts = self.soup.find_all('script')
+        if scripts:
+            with open(os.path.join(self.dev_folder, 'scripts.js'), 'w') as f:
+                for script in scripts:
+                    f.write("\n" + script.prettify() + "\n" + "*"*80)
 
     def output_results(self):
         self.create_dest_folders()
@@ -432,6 +419,18 @@ class services:
             subprocess.Popen(["open", self.downloadpath])
         else:
             subprocess.Popen(["xdg-open", self.downloadpath])
+
+    def rm_empty_dirs(self):
+        if not os.listdir(self.vid_folder):
+            os.rmdir(self.vid_folder)
+        if not os.listdir(self.aud_folder):
+            os.rmdir(self.aud_folder)
+        if not os.listdir(self.doc_folder):
+            os.rmdir(self.doc_folder)
+        if not os.listdir(self.img_folder):
+            os.rmdir(self.img_folder)
+        if not os.listdir(self.dev_folder):
+            os.rmdir(self.dev_folder)
 
     def clean_up(self):
         try:

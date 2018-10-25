@@ -124,6 +124,8 @@ class services:
         tokens_to_be_replaced = ['https://', 'http://', 'www.', '*', '\\', '/', ':', '<', '>', '|', '?', '"', '\'']
         site_name = self.multi_replace(tokens_to_be_replaced, '_', self.site)
         self.downloadpath = os.path.join(site_name, self.path)
+        if len(self.downloadpath) > 200:
+            self.downloadpath = self.downloadpath[:200] + '_'
         self.img_folder = os.path.join(self.downloadpath, "images")
         if not os.path.isdir(self.img_folder):
             os.makedirs(self.img_folder)
@@ -446,7 +448,6 @@ if __name__ == "__main__":
     site = 'https://www.youtube.com/watch?v=bugktEHP1n0'
     site = 'http://cs.lth.se/edan20/'
     site = 'https://www.bytbil.com/skane-lan/personbil-v50-topp-skick-med-1-arsgaranti-2089-12646959' #cannot find all images
-    site = 'https://www.google.se/search?safe=off&ei=DM3RW4-SEMiiwALXyr1g&q=tk+bind+enter+key&oq=tk+bind+enter&gs_l=psy-ab.3.0.0i22i30k1l3.389128.396077.0.397126.16.14.2.0.0.0.88.947.14.14.0....0...1.1.64.psy-ab..0.16.952...0j0i67k1j0i10k1j0i20i263k1j0i22i10i30k1j35i39k1.0.dKmS-IFUvVA' #error long folder name
     site = 'https://www.youtube.com/watch?v=zmr2I8caF0c' #small
     path = "."
     img_types = ['jpg', 'jpeg', 'png', 'gif']

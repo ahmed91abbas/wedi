@@ -9,30 +9,18 @@ import subprocess
 import time
 
 class MyLogger(object):
-    def debug(self, msg):
-        pass
-    def warning(self, msg):
-        pass
-    def error(self, msg):
-        pass
+    def debug(self, msg):pass
+    def warning(self, msg):pass
+    def error(self, msg):pass
 
-class dummy:
-    def __init__(self):
-        pass
-    def update_values(self, url='', dl='', perc='', size='', eta='', speed='', action=''):
-        pass
-    def set_stopevent(self):
-        pass
-    def add_to_list(self, name):
-        pass
-    def add_to_urls(self, urls):
-        pass
-    def remove_from_urls(self, url):
-        pass
-    def update_action(self, text):
-        pass
-    def show_error(self, msg):
-        pass
+class dummyGUI:
+    def update_values(self, url='', dl='', perc='', size='', eta='', speed='', action=''):pass
+    def set_stopevent(self):pass
+    def add_to_list(self, name):pass
+    def add_to_urls(self, urls):pass
+    def remove_from_urls(self, url):pass
+    def update_action(self, text):pass
+    def show_error(self, msg):pass
 
 class services:
     def __init__(self, site, settings, GUI=None):
@@ -44,7 +32,7 @@ class services:
         if GUI:
             self.gui = GUI
         else:
-            self.gui = dummy()
+            self.gui = dummyGUI()
         self.clean_up() #TODO remove
         self.img_urls = []
         self.img_run = settings['images']['run']
@@ -458,8 +446,8 @@ if __name__ == "__main__":
     site = 'https://www.youtube.com/watch?v=bugktEHP1n0'
     site = 'http://cs.lth.se/edan20/'
     site = 'https://www.bytbil.com/skane-lan/personbil-v50-topp-skick-med-1-arsgaranti-2089-12646959' #cannot find all images
-    site = 'https://www.youtube.com/watch?v=zmr2I8caF0c' #small
     site = 'https://www.google.se/search?safe=off&ei=DM3RW4-SEMiiwALXyr1g&q=tk+bind+enter+key&oq=tk+bind+enter&gs_l=psy-ab.3.0.0i22i30k1l3.389128.396077.0.397126.16.14.2.0.0.0.88.947.14.14.0....0...1.1.64.psy-ab..0.16.952...0j0i67k1j0i10k1j0i20i263k1j0i22i10i30k1j35i39k1.0.dKmS-IFUvVA' #error long folder name
+    site = 'https://www.youtube.com/watch?v=zmr2I8caF0c' #small
     path = "."
     img_types = ['jpg', 'jpeg', 'png', 'gif']
     doc_types = ['txt', 'py', 'java', 'php', 'pdf', 'md', 'gitignore', 'c']

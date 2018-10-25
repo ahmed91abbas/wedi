@@ -33,8 +33,8 @@ class runGUI:
         self.downloadingFrame = tk.Frame(self.top, bg=self.bg_color)
         self.listFrame = tk.Frame(self.top, bg=self.bg_color)
 
-        self.downloadingFrame.pack(side='top')
-        self.listFrame.pack(side='bottom')
+        self.downloadingFrame.pack()
+        self.listFrame.pack()
 
         pady = 10
         self.dFrame1 = tk.Frame(self.downloadingFrame, bg=self.bg_color)
@@ -82,7 +82,7 @@ class runGUI:
         tk.Checkbutton(self.dFrame1, text="Open download folder when done", bg=self.bg_color,
             activebackground=self.bg_color, variable=self.openfolder, width=w2).pack(side='right')
 
-        self.urlLabel = tk.Label(self.dFrame2, borderwidth= 0, relief='solid', bg=self.bg_color, width=width, anchor='w')
+        self.urlLabel = tk.Label(self.dFrame2, borderwidth= 3, relief='groove', bg=self.bg_color, width=width, anchor='w')
         self.urlLabel.pack()
 
         w1 = int(width/3)
@@ -256,17 +256,17 @@ class runGUI:
 
 if __name__ == '__main__':
     site = 'https://www.stackoverflow.com/'
-    site = 'http://cs.lth.se/edan20/'
     site = 'https://www.youtube.com/watch?v=zmr2I8caF0c' #small
+    site = 'http://cs.lth.se/edan20/'
     path = "."
     img_types = ['jpg', 'jpeg', 'png', 'gif']
     doc_types = ['py', 'txt', 'java', 'php', 'pdf', 'md', 'gitignore', 'c']
     vid_types = ['mp4', 'avi', 'mpeg', 'mpg', 'wmv', 'mov', 'flv', 'swf', 'mkv', '3gp', 'webm', 'ogg']
     aud_types = ['mp3', 'aac', 'wma', 'wav', 'm4a']
-    img_settings = {'run':False, 'img_types':img_types}
+    img_settings = {'run':True, 'img_types':img_types}
     doc_settings = {'run':False, 'doc_types':doc_types}
     vid_settings = {'run':False, 'vid_types':vid_types, 'format':'best'}
     aud_settings = {'run':False, 'aud_types':aud_types}
-    dev_settings = {'run':True}
+    dev_settings = {'run':False}
     settings = {'path':path, 'images':img_settings, 'documents':doc_settings, 'videos':vid_settings, 'audios':aud_settings, 'dev':dev_settings}
     runGUI(site, settings)

@@ -24,6 +24,7 @@ class dummyGUI:
 
 class services:
     def __init__(self, site, settings, GUI=None):
+        #sys.stdout = open(os.devnull, 'w')
         if site[-1:] != '/':
             site = site + '/'
         self.site = site

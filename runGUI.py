@@ -29,6 +29,7 @@ class runGUI:
         self.top = tk.Toplevel(bg=self.bg_color)
         self.top.title("Run status")
         self.top.wm_protocol("WM_DELETE_WINDOW", self.on_close)
+        self.top.resizable(False, False)
 
         self.downloadingFrame = tk.Frame(self.top, bg=self.bg_color)
         self.listFrame = tk.Frame(self.top, bg=self.bg_color)

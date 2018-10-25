@@ -40,12 +40,28 @@ class runGUI:
         self.dFrame1 = tk.Frame(self.downloadingFrame, bg=self.bg_color)
         self.dFrame2 = tk.Frame(self.downloadingFrame, bg=self.bg_color)
         self.dFrame3 = tk.Frame(self.downloadingFrame, bg=self.bg_color)
-        self.dFrame4 = tk.Frame(self.downloadingFrame, bg=self.bg_color)
 
         self.dFrame1.pack(pady=pady)
         self.dFrame2.pack(pady=pady)
         self.dFrame3.pack(pady=pady)
-        self.dFrame4.pack(pady=pady)
+
+        self.dFrame3_1 = tk.Frame(self.dFrame3, bg=self.bg_color)
+        self.dFrame3_2 = tk.Frame(self.dFrame3, bg=self.bg_color)
+        self.dFrame3_3 = tk.Frame(self.dFrame3, bg=self.bg_color)
+        self.dFrame3_4 = tk.Frame(self.dFrame3, bg=self.bg_color)
+        self.dFrame3_5 = tk.Frame(self.dFrame3, bg=self.bg_color)
+
+        self.dFrame3_1.pack(side='left')
+        self.dFrame3_2.pack(side='left')
+        self.dFrame3_3.pack(side='left')
+        self.dFrame3_4.pack(side='left')
+        self.dFrame3_5.pack(side='left')
+
+        self.dFrame3_1_1 = tk.Frame(self.dFrame3_1, bg=self.bg_color)
+        self.dFrame3_1_2 = tk.Frame(self.dFrame3_1, bg=self.bg_color)
+
+        self.dFrame3_1_1.pack()
+        self.dFrame3_1_2.pack()
 
         self.lFrame1 = tk.Frame(self.listFrame, bg=self.bg_color)
         self.lFrame2 = tk.Frame(self.listFrame, bg=self.bg_color)
@@ -75,25 +91,25 @@ class runGUI:
         w2 = int((width-w1)/4)
         w3 = w4 = w2
         w5 = width - w1 - w2 - w3 -w4
-        tk.Label(self.dFrame3, borderwidth= 0, relief='solid', text='Progress:', bg=self.bg_color, width=w11, anchor='w').pack(side='left')
-        self.percLabel = tk.Label(self.dFrame3, borderwidth= 0, relief='solid', text='00.0%', bg=self.bg_color, width=w12, anchor='e')
-        self.percLabel.pack(side='left')
-        tk.Label(self.dFrame3, borderwidth= 0, relief='solid', text='ETA', bg=self.bg_color, width=w2).pack(side='left')
-        tk.Label(self.dFrame3, borderwidth= 0, relief='solid', text='Speed', bg=self.bg_color, width=w3).pack(side='left')
-        tk.Label(self.dFrame3, borderwidth= 0, relief='solid', text='Downloaded', bg=self.bg_color, width=w4).pack(side='left')
-        tk.Label(self.dFrame3, borderwidth= 0, relief='solid', text='Total size', bg=self.bg_color, width=w5).pack(side='left')
+        tk.Label(self.dFrame3_1_1, borderwidth= 0, relief='solid', text='Progress:', bg=self.bg_color, width=w11, anchor='w').pack(side='left')
+        self.percLabel = tk.Label(self.dFrame3_1_1, borderwidth= 0, relief='solid', text='00.0%', bg=self.bg_color, width=w12, anchor='e')
+        self.percLabel.pack(side='right')
+        tk.Label(self.dFrame3_2, borderwidth= 0, relief='solid', text='ETA', bg=self.bg_color, width=w2).pack()
+        tk.Label(self.dFrame3_3, borderwidth= 0, relief='solid', text='Speed', bg=self.bg_color, width=w3).pack()
+        tk.Label(self.dFrame3_4, borderwidth= 0, relief='solid', text='Downloaded', bg=self.bg_color, width=w4).pack()
+        tk.Label(self.dFrame3_5, borderwidth= 0, relief='solid', text='Total size', bg=self.bg_color, width=w5).pack()
 
         w1 = math.floor(w1*7.17) #convert width to progress length
         self.progress = IntVar()
-        Progressbar(self.dFrame4, orient=tk.HORIZONTAL, length=w1, mode='determinate', variable=self.progress).pack(side='left')
-        self.etaLabel = tk.Label(self.dFrame4, borderwidth= 0, relief='solid', text='0 Seconds', bg=self.bg_color, width=w2)
-        self.etaLabel.pack(side='left')
-        self.speedLabel = tk.Label(self.dFrame4, borderwidth= 0, relief='solid', text='0.0 KB/s', bg=self.bg_color, width=w3)
-        self.speedLabel.pack(side='left')
-        self.downloadedLabel = tk.Label(self.dFrame4, borderwidth= 0, relief='solid', text='0.0 KB', bg=self.bg_color, width=w4)
-        self.downloadedLabel.pack(side='left')
-        self.sizeLabel = tk.Label(self.dFrame4, borderwidth= 0, relief='solid', text='0.0 KB', bg=self.bg_color, width=w5)
-        self.sizeLabel.pack(side='left')
+        Progressbar(self.dFrame3_1_2, orient=tk.HORIZONTAL, length=w1, mode='determinate', variable=self.progress).pack(side='left')
+        self.etaLabel = tk.Label(self.dFrame3_2, borderwidth= 0, relief='solid', text='0 Seconds', bg=self.bg_color, width=w2)
+        self.etaLabel.pack()
+        self.speedLabel = tk.Label(self.dFrame3_3, borderwidth= 0, relief='solid', text='0.0 KB/s', bg=self.bg_color, width=w3)
+        self.speedLabel.pack()
+        self.downloadedLabel = tk.Label(self.dFrame3_4, borderwidth= 0, relief='solid', text='0.0 KB', bg=self.bg_color, width=w4)
+        self.downloadedLabel.pack()
+        self.sizeLabel = tk.Label(self.dFrame3_5, borderwidth= 0, relief='solid', text='0.0 KB', bg=self.bg_color, width=w5)
+        self.sizeLabel.pack()
 
         #listFrame children
         wlist = int(width/2.5)

@@ -118,6 +118,8 @@ class runGUI:
         self.listbox.pack()
         self.listbox.config(yscrollcommand=scrollbar.set)
         self.listbox.bind('<Double-Button-1>', self.mouse_click)
+        #self.listbox.bind("<ButtonRelease-1>", self.mouse_click)
+        self.listbox.bind('<Return>', self.mouse_click)
         scrollbar.config(command=self.listbox.yview)
 
         self.load_animation(wimg, hlist)
@@ -202,9 +204,14 @@ class runGUI:
     def remove_from_urls(self, url):
         self.urlslistbox.delete(0)
 
+    # def on_enter(self, event):
+    #     index = self.listbox.index("@%s,%s" % (event.x, event.y))
+    #     print(index)
+
     def mouse_click(self, event):
         w = event.widget
         index = int(w.curselection()[0])
+        #index = self.listbox.index("@%s,%s" % (event.x, event.y))
         name = w.get(index)
         try:
             path = self.downloaded[name]

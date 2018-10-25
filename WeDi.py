@@ -254,7 +254,7 @@ class services:
                 total_length = response.headers.get('content-length')
 
                 if total_length is None: # no content length header
-                    print(response.headers)
+                    self.gui.update_values(url=url)
                     f.write(response.content)
                 else:
                     dl = 0
@@ -459,6 +459,7 @@ if __name__ == "__main__":
     site = 'http://cs.lth.se/edan20/'
     site = 'https://www.bytbil.com/skane-lan/personbil-v50-topp-skick-med-1-arsgaranti-2089-12646959' #cannot find all images
     site = 'https://www.youtube.com/watch?v=zmr2I8caF0c' #small
+    site = 'https://www.google.se/search?safe=off&ei=DM3RW4-SEMiiwALXyr1g&q=tk+bind+enter+key&oq=tk+bind+enter&gs_l=psy-ab.3.0.0i22i30k1l3.389128.396077.0.397126.16.14.2.0.0.0.88.947.14.14.0....0...1.1.64.psy-ab..0.16.952...0j0i67k1j0i10k1j0i20i263k1j0i22i10i30k1j35i39k1.0.dKmS-IFUvVA' #error long folder name
     path = "."
     img_types = ['jpg', 'jpeg', 'png', 'gif']
     doc_types = ['txt', 'py', 'java', 'php', 'pdf', 'md', 'gitignore', 'c']

@@ -8,6 +8,18 @@ import platform
 import subprocess
 import time
 
+'''
+*Thread to make connection to all extracted urls and check the content type
+*Multible runGUIs without lagging
+*Better parsing for urls. Two apended urls might be considered as one in this version
+*Fix the header of runGUI
+*Change the header of runGUI when download is done
+*When downloading audio change the name of the downloaded file to the converted one
+*Make settings GUI
+*Fix about menu
+*Add disclaimer to help menu
+'''
+
 class MyLogger(object):
     def debug(self, msg):pass
     def warning(self, msg):pass

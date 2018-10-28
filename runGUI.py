@@ -14,7 +14,7 @@ class runGUI:
         self.createGUI()
         self.cycleImages()
         self.services = services(site, settings, self)
-        self.top.after(2000, self.run_services)
+        threading.Thread(target=self.run_services).start()
         self.mainloop()
 
     def run_services(self):

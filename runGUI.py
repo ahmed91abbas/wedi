@@ -1,10 +1,13 @@
-import tkinter as tk
-from tkinter import IntVar
+try:
+    import tkinter as tk
+    from tkinter.ttk import Progressbar
+except ImportError:
+    import Tkinter as tk
+    from Tkinter.ttk import Progressbar
 import threading
 import subprocess, os, sys
 from PIL import Image, ImageTk
 from WeDi import services
-from tkinter.ttk import Progressbar
 import math
 
 class runGUI:
@@ -77,7 +80,7 @@ class runGUI:
         w1 = width - w2
         self.actionLabel = tk.Label(self.dFrame1, text='Now downloading...', bg=self.bg_color, width=w1)
         self.actionLabel.pack(side='left')
-        self.openfolder = IntVar()
+        self.openfolder = tk.IntVar()
         tk.Checkbutton(self.dFrame1, text="Open download folder when done", bg=self.bg_color,
             activebackground=self.bg_color, variable=self.openfolder, width=w2).pack(side='right')
 
@@ -99,7 +102,7 @@ class runGUI:
         tk.Label(self.dFrame3_5, borderwidth= 0, relief='solid', text='Total size', bg=self.bg_color, width=w5).pack()
 
         w1 = math.floor(w1*7.17) #convert width to progress length
-        self.progress = IntVar()
+        self.progress = tk.IntVar()
         Progressbar(self.dFrame3_1_2, orient=tk.HORIZONTAL, length=w1, mode='determinate', variable=self.progress).pack(side='left')
         self.etaLabel = tk.Label(self.dFrame3_2, borderwidth= 0, relief='solid', text='0 Seconds', bg=self.bg_color, width=w2)
         self.etaLabel.pack()

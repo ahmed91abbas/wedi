@@ -1,5 +1,7 @@
-import tkinter as tk
-from tkinter import messagebox
+try:
+    import tkinter as tk
+except ImportError:
+    import Tkinter as tk
 import sys
 import pickle
 import os
@@ -171,7 +173,7 @@ class GUI:
             self.dev_button['image'] = self.devgray
 
     def about(self):
-        messagebox.showinfo("About", "WeDi (Web Dissector) is...")
+        print("About", "WeDi (Web Dissector) is...")
 
     def default_settings(self):
         path = "."

@@ -463,7 +463,7 @@ if __name__ == "__main__":
     site = 'https://www.bytbil.com/skane-lan/personbil-v50-topp-skick-med-1-arsgaranti-2089-12646959' #cannot find all images
     site = 'https://www.youtube.com/watch?v=zmr2I8caF0c' #small
     path = "."
-    img_types = ['jpg', 'jpeg', 'png', 'gif']
+    img_types = ['jpg', 'jpeg', 'png', 'gif', 'svg']
     doc_types = ['txt', 'py', 'java', 'php', 'pdf', 'md', 'gitignore', 'c']
     vid_types = ['mp4', 'avi', 'mpeg', 'mpg', 'wmv', 'mov', 'flv', 'swf', 'mkv', '3gp', 'webm', 'ogg']
     aud_types = ['mp3', 'aac', 'wma', 'wav', 'm4a']

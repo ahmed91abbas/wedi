@@ -7,6 +7,7 @@ import youtube_dl
 import platform
 import subprocess
 import time
+#from requests_html import HTMLSession
 
 '''
 *Thread to make connection to all extracted urls and check the content type

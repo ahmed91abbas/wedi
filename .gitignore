@@ -6,3 +6,6 @@ dev/
 *.pyc
 settings.sav
 env/
+build/
+dist/
+main.spec

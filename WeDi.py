@@ -427,7 +427,7 @@ class services:
             print()
         self.rm_empty_dirs()
         print("Done.")
-        self.gui.update_action("Done.")
+        self.gui.update_values(url=self.site, action="Done.")
         self.gui.set_stopevent()
 
     def open_path(self):

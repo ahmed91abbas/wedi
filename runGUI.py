@@ -39,13 +39,14 @@ class runGUI:
         self.listFrame.pack()
 
         pady = 10
+        padx = 10
         self.dFrame1 = tk.Frame(self.downloadingFrame, bg=self.bg_color)
         self.dFrame2 = tk.Frame(self.downloadingFrame, bg=self.bg_color)
         self.dFrame3 = tk.Frame(self.downloadingFrame, bg=self.bg_color)
 
-        self.dFrame1.pack(pady=pady)
-        self.dFrame2.pack(pady=pady)
-        self.dFrame3.pack(pady=pady, padx=pady)
+        self.dFrame1.pack(pady=pady, padx=padx)
+        self.dFrame2.pack(pady=pady, padx=padx)
+        self.dFrame3.pack(pady=pady, padx=padx)
 
         self.dFrame3_1 = tk.Frame(self.dFrame3, bg=self.bg_color)
         self.dFrame3_2 = tk.Frame(self.dFrame3, bg=self.bg_color)
@@ -76,7 +77,6 @@ class runGUI:
 
         width = 110
         #downloadingFrame children
-
         file = os.path.join('textures', 'a.png')
         img = ImageTk.PhotoImage(Image.open(file))
         l = tk.Label(self.dFrame1, image=img, bg=self.bg_color)
@@ -102,7 +102,7 @@ class runGUI:
         tk.Label(self.dFrame3_1_1, borderwidth= 0, relief='solid', text='Progress:', bg=self.bg_color, width=w11, anchor='w').pack(side='left')
         self.percLabel = tk.Label(self.dFrame3_1_1, borderwidth= 0, relief='solid', text='00.0%', bg=self.bg_color, width=w12, anchor='e')
         self.percLabel.pack(side='right')
-        tk.Label(self.dFrame3_2, borderwidth= 0, relief='solid', text='ETA', bg=self.bg_color, width=w2).pack()
+        tk.Label(self.dFrame3_2, borderwidth= 0, relief='solid', text='Time left', bg=self.bg_color, width=w2).pack()
         tk.Label(self.dFrame3_3, borderwidth= 0, relief='solid', text='Speed', bg=self.bg_color, width=w3).pack()
         tk.Label(self.dFrame3_4, borderwidth= 0, relief='solid', text='Downloaded', bg=self.bg_color, width=w4).pack()
         tk.Label(self.dFrame3_5, borderwidth= 0, relief='solid', text='Total size', bg=self.bg_color, width=w5).pack()
@@ -110,8 +110,8 @@ class runGUI:
         w1 = math.floor(w1*7.17) #convert width to progress length
         self.progress = tk.IntVar()
         Progressbar(self.dFrame3_1_2, orient=tk.HORIZONTAL, length=w1, mode='determinate', variable=self.progress).pack(side='left')
-        self.etaLabel = tk.Label(self.dFrame3_2, borderwidth= 0, relief='solid', text='0 Seconds', bg=self.bg_color, width=w2)
-        self.etaLabel.pack()
+        self.timeLeftLabel = tk.Label(self.dFrame3_2, borderwidth= 0, relief='solid', text='0 Seconds', bg=self.bg_color, width=w2)
+        self.timeLeftLabel.pack()
         self.speedLabel = tk.Label(self.dFrame3_3, borderwidth= 0, relief='solid', text='0.0 KB/s', bg=self.bg_color, width=w3)
         self.speedLabel.pack()
         self.downloadedLabel = tk.Label(self.dFrame3_4, borderwidth= 0, relief='solid', text='0.0 KB', bg=self.bg_color, width=w4)
@@ -142,7 +142,6 @@ class runGUI:
         self.listbox.pack()
         self.listbox.config(yscrollcommand=scrollbar.set)
         self.listbox.bind('<Double-Button-1>', self.mouse_click)
-        #self.listbox.bind("<ButtonRelease-1>", self.mouse_click)
         self.listbox.bind('<Return>', self.mouse_click)
         scrollbar.config(command=self.listbox.yview)
 
@@ -152,7 +151,6 @@ class runGUI:
         self.images = []
         self.imgIndex = 0
         width = int(width*7.17) +50
-        #height = int(height*7.17)
         height = width*2
         path = os.path.join('textures', 'animation')
         files = [os.path.join(path,f) for f in os.listdir(path) if os.path.isfile(os.path.join(path, f))]
@@ -170,6 +168,16 @@ class runGUI:
 
     def set_stopevent(self):
         self.stopevent = True
+        for frame in self.dFrame3.winfo_children():
+            for label in frame.winfo_children():
+                label.destroy()
+        tk.Label(self.dFrame3_1, text='Run time', bg=self.bg_color).pack()
+        tk.Label(self.dFrame3_1, text='0 Seconds', bg=self.bg_color).pack()
+        tk.Label(self.dFrame3_3, text='Total download size', bg=self.bg_color).pack()
+        tk.Label(self.dFrame3_3, text='0 KB', bg=self.bg_color).pack()
+        tk.Label(self.dFrame3_5, text='Files count', bg=self.bg_color).pack()
+        tk.Label(self.dFrame3_5, text='0', bg=self.bg_color).pack()
+        self.urlLabel['anchor'] = 'center'
 
     def nextImg(self):
         self.imgIndex = self.imgIndex + 1
@@ -194,7 +202,8 @@ class runGUI:
     def update_values(self, url='',dl='0.0', perc='', size='0.0', eta='', speed='', action='Now downloading...'):
         dl = float(dl)
         size = float(size)
-        self.progress.set(int(dl*100/size))
+        if size != 0:
+            self.progress.set(int(dl*100/size))
         if size > 10**6:
             size_str = str(round(size/10**6, 2)) + ' MB'
         else:
@@ -207,7 +216,7 @@ class runGUI:
         self.percLabel['text'] = perc
         self.sizeLabel['text'] = size_str
         self.downloadedLabel['text'] = dl_str
-        self.etaLabel['text'] = eta
+        self.timeLeftLabel['text'] = eta
         self.speedLabel['text'] = speed
         self.actionLabel['text'] = action
 
@@ -226,14 +235,9 @@ class runGUI:
     def remove_from_urls(self, url):
         self.urlslistbox.delete(0)
 
-    # def on_enter(self, event):
-    #     index = self.listbox.index("@%s,%s" % (event.x, event.y))
-    #     print(index)
-
     def mouse_click(self, event):
         w = event.widget
         index = int(w.curselection()[0])
-        #index = self.listbox.index("@%s,%s" % (event.x, event.y))
         name = w.get(index)
         try:
             path = self.downloaded[name]

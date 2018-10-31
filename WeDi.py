@@ -164,7 +164,7 @@ class services:
         except:
             self.gui.show_error("Couldn't establish a connection to: " + self.site)
             print("Couldn't establish a connection to: " + self.site)
-            exit()
+            sys.exit(1)
 
     def extract_urls(self):
         self.gui.update_action("Extracting the urls from the website...")

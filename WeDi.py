@@ -28,7 +28,7 @@ class MyLogger(object):
 
 class dummyGUI:
     def update_values(self, url='', dl='', perc='', size='', eta='', speed='', action=''):pass
-    def set_stopevent(self):pass
+    def set_stopevent(self, files=0, size=0, time=0):pass
     def add_to_list(self, name):pass
     def add_to_urls(self, urls):pass
     def remove_from_urls(self, url):pass
@@ -69,6 +69,7 @@ class services:
         self.dev_folder = ""
 
     def run(self):
+        self.start_time = time.clock()
         self.connect()
         self.urls = self.extract_urls()
         if self.img_run:
@@ -428,7 +429,9 @@ class services:
         self.rm_empty_dirs()
         print("Done.")
         self.gui.update_values(url=self.site, action="Done.")
-        self.gui.set_stopevent()
+        nbr_files, total_size = self.get_folder_info(self.downloadpath)
+        runtime = time.clock() - self.start_time
+        self.gui.set_stopevent(files=nbr_files, size=total_size, time=runtime)
 
     def open_path(self):
         if platform.system() == "Windows":
@@ -437,6 +440,16 @@ class services:
             subprocess.Popen(["open", self.downloadpath])
         else:
             subprocess.Popen(["xdg-open", self.downloadpath])
+
+    def get_folder_info(self, path):
+        total_size = 0
+        nbr_files = 0
+        for dirpath, dirnames, filenames in os.walk(path):
+            for f in filenames:
+                nbr_files += 1
+                fp = os.path.join(dirpath, f)
+                total_size += os.path.getsize(fp)
+        return nbr_files, total_size
 
     def rm_empty_dirs(self):
         if not os.listdir(self.vid_folder):

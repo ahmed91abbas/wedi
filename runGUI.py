@@ -166,17 +166,30 @@ class runGUI:
         file = os.path.join('textures', 'error.png')
         self.errorImg = ImageTk.PhotoImage(Image.open(file))
 
-    def set_stopevent(self):
+    def set_stopevent(self, files=0, size=0, time=0):
         self.stopevent = True
+        #Change the download frames with info frames
+        #convert size into string
+        if size > 10**6:
+            size_str = str(round(size/10**6, 2)) + ' MB'
+        else:
+            size_str = str(round(size/10**3, 2)) + ' KB'
+        #convert time into string
+        if time > 3600:
+            time_str = str(round(time / 3600, 2)) + ' Hours'
+        elif time > 60:
+            time_str = str(round(time / 60, 2)) + ' Minutes'
+        else:
+            time_str = str(round(time,2)) + ' Seconds'
         for frame in self.dFrame3.winfo_children():
             for label in frame.winfo_children():
                 label.destroy()
         tk.Label(self.dFrame3_1, text='Run time', bg=self.bg_color).pack()
-        tk.Label(self.dFrame3_1, text='0 Seconds', bg=self.bg_color).pack()
+        tk.Label(self.dFrame3_1, text=time_str, bg=self.bg_color).pack()
         tk.Label(self.dFrame3_3, text='Total download size', bg=self.bg_color).pack()
-        tk.Label(self.dFrame3_3, text='0 KB', bg=self.bg_color).pack()
-        tk.Label(self.dFrame3_5, text='Files count', bg=self.bg_color).pack()
-        tk.Label(self.dFrame3_5, text='0', bg=self.bg_color).pack()
+        tk.Label(self.dFrame3_3, text=size_str, bg=self.bg_color).pack()
+        tk.Label(self.dFrame3_5, text='File count', bg=self.bg_color).pack()
+        tk.Label(self.dFrame3_5, text=str(files), bg=self.bg_color).pack()
         self.urlLabel['anchor'] = 'center'
 
     def nextImg(self):

@@ -291,7 +291,10 @@ class services:
                         self.gui.update_values(url=url, dl=dl, perc=perc_str, size=total_length, eta=eta_str, speed=speed_str)
             self.gui.add_to_list(filename)
         except:
-            self.gui.update_action('Failed to download ' + url)
+            msg = 'Failed to download ' + url
+            if len(msg) > 100:
+                msg[:100]
+            self.gui.update_action(msg)
             print("Falied to download!")
 
     def download_links(self, urls, types, output_dir):

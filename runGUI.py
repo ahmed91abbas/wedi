@@ -236,9 +236,11 @@ class runGUI:
     def update_action(self, text):
         self.actionLabel['text'] = text
 
-    def add_to_list(self, path):
+    def add_to_list(self, path, replace=False):
         name = os.path.basename(path)
         self.downloaded[name] = path
+        if replace:
+            self.listbox.delete(tk.END)
         self.listbox.insert(tk.END, name)
 
     def add_to_urls(self, urls):
@@ -279,8 +281,8 @@ class runGUI:
 
 if __name__ == '__main__':
     site = 'https://www.stackoverflow.com/'
-    site = 'https://www.youtube.com/watch?v=zmr2I8caF0c' #small
     site = 'http://cs.lth.se/edan20/'
+    site = 'https://www.youtube.com/watch?v=zmr2I8caF0c' #small
     path = "."
     img_types = ['jpg', 'jpeg', 'png', 'gif']
     doc_types = ['py', 'txt', 'java', 'php', 'pdf', 'md', 'gitignore', 'c']
@@ -289,7 +291,7 @@ if __name__ == '__main__':
     img_settings = {'run':True, 'img_types':img_types}
     doc_settings = {'run':False, 'doc_types':doc_types}
     vid_settings = {'run':False, 'vid_types':vid_types, 'format':'best'}
-    aud_settings = {'run':False, 'aud_types':aud_types}
+    aud_settings = {'run':True, 'aud_types':aud_types}
     dev_settings = {'run':False}
     settings = {'path':path, 'images':img_settings, 'documents':doc_settings, 'videos':vid_settings, 'audios':aud_settings, 'dev':dev_settings}
     runGUI(site, settings)

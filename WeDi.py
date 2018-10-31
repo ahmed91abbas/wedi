@@ -11,23 +11,25 @@ import time
 
 '''
 *Thread to make connection to all extracted urls and check the content type
-*Multible runGUIs without lagging
 *Better parsing for urls. Two apended urls might be considered as one in this version
-*When downloading audio change the name of the downloaded file to the converted one
 *Make settings GUI
 *Fix about menu
 *Add disclaimer to help menu
+*find a way to render js page
 '''
 
 class MyLogger(object):
-    def debug(self, msg):pass
+    def __init__(self):
+        self.msgs = []
+    def debug(self, msg):
+        self.msgs.append(msg)
     def warning(self, msg):pass
     def error(self, msg):pass
 
 class dummyGUI:
     def update_values(self, url='', dl='', perc='', size='', eta='', speed='', action=''):pass
     def set_stopevent(self, files=0, size=0, time=0):pass
-    def add_to_list(self, name):pass
+    def add_to_list(self, name, replace=False):pass
     def add_to_urls(self, urls):pass
     def remove_from_urls(self, url):pass
     def update_action(self, text):pass
@@ -314,11 +316,12 @@ class services:
 
     def ydl_audios(self):
         try:
+            logger = MyLogger()
             ydl_opts = {
                 'format': 'bestaudio/best',
                 'noplaylist':True,
                 'outtmpl': self.aud_folder + '\%(title)s.%(ext)s',
-                'logger': MyLogger(),
+                'logger': logger,
                 'progress_hooks': [self.my_hook],
                 'postprocessors': [{
                     'key': 'FFmpegExtractAudio',
@@ -328,6 +331,10 @@ class services:
             }
             with youtube_dl.YoutubeDL(ydl_opts) as ydl:
                 ydl.download([self.site])
+            msgs = logger.msgs
+            if len(msgs) > 1 and "Deleting" in msgs[len(msgs)-1]: #If last msg in logger begins with 'Deleting' replace the file name in gui
+                file = msgs[len(msgs)-2][22:] #Remove leading '[ffmpeg] Destination: '
+                self.gui.add_to_list(file, replace=True)
         except Exception as e:
             self.gui.update_action(str(e))
             print(str(e))
@@ -482,10 +489,10 @@ if __name__ == "__main__":
     doc_types = ['txt', 'py', 'java', 'php', 'pdf', 'md', 'gitignore', 'c']
     vid_types = ['mp4', 'avi', 'mpeg', 'mpg', 'wmv', 'mov', 'flv', 'swf', 'mkv', '3gp', 'webm', 'ogg']
     aud_types = ['mp3', 'aac', 'wma', 'wav', 'm4a']
-    img_settings = {'run':True, 'img_types':img_types}
-    doc_settings = {'run':True, 'doc_types':doc_types}
+    img_settings = {'run':False, 'img_types':img_types}
+    doc_settings = {'run':False, 'doc_types':doc_types}
     vid_settings = {'run':False, 'vid_types':vid_types, 'format':'best'}
-    aud_settings = {'run':False, 'aud_types':aud_types}
+    aud_settings = {'run':True, 'aud_types':aud_types}
     dev_settings = {'run':True}
     settings = {'path':path, 'images':img_settings, 'documents':doc_settings, 'videos':vid_settings, 'audios':aud_settings, 'dev':dev_settings}
     services = services(site, settings)

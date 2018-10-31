@@ -45,7 +45,7 @@ class runGUI:
 
         self.dFrame1.pack(pady=pady)
         self.dFrame2.pack(pady=pady)
-        self.dFrame3.pack(pady=pady)
+        self.dFrame3.pack(pady=pady, padx=pady)
 
         self.dFrame3_1 = tk.Frame(self.dFrame3, bg=self.bg_color)
         self.dFrame3_2 = tk.Frame(self.dFrame3, bg=self.bg_color)
@@ -78,11 +78,11 @@ class runGUI:
         #downloadingFrame children
         w2 = int(width / 3)
         w1 = width - w2
-        self.actionLabel = tk.Label(self.dFrame1, text='Now downloading...', bg=self.bg_color, width=w1)
+        self.actionLabel = tk.Label(self.dFrame1, text='Now downloading...', bg=self.bg_color, width=w1, font=('calibri', 13))
         self.actionLabel.pack(side='left')
         self.openfolder = tk.IntVar()
-        tk.Checkbutton(self.dFrame1, text="Open download folder when done", bg=self.bg_color,
-            activebackground=self.bg_color, variable=self.openfolder, width=w2).pack(side='right')
+        # tk.Checkbutton(self.dFrame1, text="Open download folder when done", bg=self.bg_color,
+        #     activebackground=self.bg_color, variable=self.openfolder, width=w2).pack(side='right')
 
         self.urlLabel = tk.Label(self.dFrame2, borderwidth= 3, relief='groove', bg=self.bg_color, width=width, anchor='w')
         self.urlLabel.pack()

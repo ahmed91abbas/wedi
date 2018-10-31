@@ -30,12 +30,13 @@ class GUI:
 
         menu = tk.Menu(self.root)
         self.root.config(menu=menu)
-        prefmenu = tk.Menu(menu)
+        prefmenu = tk.Menu(menu, tearoff=0)
         menu.add_cascade(label="Preferences", menu=prefmenu)
         prefmenu.add_command(label="Settings", command=self.about)
-        helpmenu = tk.Menu(menu)
+        helpmenu = tk.Menu(menu, tearoff=0)
         menu.add_cascade(label="Help", menu=helpmenu)
         helpmenu.add_command(label="How to...", command=self.about)
+        helpmenu.add_command(label="Disclaimer", command=self.about)
         helpmenu.add_command(label="About", command=self.about)
 
         self.docgray = ImageTk.PhotoImage(Image.open(os.path.join('textures', 'docgray.png')))

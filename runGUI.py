@@ -76,13 +76,19 @@ class runGUI:
 
         width = 110
         #downloadingFrame children
-        w2 = int(width / 3)
-        w1 = width - w2
-        self.actionLabel = tk.Label(self.dFrame1, text='Now downloading...', bg=self.bg_color, width=w1, font=('calibri', 13))
+
+        file = os.path.join('textures', 'a.png')
+        img = ImageTk.PhotoImage(Image.open(file))
+        l = tk.Label(self.dFrame1, image=img, bg=self.bg_color)
+        l.photo=img
+        l.pack(side='left')
+        self.actionLabel = tk.Label(self.dFrame1, text='Now downloading...', bg=self.bg_color, font=('calibri', 13))
         self.actionLabel.pack(side='left')
-        self.openfolder = tk.IntVar()
-        # tk.Checkbutton(self.dFrame1, text="Open download folder when done", bg=self.bg_color,
-        #     activebackground=self.bg_color, variable=self.openfolder, width=w2).pack(side='right')
+        file = os.path.join('textures', 'b.png')
+        img = ImageTk.PhotoImage(Image.open(file))
+        l = tk.Label(self.dFrame1, image=img, bg=self.bg_color)
+        l.photo=img
+        l.pack(side='left')
 
         self.urlLabel = tk.Label(self.dFrame2, borderwidth= 3, relief='groove', bg=self.bg_color, width=width, anchor='w')
         self.urlLabel.pack()
@@ -164,8 +170,6 @@ class runGUI:
 
     def set_stopevent(self):
         self.stopevent = True
-        if self.openfolder.get() == 1:
-            self.openDownloadPath()
 
     def nextImg(self):
         self.imgIndex = self.imgIndex + 1

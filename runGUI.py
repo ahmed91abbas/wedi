@@ -284,6 +284,7 @@ if __name__ == '__main__':
     site = 'http://cs.lth.se/edan20/'
     site = 'https://www.youtube.com/watch?v=zmr2I8caF0c' #small
     path = "."
+    extensive = False
     img_types = ['jpg', 'jpeg', 'png', 'gif']
     doc_types = ['py', 'txt', 'java', 'php', 'pdf', 'md', 'gitignore', 'c']
     vid_types = ['mp4', 'avi', 'mpeg', 'mpg', 'wmv', 'mov', 'flv', 'swf', 'mkv', '3gp', 'webm', 'ogg']
@@ -293,5 +294,5 @@ if __name__ == '__main__':
     vid_settings = {'run':False, 'vid_types':vid_types, 'format':'best'}
     aud_settings = {'run':True, 'aud_types':aud_types}
     dev_settings = {'run':False}
-    settings = {'path':path, 'images':img_settings, 'documents':doc_settings, 'videos':vid_settings, 'audios':aud_settings, 'dev':dev_settings}
+    settings = {'path':path, 'extensive':extensive,'images':img_settings, 'documents':doc_settings, 'videos':vid_settings, 'audios':aud_settings, 'dev':dev_settings}
     runGUI(site, settings)

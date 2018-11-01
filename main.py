@@ -110,9 +110,9 @@ class GUI:
         self.options["menu"].config(bg=self.button_color, font=menufont1)
         self.options.grid(row=2, column=1)
 
-        self.run_button = tk.Button(self.end_frame, text="Run", font=font, image=self.buttonimg, border=0, bg=self.bg_color, activebackground=self.bg_color,compound=tk.CENTER, command=self.on_run)
+        self.run_button = tk.Button(self.end_frame, text="Fast run", font=font, image=self.buttonimg, border=0, bg=self.bg_color, activebackground=self.bg_color,compound=tk.CENTER, command=self.on_run)
         self.run_button.pack(side='left', padx=50, pady=30)
-        self.button = tk.Button(self.end_frame, text='Exit', font=font, image=self.buttonimg, border=0, bg=self.bg_color, activebackground=self.bg_color,compound=tk.CENTER, command=self.on_close)
+        self.button = tk.Button(self.end_frame, text='Extensive run', font=font, image=self.buttonimg, border=0, bg=self.bg_color, activebackground=self.bg_color,compound=tk.CENTER, command=self.on_extensive_run)
         self.button.pack(side='left', padx=50, pady=30)
 
         self.start_frame.pack(side="top")
@@ -178,6 +178,7 @@ class GUI:
 
     def default_settings(self):
         path = "."
+        extensive = False
         img_types = ['jpg', 'jpeg', 'png', 'gif']
         doc_types = ['py', 'txt', 'java', 'php', 'pdf', 'md', 'gitignore', 'c']
         vid_types = ['mp4', 'avi', 'mpeg', 'mpg', 'wmv', 'mov', 'flv', 'swf', 'mkv', '3gp']
@@ -187,9 +188,13 @@ class GUI:
         vid_settings = {'run':True, 'vid_types':vid_types, 'format':'best'}
         aud_settings = {'run':True, 'aud_types':aud_types}
         dev_settings = {'run':True}
-        settings = {'path':path, 'images':img_settings, 'documents':doc_settings, 'videos':vid_settings, 'audios':aud_settings, 'dev':dev_settings}
+        settings = {'path':path, 'extensive':extensive,'images':img_settings, 'documents':doc_settings, 'videos':vid_settings, 'audios':aud_settings, 'dev':dev_settings}
         pickle.dump(settings, open('settings.sav', 'wb'))
         return settings
+
+    def on_extensive_run(self):
+        self.settings['extensive'] = True
+        self.on_run()
 
     def on_run(self):
         site = self.siteEntry.get()

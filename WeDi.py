@@ -16,7 +16,6 @@ from selenium.webdriver.chrome.options import Options
 *Make settings GUI
 *Fix about menu
 *Add disclaimer to help menu
-*find a way to render js page
 '''
 
 class MyLogger(object):
@@ -37,9 +36,9 @@ class dummyGUI:
     def show_error(self, msg):pass
 
 class services:
-    def __init__(self, site, settings, GUI=None, extensive=False):
+    def __init__(self, site, settings, GUI=None):
         #sys.stdout = open(os.devnull, 'w')
-        self.extensive = extensive
+        self.extensive = settings['extensive']
         if site[-1:] != '/':
             site = site + '/'
         self.site = site
@@ -181,7 +180,8 @@ class services:
             self.response = requests.get(self.site, allow_redirects=True)
         else:
             self.response = requests.get(self.site, allow_redirects=True)
-            self.soup = BeautifulSoup(self.response.text, 'html.parser')
+            self.page_source = self.response.text
+            self.soup = BeautifulSoup(self.page_source, 'html.parser')
         # except:
         #     msg = "Couldn't establish a connection to: " + self.site
         #     if len(msg) > 100:
@@ -193,14 +193,11 @@ class services:
     def extract_urls(self):
         self.gui.update_action("Extracting the urls from the website...")
         res = []
-        if self.extensive:
-            urls = re.findall('["\']((http|ftp)s?://.*?)["\']', self.page_source)
-        else:
-            urls = re.findall('["\']((http|ftp)s?://.*?)["\']', self.response.text)
+        urls = re.findall('["\']((http|ftp)s?://.*?)["\']', self.page_source)
         for link in self.soup.find_all('a'):
             if 'href' in str(link):
                 urls.append((link['href'], ""))
-        urls.append((self.site[:-1], "")) #remove railing /
+        urls.append((self.site[:-1], "")) #remove tailing /
         urls = set(urls)
         for url in urls:
             url = url[0]
@@ -527,9 +524,10 @@ if __name__ == "__main__":
     site = 'http://cs.lth.se/edan20/'
     site = 'https://www.youtube.com/watch?v=zmr2I8caF0c' #small
     site = 'https://www.bytbil.com/'
-    site = 'https://m2.ikea.com/se/sv/campaigns/nytt-laegre-pris-pub3c9e0c81'
     site = 'https://www.blocket.se/malmo/Mini_Cooper_Clubman_Pepper_120hk_6_vaxl_82169382.htm?ca=23_11&w=0'
+    site = 'https://m2.ikea.com/se/sv/campaigns/nytt-laegre-pris-pub3c9e0c81'
     path = "."
+    extensive = True
     img_types = ['jpg', 'jpeg', 'png', 'gif', 'svg']
     doc_types = ['txt', 'py', 'java', 'php', 'pdf', 'md', 'gitignore', 'c']
     vid_types = ['mp4', 'avi', 'mpeg', 'mpg', 'wmv', 'mov', 'flv', 'swf', 'mkv', '3gp', 'webm', 'ogg']
@@ -539,7 +537,7 @@ if __name__ == "__main__":
     vid_settings = {'run':False, 'vid_types':vid_types, 'format':'best'}
     aud_settings = {'run':False, 'aud_types':aud_types}
     dev_settings = {'run':True}
-    settings = {'path':path, 'images':img_settings, 'documents':doc_settings, 'videos':vid_settings, 'audios':aud_settings, 'dev':dev_settings}
-    services = services(site, settings, extensive=True)
+    settings = {'path':path, 'extensive':extensive, 'images':img_settings, 'documents':doc_settings, 'videos':vid_settings, 'audios':aud_settings, 'dev':dev_settings}
+    services = services(site, settings)
     services.run()
 

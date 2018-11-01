@@ -179,10 +179,10 @@ class GUI:
     def default_settings(self):
         path = "."
         extensive = False
-        img_types = ['jpg', 'jpeg', 'png', 'gif']
-        doc_types = ['py', 'txt', 'java', 'php', 'pdf', 'md', 'gitignore', 'c']
-        vid_types = ['mp4', 'avi', 'mpeg', 'mpg', 'wmv', 'mov', 'flv', 'swf', 'mkv', '3gp']
-        aud_types = ['mp3', 'aac', 'wma', 'wav']
+        img_types = ['jpg', 'jpeg', 'png', 'gif', 'svg']
+        doc_types = ['txt', 'py', 'java', 'php', 'pdf', 'md', 'gitignore', 'c']
+        vid_types = ['mp4', 'avi', 'mpeg', 'mpg', 'wmv', 'mov', 'flv', 'swf', 'mkv', '3gp', 'webm', 'ogg']
+        aud_types = ['mp3', 'aac', 'wma', 'wav', 'm4a']
         img_settings = {'run':True, 'img_types':img_types}
         doc_settings = {'run':True, 'doc_types':doc_types}
         vid_settings = {'run':True, 'vid_types':vid_types, 'format':'best'}

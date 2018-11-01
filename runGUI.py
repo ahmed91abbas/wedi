@@ -285,8 +285,8 @@ if __name__ == '__main__':
     site = 'https://www.youtube.com/watch?v=zmr2I8caF0c' #small
     path = "."
     extensive = False
-    img_types = ['jpg', 'jpeg', 'png', 'gif']
-    doc_types = ['py', 'txt', 'java', 'php', 'pdf', 'md', 'gitignore', 'c']
+    img_types = ['jpg', 'jpeg', 'png', 'gif', 'svg']
+    doc_types = ['txt', 'py', 'java', 'php', 'pdf', 'md', 'gitignore', 'c']
     vid_types = ['mp4', 'avi', 'mpeg', 'mpg', 'wmv', 'mov', 'flv', 'swf', 'mkv', '3gp', 'webm', 'ogg']
     aud_types = ['mp3', 'aac', 'wma', 'wav', 'm4a']
     img_settings = {'run':True, 'img_types':img_types}

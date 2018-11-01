@@ -96,7 +96,7 @@ class services:
                 "at " + d['_speed_str'], "ETA " + d['_eta_str'], " "*5, end='\r')
 
     def extract_domain(self, site):
-        domain = re.search('(http|ftp)s?[:\/\/]+[A-Za-z0-9\.]+\/', site)
+        domain = re.search('https?:\/\/[-_A-Za-z0-9\.]+\/', site)
         if not domain:
             return ""
         res = domain.group(0).split('://')
@@ -489,13 +489,14 @@ if __name__ == "__main__":
     site = 'https://www.youtube.com/watch?v=bugktEHP1n0'
     site = 'http://cs.lth.se/edan20/'
     site = 'https://www.bytbil.com/skane-lan/personbil-v50-topp-skick-med-1-arsgaranti-2089-12646959' #cannot find all images
+    site = 'http://python-requests.org/' #error domian
     site = 'https://www.youtube.com/watch?v=zmr2I8caF0c' #small
     path = "."
     img_types = ['jpg', 'jpeg', 'png', 'gif', 'svg']
     doc_types = ['txt', 'py', 'java', 'php', 'pdf', 'md', 'gitignore', 'c']
     vid_types = ['mp4', 'avi', 'mpeg', 'mpg', 'wmv', 'mov', 'flv', 'swf', 'mkv', '3gp', 'webm', 'ogg']
     aud_types = ['mp3', 'aac', 'wma', 'wav', 'm4a']
-    img_settings = {'run':False, 'img_types':img_types}
+    img_settings = {'run':True, 'img_types':img_types}
     doc_settings = {'run':False, 'doc_types':doc_types}
     vid_settings = {'run':False, 'vid_types':vid_types, 'format':'best'}
     aud_settings = {'run':True, 'aud_types':aud_types}

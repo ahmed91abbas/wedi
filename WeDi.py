@@ -159,11 +159,17 @@ class services:
 
     def connect(self):
         try:
-            self.gui.update_action('Establishing connection to' + self.site)
+            msg = 'Establishing connection to' + self.site
+            if len(msg) > 100:
+                msg = msg[:97] + "..."
+            self.gui.update_action(msg)
             self.response = requests.get(self.site, allow_redirects=True)
             self.soup = BeautifulSoup(self.response.text, 'html.parser')
         except:
-            self.gui.show_error("Couldn't establish a connection to: " + self.site)
+            msg = "Couldn't establish a connection to: " + self.site
+            if len(msg) > 100:
+                msg = msg[:97] + "..."
+            self.gui.show_error(msg)
             print("Couldn't establish a connection to: " + self.site)
             sys.exit(1)
 
@@ -294,7 +300,7 @@ class services:
         except:
             msg = 'Failed to download ' + url
             if len(msg) > 100:
-                msg[:100]
+                msg = msg[:97] + "..."
             self.gui.update_action(msg)
             print("Falied to download!")
 

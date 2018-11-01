@@ -7,7 +7,7 @@ except ImportError:
 import threading
 import subprocess, os, sys
 from PIL import Image, ImageTk
-from WeDi import services
+from wedi import services
 import math
 
 class runGUI:
@@ -180,7 +180,7 @@ class runGUI:
         elif time > 60:
             time_str = str(round(time / 60, 2)) + ' Minutes'
         else:
-            time_str = str(round(time,2)) + ' Seconds'
+            time_str = str(round(time,1)) + ' Seconds'
         for frame in self.dFrame3.winfo_children():
             for label in frame.winfo_children():
                 label.destroy()

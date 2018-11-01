@@ -362,11 +362,13 @@ class services:
     def output_dev(self):
         #General information about main url
         filename = os.path.join(self.dev_folder, 'mainURL.txt')
-        with open(filename, 'w') as f:
-            f.write(self.site + "\n\n")
-            f.write("Headers:\n")
+        with open(filename, 'wb') as f:
+            line = self.site + "\n\n"
+            f.write(line.encode('utf-8'))
+            f.write("Headers:\n".encode('utf-8'))
             for head in self.response.headers:
-                f.write(head + ": " + str(self.response.headers[head]) + "\n")
+                line = head + ": " + str(self.response.headers[head]) + "\n"
+                f.write(line.encode('utf-8'))
             self.gui.add_to_list(filename)
         #Dump of the source code
         filename = os.path.join(self.dev_folder, 'source.html')
@@ -375,40 +377,46 @@ class services:
             self.gui.add_to_list(filename)
         #All the found urls
         filename = os.path.join(self.dev_folder, 'allURLs.txt')
-        with open(filename, 'w') as f:
+        with open(filename, 'wb') as f:
             for url in set(self.urls):
-                f.write(url[0] + "\n")
+                line = url[0] + '\n'
+                f.write(line.encode('utf-8'))
             self.gui.add_to_list(filename)
         if (len(self.img_urls) != 0):
             filename = os.path.join(self.dev_folder, 'imgURLs.txt')
-            with open(filename, 'w') as f:
+            with open(filename, 'wb') as f:
                 for url in set(self.img_urls):
-                    f.write(url + "\n")
+                    line = url + '\n'
+                    f.write(line.encode('utf-8'))
                 self.gui.add_to_list(filename)
         if (len(self.doc_urls) != 0):
             filename = os.path.join(self.dev_folder, 'docURLs.txt')
-            with open(filename, 'w') as f:
+            with open(filename, 'wb') as f:
                 for url in set(self.doc_urls):
-                    f.write(url + "\n")
+                    line = url + '\n'
+                    f.write(line.encode('utf-8'))
                 self.gui.add_to_list(filename)
         if (len(self.vid_urls) != 0):
             filename = os.path.join(self.dev_folder, 'vidURLs.txt')
-            with open(filename, 'w') as f:
+            with open(filename, 'wb') as f:
                 for url in set(self.vid_urls):
-                    f.write(url + "\n")
+                    line = url + '\n'
+                    f.write(line.encode('utf-8'))
                 self.gui.add_to_list(filename)
         if (len(self.aud_urls) != 0):
             filename = os.path.join(self.dev_folder, 'audURLs.txt')
-            with open(filename, 'w') as f:
+            with open(filename, 'wb') as f:
                 for url in set(self.aud_urls):
-                    f.write(url + "\n")
+                    line = url + '\n'
+                    f.write(line.encode('utf-8'))
                 self.gui.add_to_list(filename)
         scripts = self.soup.find_all('script')
         if scripts:
             filename = os.path.join(self.dev_folder, 'scripts.html')
-            with open(filename, 'w') as f:
+            with open(filename, 'wb') as f:
                 for script in scripts:
-                    f.write("\n" + script.prettify() + "\n" + "*"*80)
+                    line = "\n" + script.prettify() + "\n" + "*"*80
+                    f.write(line.encode('utf-8'))
                 self.gui.add_to_list(filename)
 
     def output_results(self):
@@ -489,17 +497,17 @@ if __name__ == "__main__":
     site = 'https://www.youtube.com/watch?v=bugktEHP1n0'
     site = 'http://cs.lth.se/edan20/'
     site = 'https://www.bytbil.com/skane-lan/personbil-v50-topp-skick-med-1-arsgaranti-2089-12646959' #cannot find all images
-    site = 'http://python-requests.org/' #error domian
     site = 'https://www.youtube.com/watch?v=zmr2I8caF0c' #small
+    site = 'http://python-requests.org/' #error domian
     path = "."
     img_types = ['jpg', 'jpeg', 'png', 'gif', 'svg']
     doc_types = ['txt', 'py', 'java', 'php', 'pdf', 'md', 'gitignore', 'c']
     vid_types = ['mp4', 'avi', 'mpeg', 'mpg', 'wmv', 'mov', 'flv', 'swf', 'mkv', '3gp', 'webm', 'ogg']
     aud_types = ['mp3', 'aac', 'wma', 'wav', 'm4a']
-    img_settings = {'run':True, 'img_types':img_types}
+    img_settings = {'run':False, 'img_types':img_types}
     doc_settings = {'run':False, 'doc_types':doc_types}
     vid_settings = {'run':False, 'vid_types':vid_types, 'format':'best'}
-    aud_settings = {'run':True, 'aud_types':aud_types}
+    aud_settings = {'run':False, 'aud_types':aud_types}
     dev_settings = {'run':True}
     settings = {'path':path, 'images':img_settings, 'documents':doc_settings, 'videos':vid_settings, 'audios':aud_settings, 'dev':dev_settings}
     services = services(site, settings)

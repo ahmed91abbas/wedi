@@ -193,10 +193,10 @@ class GUI:
         return settings
 
     def on_extensive_run(self):
-        self.settings['extensive'] = True
-        self.on_run()
+        self.on_run(extensive=True)
 
-    def on_run(self):
+    def on_run(self, extensive=False):
+        self.settings['extensive'] = extensive
         site = self.siteEntry.get()
         if len(site) > 10 and site[:4] == 'http':
             pickle.dump(self.settings, open('settings.sav', 'wb'))

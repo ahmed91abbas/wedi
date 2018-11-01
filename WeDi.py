@@ -241,6 +241,7 @@ class services:
                 continue
             url = self.apply_special_rules(url)
             self.img_urls.append(url)
+            self.urls.append(url)
 
     def is_img_link(self, url):
         for img_type in self.img_types:
@@ -520,14 +521,14 @@ class services:
 
 if __name__ == "__main__":
     site = 'https://www.dplay.se/videos/stories-from-norway/stories-from-norway-102'
-    site = 'https://www.youtube.com/watch?v=bugktEHP1n0'
     site = 'http://cs.lth.se/edan20/'
     site = 'https://www.youtube.com/watch?v=zmr2I8caF0c' #small
     site = 'https://www.bytbil.com/'
     site = 'https://www.blocket.se/malmo/Mini_Cooper_Clubman_Pepper_120hk_6_vaxl_82169382.htm?ca=23_11&w=0'
-    site = 'https://m2.ikea.com/se/sv/campaigns/nytt-laegre-pris-pub3c9e0c81'
+    site = 'https://m2.ikea.com/se/sv/campaigns/nytt-laegre-pris-pub3c9e0c81' #js rendered page
+    site = 'https://www.nordea.se/'
     path = "."
-    extensive = True
+    extensive = False
     img_types = ['jpg', 'jpeg', 'png', 'gif', 'svg']
     doc_types = ['txt', 'py', 'java', 'php', 'pdf', 'md', 'gitignore', 'c']
     vid_types = ['mp4', 'avi', 'mpeg', 'mpg', 'wmv', 'mov', 'flv', 'swf', 'mkv', '3gp', 'webm', 'ogg']

@@ -173,7 +173,11 @@ class services:
             driver_path = os.path.join('drivers', 'chromedriver')
             self.driver = webdriver.Chrome(executable_path=driver_path, chrome_options=chrome_options)
             self.driver.get(self.site)
-            self.soup = BeautifulSoup(self.driver.page_source, 'html.parser')
+            self.page_source = self.driver.page_source
+            self.driver.stop_client()
+            self.driver.close()
+            self.driver.quit()
+            self.soup = BeautifulSoup(self.page_source, 'html.parser')
             self.response = requests.get(self.site, allow_redirects=True)
         else:
             self.response = requests.get(self.site, allow_redirects=True)
@@ -190,7 +194,7 @@ class services:
         self.gui.update_action("Extracting the urls from the website...")
         res = []
         if self.extensive:
-            urls = re.findall('["\']((http|ftp)s?://.*?)["\']', self.driver.page_source)
+            urls = re.findall('["\']((http|ftp)s?://.*?)["\']', self.page_source)
         else:
             urls = re.findall('["\']((http|ftp)s?://.*?)["\']', self.response.text)
         for link in self.soup.find_all('a'):
@@ -523,8 +527,8 @@ if __name__ == "__main__":
     site = 'http://cs.lth.se/edan20/'
     site = 'https://www.youtube.com/watch?v=zmr2I8caF0c' #small
     site = 'https://www.bytbil.com/'
-    site = 'https://www.blocket.se/malmo/Mini_Cooper_Clubman_Pepper_120hk_6_vaxl_82169382.htm?ca=23_11&w=0'
     site = 'https://m2.ikea.com/se/sv/campaigns/nytt-laegre-pris-pub3c9e0c81'
+    site = 'https://www.blocket.se/malmo/Mini_Cooper_Clubman_Pepper_120hk_6_vaxl_82169382.htm?ca=23_11&w=0'
     path = "."
     img_types = ['jpg', 'jpeg', 'png', 'gif', 'svg']
     doc_types = ['txt', 'py', 'java', 'php', 'pdf', 'md', 'gitignore', 'c']

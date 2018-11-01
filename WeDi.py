@@ -7,7 +7,8 @@ import youtube_dl
 import platform
 import subprocess
 import time
-#from requests_html import HTMLSession
+from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
 
 '''
 *Thread to make connection to all extracted urls and check the content type
@@ -36,8 +37,9 @@ class dummyGUI:
     def show_error(self, msg):pass
 
 class services:
-    def __init__(self, site, settings, GUI=None):
+    def __init__(self, site, settings, GUI=None, extensive=False):
         #sys.stdout = open(os.devnull, 'w')
+        self.extensive = extensive
         if site[-1:] != '/':
             site = site + '/'
         self.site = site
@@ -160,25 +162,37 @@ class services:
             os.makedirs(self.dev_folder)
 
     def connect(self):
-        try:
-            msg = 'Establishing connection to' + self.site
-            if len(msg) > 100:
-                msg = msg[:97] + "..."
-            self.gui.update_action(msg)
+        # try:
+        msg = 'Establishing connection to' + self.site
+        if len(msg) > 100:
+            msg = msg[:97] + "..."
+        self.gui.update_action(msg)
+        if self.extensive:
+            chrome_options = Options()
+            chrome_options.add_argument("--headless")
+            driver_path = os.path.join('drivers', 'chromedriver')
+            self.driver = webdriver.Chrome(executable_path=driver_path, chrome_options=chrome_options)
+            self.driver.get(self.site)
+            self.soup = BeautifulSoup(self.driver.page_source, 'html.parser')
+            self.response = requests.get(self.site, allow_redirects=True)
+        else:
             self.response = requests.get(self.site, allow_redirects=True)
             self.soup = BeautifulSoup(self.response.text, 'html.parser')
-        except:
-            msg = "Couldn't establish a connection to: " + self.site
-            if len(msg) > 100:
-                msg = msg[:97] + "..."
-            self.gui.show_error(msg)
-            print("Couldn't establish a connection to: " + self.site)
-            sys.exit(1)
+        # except:
+        #     msg = "Couldn't establish a connection to: " + self.site
+        #     if len(msg) > 100:
+        #         msg = msg[:97] + "..."
+        #     self.gui.show_error(msg)
+        #     print("Couldn't establish a connection to: " + self.site)
+        #     sys.exit(1)
 
     def extract_urls(self):
         self.gui.update_action("Extracting the urls from the website...")
         res = []
-        urls = re.findall('["\']((http|ftp)s?://.*?)["\']', self.response.text)
+        if self.extensive:
+            urls = re.findall('["\']((http|ftp)s?://.*?)["\']', self.driver.page_source)
+        else:
+            urls = re.findall('["\']((http|ftp)s?://.*?)["\']', self.response.text)
         for link in self.soup.find_all('a'):
             if 'href' in str(link):
                 urls.append((link['href'], ""))
@@ -498,7 +512,7 @@ class services:
             dirs = [os.path.join(self.path, d) for d in os.listdir(self.path)
                         if os.path.isdir(os.path.join(self.path, d))]
             for d in dirs:
-                if d != os.path.join(self.path, '.git') and d != os.path.join(self.path, 'textures'):
+                if d != os.path.join(self.path, '.git') and d != os.path.join(self.path, 'textures') and d != os.path.join(self.path, 'drivers'):
                     shutil.rmtree(d)
         except:
             pass
@@ -508,18 +522,20 @@ if __name__ == "__main__":
     site = 'https://www.youtube.com/watch?v=bugktEHP1n0'
     site = 'http://cs.lth.se/edan20/'
     site = 'https://www.youtube.com/watch?v=zmr2I8caF0c' #small
-    site = 'https://www.bytbil.com/' #cannot find all images
+    site = 'https://www.bytbil.com/'
+    site = 'https://www.blocket.se/malmo/Mini_Cooper_Clubman_Pepper_120hk_6_vaxl_82169382.htm?ca=23_11&w=0'
+    site = 'https://m2.ikea.com/se/sv/campaigns/nytt-laegre-pris-pub3c9e0c81'
     path = "."
     img_types = ['jpg', 'jpeg', 'png', 'gif', 'svg']
     doc_types = ['txt', 'py', 'java', 'php', 'pdf', 'md', 'gitignore', 'c']
     vid_types = ['mp4', 'avi', 'mpeg', 'mpg', 'wmv', 'mov', 'flv', 'swf', 'mkv', '3gp', 'webm', 'ogg']
     aud_types = ['mp3', 'aac', 'wma', 'wav', 'm4a']
-    img_settings = {'run':False, 'img_types':img_types}
+    img_settings = {'run':True, 'img_types':img_types}
     doc_settings = {'run':False, 'doc_types':doc_types}
     vid_settings = {'run':False, 'vid_types':vid_types, 'format':'best'}
     aud_settings = {'run':False, 'aud_types':aud_types}
     dev_settings = {'run':True}
     settings = {'path':path, 'images':img_settings, 'documents':doc_settings, 'videos':vid_settings, 'audios':aud_settings, 'dev':dev_settings}
-    services = services(site, settings)
+    services = services(site, settings, extensive=True)
     services.run()
 

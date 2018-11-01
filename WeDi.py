@@ -47,7 +47,8 @@ class services:
             self.gui = GUI
         else:
             self.gui = dummyGUI()
-        self.clean_up() #TODO remove
+        self.clean_up() #TODO remove'
+        self.urls = []
         self.img_urls = []
         self.img_run = settings['images']['run']
         self.img_types = settings['images']['img_types']
@@ -116,7 +117,8 @@ class services:
             if len(url) > x and url[:x] == domain_name:
                 return protocol + '://' + url
             return protocol + '://' + domain_name + url
-
+        if len(url) <= 2:
+            return None
         return url
 
     def apply_special_rules(self, url):
@@ -175,6 +177,7 @@ class services:
 
     def extract_urls(self):
         self.gui.update_action("Extracting the urls from the website...")
+        res = []
         urls = re.findall('["\']((http|ftp)s?://.*?)["\']', self.response.text)
         for link in self.soup.find_all('a'):
             if 'href' in str(link):
@@ -185,7 +188,10 @@ class services:
             url = url[0]
             for link in url.split(" "):
                 link = self.fix_url(link)
+                if not link:
+                    continue
                 link = self.apply_special_rules(link)
+                res.append(link)
                 if (self.is_img_link(link)):
                     self.img_urls.append(link)
                 elif (self.is_doc_link(link)):
@@ -195,15 +201,18 @@ class services:
                 elif (self.is_aud_link(link)):
                     self.aud_urls.append(link)
         self.extract_images()
-        return urls
+        return res
 
     def extract_images(self):
         res = re.findall(';pic=.*;', str(self.soup))
         for url in res:
             url = url[5:-1]
             url =  self.fix_url(url)
+            if not url:
+                continue
             url = self.apply_special_rules(url)
             self.img_urls.append(url)
+            self.urls.append(url)
 
         img_tags = self.soup.find_all('img')
         for img in img_tags:
@@ -213,6 +222,8 @@ class services:
             elif ' data-src=' in str(img):
                 url = img['data-src']
             url =  self.fix_url(url)
+            if not url:
+                continue
             url = self.apply_special_rules(url)
             self.img_urls.append(url)
 
@@ -379,7 +390,7 @@ class services:
         filename = os.path.join(self.dev_folder, 'allURLs.txt')
         with open(filename, 'wb') as f:
             for url in set(self.urls):
-                line = url[0] + '\n'
+                line = url + '\n'
                 f.write(line.encode('utf-8'))
             self.gui.add_to_list(filename)
         if (len(self.img_urls) != 0):
@@ -496,9 +507,8 @@ if __name__ == "__main__":
     site = 'https://www.dplay.se/videos/stories-from-norway/stories-from-norway-102'
     site = 'https://www.youtube.com/watch?v=bugktEHP1n0'
     site = 'http://cs.lth.se/edan20/'
-    site = 'https://www.bytbil.com/skane-lan/personbil-v50-topp-skick-med-1-arsgaranti-2089-12646959' #cannot find all images
     site = 'https://www.youtube.com/watch?v=zmr2I8caF0c' #small
-    site = 'http://python-requests.org/' #error domian
+    site = 'https://www.bytbil.com/' #cannot find all images
     path = "."
     img_types = ['jpg', 'jpeg', 'png', 'gif', 'svg']
     doc_types = ['txt', 'py', 'java', 'php', 'pdf', 'md', 'gitignore', 'c']

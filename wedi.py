@@ -167,10 +167,13 @@ class services:
             msg = msg[:97] + "..."
         self.gui.update_action(msg)
         if self.extensive:
-            chrome_options = Options()
-            chrome_options.add_argument("--headless")
-            driver_path = os.path.join('drivers', 'chromedriver')
-            self.driver = webdriver.Chrome(executable_path=driver_path, chrome_options=chrome_options)
+            from selenium.webdriver.firefox.options import Options
+            firefox_options = Options()
+            firefox_options.add_argument("--headless")
+            driver_path = os.path.join('drivers', 'geckodriver_linux')
+            self.driver = webdriver.Firefox(executable_path=driver_path, firefox_options=firefox_options)
+            # driver_path = os.path.join('drivers', 'chromedriver_linux')
+            # self.driver = webdriver.Chrome(executable_path=driver_path, chrome_options=driver_options)
             self.driver.get(self.site)
             self.page_source = self.driver.page_source
             self.driver.stop_client()
@@ -526,11 +529,11 @@ if __name__ == "__main__":
     site = 'http://cs.lth.se/edan20/'
     site = 'https://www.bytbil.com/'
     site = 'https://www.blocket.se/malmo/Mini_Cooper_Clubman_Pepper_120hk_6_vaxl_82169382.htm?ca=23_11&w=0'
-    site = 'https://m2.ikea.com/se/sv/campaigns/nytt-laegre-pris-pub3c9e0c81' #js rendered page
     site = 'https://www.nordea.se/'
     site = 'https://www.youtube.com/watch?v=zmr2I8caF0c' #small
+    site = 'https://m2.ikea.com/se/sv/campaigns/nytt-laegre-pris-pub3c9e0c81' #js rendered page
     path = "."
-    extensive = False
+    extensive = True
     img_types = ['jpg', 'jpeg', 'png', 'gif', 'svg']
     doc_types = ['txt', 'py', 'java', 'php', 'pdf', 'md', 'gitignore', 'c']
     vid_types = ['mp4', 'avi', 'mpeg', 'mpg', 'wmv', 'mov', 'flv', 'swf', 'mkv', '3gp', 'webm', 'ogg']

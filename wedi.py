@@ -8,7 +8,6 @@ import platform
 import subprocess
 import time
 from selenium import webdriver
-from selenium.webdriver.chrome.options import Options
 
 '''
 *Thread to make connection to all extracted urls and check the content type
@@ -160,38 +159,80 @@ class services:
         if not os.path.isdir(self.dev_folder):
             os.makedirs(self.dev_folder)
 
+    def connect_extensive(self, browser):
+        _platform = sys.platform
+        if _platform == "linux" or _platform == "linux2": # linux
+            firefox_driver_path = os.path.join('drivers', 'geckodriver_linux')
+            chrome_driver_path = os.path.join('drivers', 'chromedriver_linux')
+        elif _platform == "darwin": # MAC OS X
+            firefox_driver_path = os.path.join('drivers', 'geckodriver_mac')
+            chrome_driver_path = os.path.join('drivers', 'chromedriver_mac')
+        elif _platform == "win32" or _platform == "win64": # Windows
+            firefox_driver_path = os.path.join('drivers', 'geckodriver_win')
+            chrome_driver_path = os.path.join('drivers', 'chromedriver_win')
+
+        if browser == 'firefox':
+            try:
+                from selenium.webdriver.firefox.options import Options
+                firefox_options = Options()
+                firefox_options.add_argument("--headless")
+                self.driver = webdriver.Firefox(executable_path=firefox_driver_path, firefox_options=firefox_options)
+            except Exception as e:
+                if 'executable needs to be in PATH' in str(e): #driver not found
+                    msg = "Firefox webdriver is missing! Try reinstalling the program."
+                    print(msg)
+                    self.gui.show_error(msg)
+                    sys.exit(1)
+                else:
+                    self.connect_extensive('chrome')
+        elif browser == 'chrome':
+            try:
+                from selenium.webdriver.chrome.options import Options
+                chrome_options = Options()
+                chrome_options.add_argument("--headless")
+                self.driver = webdriver.Chrome(executable_path=chrome_driver_path, chrome_options=chrome_options)
+            except Exception as e:
+                print(e)
+                if 'executable needs to be in PATH' in str(e): #driver not found
+                    msg = "Chrome webdriver is missing! Try reinstalling the program."
+                    print(msg)
+                    self.gui.show_error(msg)
+                    sys.exit(1)
+                else:
+                    self.connect_extensive(None)
+        else:
+            msg = "To use extensive run either Firefox or Chrome browser should be installed!"
+            print(msg)
+            self.gui.show_error(msg)
+            sys.exit(1)
+
+        self.driver.get(self.site)
+        self.page_source = self.driver.page_source
+        self.driver.stop_client()
+        self.driver.close()
+        self.driver.quit()
+        self.soup = BeautifulSoup(self.page_source, 'html.parser')
+        self.response = requests.get(self.site, allow_redirects=True)
+
     def connect(self):
-        # try:
         msg = 'Establishing connection to ' + self.site
         if len(msg) > 100:
             msg = msg[:97] + "..."
         self.gui.update_action(msg)
         if self.extensive:
-            from selenium.webdriver.firefox.options import Options
-            firefox_options = Options()
-            firefox_options.add_argument("--headless")
-            driver_path = os.path.join('drivers', 'geckodriver_linux')
-            self.driver = webdriver.Firefox(executable_path=driver_path, firefox_options=firefox_options)
-            # driver_path = os.path.join('drivers', 'chromedriver_linux')
-            # self.driver = webdriver.Chrome(executable_path=driver_path, chrome_options=driver_options)
-            self.driver.get(self.site)
-            self.page_source = self.driver.page_source
-            self.driver.stop_client()
-            self.driver.close()
-            self.driver.quit()
-            self.soup = BeautifulSoup(self.page_source, 'html.parser')
-            self.response = requests.get(self.site, allow_redirects=True)
+            self.connect_extensive('firefox')
         else:
-            self.response = requests.get(self.site, allow_redirects=True)
-            self.page_source = self.response.text
-            self.soup = BeautifulSoup(self.page_source, 'html.parser')
-        # except:
-        #     msg = "Couldn't establish a connection to: " + self.site
-        #     if len(msg) > 100:
-        #         msg = msg[:97] + "..."
-        #     self.gui.show_error(msg)
-        #     print("Couldn't establish a connection to: " + self.site)
-        #     sys.exit(1)
+            try:
+                self.response = requests.get(self.site, allow_redirects=True)
+                self.page_source = self.response.text
+                self.soup = BeautifulSoup(self.page_source, 'html.parser')
+            except:
+                msg = "Couldn't establish a connection to: " + self.site
+                if len(msg) > 100:
+                    msg = msg[:97] + "..."
+                self.gui.show_error(msg)
+                print("Couldn't establish a connection to: " + self.site)
+                sys.exit(1)
 
     def extract_urls(self):
         self.gui.update_action("Extracting the urls from the website...")
@@ -538,9 +579,9 @@ if __name__ == "__main__":
     doc_types = ['txt', 'py', 'java', 'php', 'pdf', 'md', 'gitignore', 'c']
     vid_types = ['mp4', 'avi', 'mpeg', 'mpg', 'wmv', 'mov', 'flv', 'swf', 'mkv', '3gp', 'webm', 'ogg']
     aud_types = ['mp3', 'aac', 'wma', 'wav', 'm4a']
-    img_settings = {'run':False, 'img_types':img_types}
+    img_settings = {'run':True, 'img_types':img_types}
     doc_settings = {'run':False, 'doc_types':doc_types}
-    vid_settings = {'run':True, 'vid_types':vid_types, 'format':'best'}
+    vid_settings = {'run':False, 'vid_types':vid_types, 'format':'best'}
     aud_settings = {'run':False, 'aud_types':aud_types}
     dev_settings = {'run':True}
     settings = {'path':path, 'extensive':extensive, 'images':img_settings, 'documents':doc_settings, 'videos':vid_settings, 'audios':aud_settings, 'dev':dev_settings}

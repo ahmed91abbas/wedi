@@ -271,9 +271,9 @@ class runGUI:
         self.services.open_path()
 
     def show_error(self, msg):
+        self.error = True
         self.set_stopevent()
         self.actionLabel['text'] = msg
-        self.error = True
 
     def on_close(self):
         self.top.destroy()

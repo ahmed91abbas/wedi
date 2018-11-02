@@ -1,3 +1,4 @@
+import mttkinter as mttkinter
 try:
     import tkinter as tk
     from tkinter.ttk import Progressbar
@@ -154,6 +155,7 @@ class runGUI:
         height = width*2
         path = os.path.join('textures', 'animation')
         files = [os.path.join(path,f) for f in os.listdir(path) if os.path.isfile(os.path.join(path, f))]
+        files = sorted(files)
         for file in files:
             image = Image.open(file)
             image = image.resize((width, height), Image.ANTIALIAS)

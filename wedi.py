@@ -7,8 +7,8 @@ import youtube_dl
 import platform
 import subprocess
 import time
-#from selenium import webdriver
-#from selenium.webdriver.chrome.options import Options
+from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
 
 '''
 *Thread to make connection to all extracted urls and check the content type
@@ -161,34 +161,34 @@ class services:
             os.makedirs(self.dev_folder)
 
     def connect(self):
-        try:
-            msg = 'Establishing connection to ' + self.site
-            if len(msg) > 100:
-                msg = msg[:97] + "..."
-            self.gui.update_action(msg)
-            # if self.extensive:
-            #     chrome_options = Options()
-            #     chrome_options.add_argument("--headless")
-            #     driver_path = os.path.join('drivers', 'chromedriver')
-            #     self.driver = webdriver.Chrome(executable_path=driver_path, chrome_options=chrome_options)
-            #     self.driver.get(self.site)
-            #     self.page_source = self.driver.page_source
-            #     self.driver.stop_client()
-            #     self.driver.close()
-            #     self.driver.quit()
-            #     self.soup = BeautifulSoup(self.page_source, 'html.parser')
-            #     self.response = requests.get(self.site, allow_redirects=True)
-            #else:
+        # try:
+        msg = 'Establishing connection to ' + self.site
+        if len(msg) > 100:
+            msg = msg[:97] + "..."
+        self.gui.update_action(msg)
+        if self.extensive:
+            chrome_options = Options()
+            chrome_options.add_argument("--headless")
+            driver_path = os.path.join('drivers', 'chromedriver')
+            self.driver = webdriver.Chrome(executable_path=driver_path, chrome_options=chrome_options)
+            self.driver.get(self.site)
+            self.page_source = self.driver.page_source
+            self.driver.stop_client()
+            self.driver.close()
+            self.driver.quit()
+            self.soup = BeautifulSoup(self.page_source, 'html.parser')
+            self.response = requests.get(self.site, allow_redirects=True)
+        else:
             self.response = requests.get(self.site, allow_redirects=True)
             self.page_source = self.response.text
             self.soup = BeautifulSoup(self.page_source, 'html.parser')
-        except:
-            msg = "Couldn't establish a connection to: " + self.site
-            if len(msg) > 100:
-                msg = msg[:97] + "..."
-            self.gui.show_error(msg)
-            print("Couldn't establish a connection to: " + self.site)
-            sys.exit(1)
+        # except:
+        #     msg = "Couldn't establish a connection to: " + self.site
+        #     if len(msg) > 100:
+        #         msg = msg[:97] + "..."
+        #     self.gui.show_error(msg)
+        #     print("Couldn't establish a connection to: " + self.site)
+        #     sys.exit(1)
 
     def extract_urls(self):
         self.gui.update_action("Extracting the urls from the website...")

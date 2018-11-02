@@ -135,7 +135,7 @@ class GUI:
             self.siteEntry.insert(0, clipboard)
 
     def on_close(self):
-        self.root.quit()
+        self.root.destroy()
         sys.exit(1)
 
     def on_videos(self):

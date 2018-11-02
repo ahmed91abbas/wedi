@@ -77,27 +77,27 @@ class GUI:
         color = self.docgray
         if self.settings['documents']['run']:
             color = self.docgreen
-        self.doc_button = tk.Button(self.body_frame, image=color, border=0, bg= self.bg_color, activebackground=self.bg_color, command=self.on_documents)
+        self.doc_button = tk.Button(self.body_frame, image=color, border=0, highlightthickness=0, bg= self.bg_color, activebackground=self.bg_color, command=self.on_documents)
         self.doc_button.grid(row=0, column=0, padx=20, pady=10)
         color = self.imggray
         if self.settings['images']['run']:
             color = self.imggreen
-        self.img_button = tk.Button(self.body_frame, image=color, border=0, bg= self.bg_color, activebackground=self.bg_color, command=self.on_images)
+        self.img_button = tk.Button(self.body_frame, image=color, border=0, highlightthickness=0, bg= self.bg_color, activebackground=self.bg_color, command=self.on_images)
         self.img_button.grid(row=0, column=1, padx=20, pady=10)
         color = self.audgray
         if self.settings['audios']['run']:
             color = self.audgreen
-        self.aud_button = tk.Button(self.body_frame, image=color, border=0, bg= self.bg_color, activebackground=self.bg_color, command=self.on_audios)
+        self.aud_button = tk.Button(self.body_frame, image=color, border=0, highlightthickness=0, bg= self.bg_color, activebackground=self.bg_color, command=self.on_audios)
         self.aud_button.grid(row=1, column=0, padx=20, pady=10)
         color = self.devgray
         if self.settings['dev']['run']:
             color = self.devgreen
-        self.dev_button = tk.Button(self.body_frame, image=color, border=0, bg= self.bg_color, activebackground=self.bg_color, command=self.on_analytics)
+        self.dev_button = tk.Button(self.body_frame, image=color, border=0, highlightthickness=0, bg= self.bg_color, activebackground=self.bg_color, command=self.on_analytics)
         self.dev_button.grid(row=1, column=1, padx=20, pady=10)
         color = self.vidgray
         if self.settings['videos']['run']:
             color = self.vidgreen
-        self.vid_button = tk.Button(self.body_frame, image=color, border=0, bg= self.bg_color, activebackground=self.bg_color, command=self.on_videos)
+        self.vid_button = tk.Button(self.body_frame, image=color, border=0, highlightthickness=0, bg= self.bg_color, activebackground=self.bg_color, command=self.on_videos)
         self.vid_button.grid(row=2, column=0, padx=20, pady=10)
 
         def set_format(value):
@@ -110,9 +110,9 @@ class GUI:
         self.options["menu"].config(bg=self.button_color, font=menufont1)
         self.options.grid(row=2, column=1)
 
-        self.run_button = tk.Button(self.end_frame, text="Fast run", font=font, image=self.buttonimg, border=0, bg=self.bg_color, activebackground=self.bg_color,compound=tk.CENTER, command=self.on_run)
+        self.run_button = tk.Button(self.end_frame, text="Fast run", font=font, image=self.buttonimg, border=0, highlightthickness=0, bg=self.bg_color, activebackground=self.bg_color,compound=tk.CENTER, command=self.on_run)
         self.run_button.pack(side='left', padx=50, pady=30)
-        self.button = tk.Button(self.end_frame, text='Extensive run', font=font, image=self.buttonimg, border=0, bg=self.bg_color, activebackground=self.bg_color,compound=tk.CENTER, command=self.on_extensive_run)
+        self.button = tk.Button(self.end_frame, text='Extensive run', font=font, image=self.buttonimg, border=0, highlightthickness=0, bg=self.bg_color, activebackground=self.bg_color,compound=tk.CENTER, command=self.on_extensive_run)
         self.button.pack(side='left', padx=50, pady=30)
 
         self.start_frame.pack(side="top")

@@ -1,0 +1,128 @@
+1541178254083	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "-marionette" "--headless" "-foreground" "-no-remote" "-profile" "C:\\Users\\Ahmed\\AppData\\Local\\Temp\\rust_mozprofile.5vgI3AElqcGF"
+*** You are running in headless mode.
+1541178256803	Marionette	INFO	Listening on port 62883
+1541178257302	Marionette	WARN	TLS certificate errors will be ignored for this session
+1541178257354	Marionette	DEBUG	[6442450945] Frame script loaded
+1541178257358	Marionette	DEBUG	[6442450945] Frame script registered
+1541178257379	Marionette	DEBUG	[6442450945] Received DOM event beforeunload for about:blank
+1541178258066	Marionette	DEBUG	[6442450945] Received DOM event pagehide for about:blank
+1541178261679	Marionette	DEBUG	[6442450945] Received DOM event DOMContentLoaded for https://www.youtube.com/watch?v=RkkdYdWMfQ0
+1541178261696	Marionette	DEBUG	[6442450945] Received DOM event pageshow for https://www.youtube.com/watch?v=RkkdYdWMfQ0
+1541178262555	Marionette	INFO	Stopped listening on port 62883
+[Parent 4892, Gecko_IOThread] WARNING: pipe error: 109: file z:/build/build/src/ipc/chromium/src/chrome/common/ipc_channel_win.cc, line 346
+[Parent 4892, Gecko_IOThread] WARNING: pipe error: 109: file z:/build/build/src/ipc/chromium/src/chrome/common/ipc_channel_win.cc, line 346
+[Child 8052, Chrome_ChildThread] WARNING: pip
+###!!! [Child][RunMessage] Error: Channel closing: too late to send/recv, messages will be lost
+
+e erro
+###!!! [Child][RunMessage] Error: Channel closing: too late to send/recv, messages will be lost
+
+r: 10
+###!!! [Child][RunMessage] Error: Channel closing: too late to send/recv, messages will be lost
+
+9: f
+###!!! [Child][RunMessage] Error: Channel closing: too late to send/recv, messages will be lost
+
+ile z
+###!!! [Child][RunMessage] Error: Channel closing: too late to send/recv, messages will be lost
+
+:/build/build/src/ipc/chromium/src/chrome/common/ipc_channel_win.cc, line 346
+[Child 8052, Chrome_ChildThread] WARNING: pipe error: 109: file z:/build/build/src/ipc/chromium/src/chrome/common/ipc_chann[Parent 4892, Gecko_IOThread] WARNING: pipe error: 109: file z:/build/build/src/ipc/chromium/src/chrome/common/ipc_channel_win.cc, line 346
+[Child 10048, Chrome_ChildThread] WARNING: pipe error: 109: file z:/build/build/src/ipc/chromium/src/chrome/common/ipc_channel_win.cc, line 346
+[Child 10048, Chrome_ChildThread] WARNING: pipe error: 109: file z:/build/build/src/ipc/chromium/src/chrome/common/ipc_channel_win.cc, line 346
+1541178330372	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "-marionette" "--headless" "-foreground" "-no-remote" "-profile" "C:\\Users\\Ahmed\\AppData\\Local\\Temp\\rust_mozprofile.5RTm7BrIvIMf"
+*** You are running in headless mode.
+1541178333153	Marionette	INFO	Listening on port 62939
+1541178333602	Marionette	WARN	TLS certificate errors will be ignored for this session
+1541178333663	Marionette	DEBUG	[6442450945] Frame script loaded
+1541178333666	Marionette	DEBUG	[6442450945] Frame script registered
+1541178333685	Marionette	DEBUG	[6442450945] Received DOM event beforeunload for about:blank
+1541178334139	Marionette	DEBUG	[6442450945] Received DOM event pagehide for about:blank
+1541178339043	Marionette	DEBUG	[6442450945] Received DOM event DOMContentLoaded for https://www.youtube.com/watch?v=RkkdYdWMfQ0
+1541178339700	Marionette	DEBUG	[6442450945] Received DOM event pageshow for https://www.youtube.com/watch?v=RkkdYdWMfQ0
+1541178340191	Marionette	INFO	Stopped listening on port 62939
+[Child 816, Chrome_ChildThread] WARNING: pipe error: 109: file z:/build/build/src/ipc/chromium/src/chrome/common/ipc_channel_win.cc, line 346
+[Child 816, Chrome_ChildThread] WARNING: pipe error: 109: file z:/build/build
+###!!! [Child][MessageChannel] Error: (msgtype=0x560027,name=PNecko::Msg_RemoveRequestContext) Channel closing: too late to send/recv, messages will be lost
+
+
+###!!! [Child][RunMessage] Error: Channel closing: too late to send/recv, messages will be lost
+
+
+###!!! [Child][MessageChannel] Error: (msgtype=0x2E00B1,name=PContent::Msg_ScriptError) Channel closing: too late to send/recv, messages will be lost
+
+
+###!!! [Child][RunMessage] Error: Channel closing: too late to send/recv, messages will be lost
+
+
+###!!! [Child][RunMessage] Error: Channel closing: too late to send/recv, messages will be lost
+
+
+###!!! [Child][MessageChannel] Error: (msgtype=0x2E00B1,name=PContent::Msg_ScriptError) Channel closing: too late to send/recv, messages will be lost
+
+
+###!!! [Child][RunMessage] Error: Channel closing: too late to send/recv, messages will be lost
+
+
+###!!! [Child][RunMessage] Error: Channel closing: too late to send/recv, messages will be lost
+
+
+###!!! [Child][RunMessage] Error: Channel closing: too late to send/recv, messages will be lost
+
+
+###!!! [Child][RunMessage] Error: Channel closing: too late to send/recv, messages will be lost
+
+
+###!!! [Child][RunMessage] Error: Channel closing: too late to send/recv, messages will be lost
+
+
+###!!! [Child][RunMessage] Error: Channel closing: too late to send/recv, messages will be lost
+
+
+###!!! [Child][RunMessage] Error: Channel closing: too late to send/recv, messages will be lost
+
+
+###!!! [Child][RunMessage] Error: Channel closing: too late to send/recv, messages will be lost
+
+
+###!!! [Child][RunMessage] Error: Channel closing: too late to send/recv, messages will be lost
+
+
+###!!! [Child][RunMessage] Error: Channel closing: too late to send/recv, messages will be lost
+
+
+###!!! [Child][RunMessage] Error: Channel closing: too late to send/recv, messages will be lost
+
+[Parent 4864, Gecko_IOThread] WARNING: pipe error: 109: file z:/build/build/src/ipc/chromium/src/chrome/common/ipc_channel_win.cc, line 346
+1541178894588	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "-marionette" "--headless" "-foreground" "-no-remote" "-profile" "C:\\Users\\Ahmed\\AppData\\Local\\Temp\\rust_mozprofile.wt98euimUADO"
+*** You are running in headless mode.
+1541178897456	Marionette	INFO	Listening on port 63073
+1541178897815	Marionette	WARN	TLS certificate errors will be ignored for this session
+1541178897881	Marionette	DEBUG	[6442450945] Frame script loaded
+1541178897897	Marionette	DEBUG	[6442450945] Frame script registered
+1541178897923	Marionette	DEBUG	[6442450945] Received DOM event beforeunload for about:blank
+1541178898405	Marionette	DEBUG	[6442450945] Received DOM event pagehide for about:blank
+1541178904468	Marionette	DEBUG	[6442450945] Received DOM event DOMContentLoaded for https://www.youtube.com/watch?v=RkkdYdWMfQ0
+1541178905418	Marionette	DEBUG	[6442450945] Received DOM event pageshow for https://www.youtube.com/watch?v=RkkdYdWMfQ0
+1541178905901	Marionette	INFO	Stopped listening on port 63073
+[Child 10356, MediaPlayback #3] WARNING: Decoder=22e2f0e53e0 Decode error: NS_ERROR_DOM_MEDIA_FATAL_ERR (0x806e0005) - class RefPtr<class mozilla::MozPromise<class RefPtr<class mozilla::MediaTrackDemuxer::SamplesHolder>,class mozilla::MediaResult,1> > __cdecl mozilla::MediaSourceTrackDemuxer::DoGetSamples(int): manager is detached.: file z:/build/build/src/dom/media/MediaDecoderStateMachine.cpp, line 3429
+[Parent 4416, Gecko_IOThread] WARNING: pipe error: 109: file z:/build/build/src/ipc/chromium/src/chrome/common/ipc_channel_win.cc, line 346
+1541178974385	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "-marionette" "--headless" "-foreground" "-no-remote" "-profile" "C:\\Users\\Ahmed\\AppData\\Local\\Temp\\rust_mozprofile.mp7DCwleVYkC"
+*** You are running in headless mode.
+1541178977415	Marionette	INFO	Listening on port 63137
+1541178977668	Marionette	WARN	TLS certificate errors will be ignored for this session
+1541178977731	Marionette	DEBUG	[6442450945] Frame script loaded
+1541178977735	Marionette	DEBUG	[6442450945] Frame script registered
+1541178977758	Marionette	DEBUG	[6442450945] Received DOM event beforeunload for about:blank
+1541178978169	Marionette	DEBUG	[6442450945] Received DOM event pagehide for about:blank
+1541178980300	Marionette	DEBUG	[6442450945] Received DOM event DOMContentLoaded for https://www.youtube.com/watch?v=RkkdYdWMfQ0
+1541178981942	Marionette	DEBUG	[6442450945] Received DOM event pageshow for https://www.youtube.com/watch?v=RkkdYdWMfQ0
+1541178982403	Marionette	INFO	Stopped listening on port 63137
+[Child 2024, MediaPlayback #2] WARNING: Decoder=1e54b679f20 Decode error: NS_ERROR_DOM_MEDIA_FATAL_ERR (0x806e0005) - class RefPtr<class mozilla::MozPromise<class RefPtr<class mozilla::MediaTrackDemuxer::SamplesHolder>,class mozilla::MediaResult,1> > __cdecl mozilla::MediaSourceTrackDemuxer::DoGetSamples(int): manager is detached.: file z:/build/build/src/dom/media/MediaDecoderStateMachine.cpp, line 3429
+[Child 2024, MediaPlayback #2] WARNING: Decoder=1e54b679f20 Decode error: NS_ERROR_DOM_MEDIA_FATAL_ERR (0x806e0005) - class RefPtr<class mozilla::MozPromise<class RefPtr<class mozilla::MediaTrackDemuxer::SamplesHolder>,class mozilla::MediaResult,1> > __cdecl mozilla::MediaSourceTrackDemuxer::DoGetSamples(int): manager is detached.: file z:/build/build/src/dom/media/MediaDecoderStateMachine.cpp, line 3429
+[Child 2024, MediaPlayback #3] WARNING: Decoder=1e54b679f20 Decode error: NS_ERROR_DOM_MEDIA_FATAL_ERR (0x806e0005) - class RefPtr<class mozilla::MozPromise<class RefPtr<class mozilla::MediaTrackDemuxer::SamplesHolder>,class mozilla::MediaResult,1> > __cdecl mozilla::MediaSourceTrackDemuxer::DoGetSamples(int): manager is detached.: file z:/build/build/src/dom/media/MediaDecoderStateMachine.cpp, line 3429
+[Parent 5964, Gecko_IOThread] WARNING: pipe error: 109: file z:/build/build/src/ipc/chromium/src/chrome/common/ipc_channel_win.cc, line 346
+[Child 7796, Chrome_ChildThread] WARNING: pipe error: 109: file z:/build/build/src/ipc/chromium/src/chrome/common/ipc_channel_win.cc, line 346
+[Child[Parent 5964, Gecko_IOThread] WARNING: pipe error: 109: file z:/build/build/src/ipc/chromium/src/chrome/common/ipc_channel_win.cc, line 346
+[Child 2024, Chrome_ChildThread] WARNING: pipe error: 109: file z:/build/build/src/ipc/chromium/src/chrome/common/ipc_channel_win.cc, line 346
+[Child 2024, Ch

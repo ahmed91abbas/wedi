@@ -4,7 +4,6 @@ import requests
 from bs4 import BeautifulSoup
 import os, sys, shutil
 import youtube_dl
-import platform
 import subprocess
 import time
 from selenium import webdriver
@@ -239,7 +238,7 @@ class services:
         res = []
         urls = re.findall('["\']((http|ftp)s?://.*?)["\']', self.page_source)
         for link in self.soup.find_all('a'):
-            if 'href' in str(link):
+            if 'href' in link:
                 urls.append((link['href'], ""))
         urls.append((self.site[:-1], "")) #remove tailing /
         urls = set(urls)
@@ -526,12 +525,13 @@ class services:
         self.gui.set_stopevent(files=nbr_files, size=total_size, time=runtime)
 
     def open_path(self):
-        if platform.system() == "Windows":
-            os.startfile(self.downloadpath)
-        elif platform.system() == "Darwin":
-            subprocess.Popen(["open", self.downloadpath])
-        else:
+        _platform = sys.platform
+        if _platform == "linux" or _platform == "linux2": # linux
             subprocess.Popen(["xdg-open", self.downloadpath])
+        elif _platform == "darwin": # MAC OS X
+            subprocess.Popen(["open", self.downloadpath])
+        elif _platform == "win32" or _platform == "win64": # Windows
+            os.startfile(self.downloadpath)
 
     def get_folder_info(self, path):
         total_size = 0

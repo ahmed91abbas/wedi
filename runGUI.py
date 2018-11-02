@@ -292,9 +292,9 @@ if __name__ == '__main__':
     vid_types = ['mp4', 'avi', 'mpeg', 'mpg', 'wmv', 'mov', 'flv', 'swf', 'mkv', '3gp', 'webm', 'ogg']
     aud_types = ['mp3', 'aac', 'wma', 'wav', 'm4a']
     img_settings = {'run':True, 'img_types':img_types}
-    doc_settings = {'run':False, 'doc_types':doc_types}
-    vid_settings = {'run':False, 'vid_types':vid_types, 'format':'best'}
+    doc_settings = {'run':True, 'doc_types':doc_types}
+    vid_settings = {'run':True, 'vid_types':vid_types, 'format':'best'}
     aud_settings = {'run':True, 'aud_types':aud_types}
-    dev_settings = {'run':False}
+    dev_settings = {'run':True}
     settings = {'path':path, 'extensive':extensive,'images':img_settings, 'documents':doc_settings, 'videos':vid_settings, 'audios':aud_settings, 'dev':dev_settings}
     runGUI(site, settings)

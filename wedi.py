@@ -350,10 +350,11 @@ class services:
     def ydl_audios(self):
         try:
             logger = MyLogger()
+            filepath = os.path.join(self.aud_folder, '%(title)s.%(ext)s')
             ydl_opts = {
                 'format': 'bestaudio/best',
                 'noplaylist':True,
-                'outtmpl': self.aud_folder + '\%(title)s.%(ext)s',
+                'outtmpl': filepath,
                 'logger': logger,
                 'progress_hooks': [self.my_hook],
                 'postprocessors': [{
@@ -373,8 +374,9 @@ class services:
             print(str(e))
 
     def ydl_video(self):
+        filepath = os.path.join(self.vid_folder, '%(title)s.%(ext)s')
         ydl_opts = {
-            'outtmpl': self.vid_folder + '\%(title)s.%(ext)s',
+            'outtmpl': filepath,
             'format': self.vid_format,
             'logger': MyLogger(),
             'progress_hooks': [self.my_hook],
@@ -522,20 +524,20 @@ class services:
 if __name__ == "__main__":
     site = 'https://www.dplay.se/videos/stories-from-norway/stories-from-norway-102'
     site = 'http://cs.lth.se/edan20/'
-    site = 'https://www.youtube.com/watch?v=zmr2I8caF0c' #small
     site = 'https://www.bytbil.com/'
     site = 'https://www.blocket.se/malmo/Mini_Cooper_Clubman_Pepper_120hk_6_vaxl_82169382.htm?ca=23_11&w=0'
     site = 'https://m2.ikea.com/se/sv/campaigns/nytt-laegre-pris-pub3c9e0c81' #js rendered page
     site = 'https://www.nordea.se/'
+    site = 'https://www.youtube.com/watch?v=zmr2I8caF0c' #small
     path = "."
     extensive = False
     img_types = ['jpg', 'jpeg', 'png', 'gif', 'svg']
     doc_types = ['txt', 'py', 'java', 'php', 'pdf', 'md', 'gitignore', 'c']
     vid_types = ['mp4', 'avi', 'mpeg', 'mpg', 'wmv', 'mov', 'flv', 'swf', 'mkv', '3gp', 'webm', 'ogg']
     aud_types = ['mp3', 'aac', 'wma', 'wav', 'm4a']
-    img_settings = {'run':True, 'img_types':img_types}
+    img_settings = {'run':False, 'img_types':img_types}
     doc_settings = {'run':False, 'doc_types':doc_types}
-    vid_settings = {'run':False, 'vid_types':vid_types, 'format':'best'}
+    vid_settings = {'run':True, 'vid_types':vid_types, 'format':'best'}
     aud_settings = {'run':False, 'aud_types':aud_types}
     dev_settings = {'run':True}
     settings = {'path':path, 'extensive':extensive, 'images':img_settings, 'documents':doc_settings, 'videos':vid_settings, 'audios':aud_settings, 'dev':dev_settings}

@@ -43,11 +43,11 @@ class services:
         self.site = site
         self.domain = self.extract_domain(self.site)
         self.path = settings['path']
+        self.clean_up() #TODO remove'
         if GUI:
             self.gui = GUI
         else:
             self.gui = dummyGUI()
-        self.clean_up() #TODO remove'
         self.urls = []
         self.img_urls = []
         self.img_run = settings['images']['run']
@@ -560,8 +560,15 @@ class services:
         try:
             dirs = [os.path.join(self.path, d) for d in os.listdir(self.path)
                         if os.path.isdir(os.path.join(self.path, d))]
+            exclude = []
+            exclude.append(os.path.join(self.path, '.git'))
+            exclude.append(os.path.join(self.path, 'textures'))
+            exclude.append(os.path.join(self.path, 'drivers'))
+            exclude.append(os.path.join(self.path, 'certifi'))
             for d in dirs:
-                if d != os.path.join(self.path, '.git') and d != os.path.join(self.path, 'textures') and d != os.path.join(self.path, 'drivers') and d != os.path.join(self.path, 'certifi'):
+                print(d)
+                if d not in exclude:
+                    print(d)
                     shutil.rmtree(d)
         except:
             pass
@@ -572,19 +579,19 @@ if __name__ == "__main__":
     site = 'https://www.bytbil.com/'
     site = 'https://www.blocket.se/malmo/Mini_Cooper_Clubman_Pepper_120hk_6_vaxl_82169382.htm?ca=23_11&w=0'
     site = 'https://www.nordea.se/'
-    site = 'https://www.youtube.com/watch?v=zmr2I8caF0c' #small
     site = 'https://m2.ikea.com/se/sv/campaigns/nytt-laegre-pris-pub3c9e0c81' #js rendered page
+    site = 'https://www.youtube.com/watch?v=zmr2I8caF0c' #small
     path = "."
-    extensive = True
+    extensive = False
     img_types = ['jpg', 'jpeg', 'png', 'gif', 'svg']
     doc_types = ['txt', 'py', 'java', 'php', 'pdf', 'md', 'gitignore', 'c']
     vid_types = ['mp4', 'avi', 'mpeg', 'mpg', 'wmv', 'mov', 'flv', 'swf', 'mkv', '3gp', 'webm', 'ogg']
     aud_types = ['mp3', 'aac', 'wma', 'wav', 'm4a']
-    img_settings = {'run':True, 'img_types':img_types}
+    img_settings = {'run':False, 'img_types':img_types}
     doc_settings = {'run':False, 'doc_types':doc_types}
     vid_settings = {'run':False, 'vid_types':vid_types, 'format':'best'}
     aud_settings = {'run':False, 'aud_types':aud_types}
-    dev_settings = {'run':True}
+    dev_settings = {'run':False}
     settings = {'path':path, 'extensive':extensive, 'images':img_settings, 'documents':doc_settings, 'videos':vid_settings, 'audios':aud_settings, 'dev':dev_settings}
     services = services(site, settings)
     services.run()

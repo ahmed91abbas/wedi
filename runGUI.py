@@ -1,10 +1,10 @@
-import mttkinter as mttkinter
 try:
     import tkinter as tk
     from tkinter.ttk import Progressbar
 except ImportError:
     import Tkinter as tk
     from Tkinter.ttk import Progressbar
+import mttkinter as mttkinter
 import threading
 import subprocess, os, sys
 from PIL import Image, ImageTk

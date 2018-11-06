@@ -3,10 +3,10 @@ documents/
 videos/
 audios/
 dev/
-*.pyc
-settings.sav
 env/
 build/
 dist/
-main.spec
-geckodriver.log
+*.spec
+*.log
+*.pyc
+*.sav

@@ -36,6 +36,7 @@ class dummyGUI:
 class services:
     def __init__(self, site, settings, GUI=None):
         #sys.stdout = open(os.devnull, 'w')
+        os.environ['REQUESTS_CA_BUNDLE'] = os.path.join("certifi", "cacert.pem")
         self.extensive = settings['extensive']
         if site[-1:] != '/':
             site = site + '/'
@@ -560,7 +561,7 @@ class services:
             dirs = [os.path.join(self.path, d) for d in os.listdir(self.path)
                         if os.path.isdir(os.path.join(self.path, d))]
             for d in dirs:
-                if d != os.path.join(self.path, '.git') and d != os.path.join(self.path, 'textures') and d != os.path.join(self.path, 'drivers'):
+                if d != os.path.join(self.path, '.git') and d != os.path.join(self.path, 'textures') and d != os.path.join(self.path, 'drivers') and d != os.path.join(self.path, 'certifi'):
                     shutil.rmtree(d)
         except:
             pass

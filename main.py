@@ -123,8 +123,8 @@ class GUI:
 
         self.run_button = tk.Button(self.end_frame, text="Run", font=font, image=self.buttonimg, border=0, highlightthickness=0, bg=self.bg_color, activebackground=self.bg_color,compound=tk.CENTER, command=self.on_run)
         self.run_button.pack(side='left', padx=50)
-        self.button = tk.Button(self.end_frame, text='Extensive run', font=font, image=self.buttonimg, border=0, highlightthickness=0, bg=self.bg_color, activebackground=self.bg_color,compound=tk.CENTER, command=self.on_extensive_run)
-        self.button.pack(side='left', padx=50)
+        self.run_button2 = tk.Button(self.end_frame, text='Extensive run', font=font, image=self.buttonimg, border=0, highlightthickness=0, bg=self.bg_color, activebackground=self.bg_color,compound=tk.CENTER, command=self.on_extensive_run)
+        self.run_button2.pack(side='left', padx=50)
 
         self.start_frame.pack(side="top")
         self.start_frame2.pack(side="top")
@@ -230,12 +230,27 @@ class GUI:
         text = "Deactivate to hide hover over help text"
         self.info_toolTip = self.createToolTip(self.info_button, text)
         self.toolTips.append(self.info_button)
+        text = "The url of the page you want to download from goes in here..."
+        self.createToolTip(self.siteEntry, text)
+        self.toolTips.append(self.siteEntry)
         text = "Paste in url from clipboard"
         self.createToolTip(self.paste_button, text)
         self.toolTips.append(self.paste_button)
         text = "Empty url entry field"
         self.createToolTip(self.del_button, text)
         self.toolTips.append(self.del_button)
+        text = "Creates files containing information about the supplied\nurl, the results of the run and some analytics data"
+        self.createToolTip(self.dev_button, text)
+        self.toolTips.append(self.dev_button)
+        text = "This option will also try to extract the audio from the videos found in the url\nPlease note that you need to have ffmpeg installed in your machine if you want\nthe downloaded audio file to be converted to mp3"
+        self.createToolTip(self.aud_button, text)
+        self.toolTips.append(self.aud_button)
+        text = "This option will also try to extract empeded video files found in the url\nPlease note that not all websites are supported"
+        self.createToolTip(self.vid_button, text)
+        self.toolTips.append(self.vid_button)
+        text = "This mode uses either Firefox or Chrome browsers\nin your machine to fetch the source code of the url"
+        self.createToolTip(self.run_button2, text)
+        self.toolTips.append(self.run_button2)
 
     def destroyToolTips(self):
         for w in self.toolTips:

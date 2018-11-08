@@ -566,9 +566,7 @@ class services:
             exclude.append(os.path.join(self.path, 'drivers'))
             exclude.append(os.path.join(self.path, 'certifi'))
             for d in dirs:
-                print(d)
                 if d not in exclude:
-                    print(d)
                     shutil.rmtree(d)
         except:
             pass

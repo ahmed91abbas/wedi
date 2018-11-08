@@ -7,6 +7,7 @@ import pickle
 import os
 import runGUI
 from PIL import Image, ImageTk
+from ToolTip import ToolTip
 
 class GUI:
     def __init__(self):
@@ -16,6 +17,7 @@ class GUI:
             self.settings = self.default_settings()
         self.format_dict = {"Best video quality":'best', "Worst video quality":'worst', "Only video (no audio)":'bestvideo'}
         self.inv_format_dict = {v: k for k, v in self.format_dict.items()}
+        self.info_on = False
         self.bg_color = '#e6e6ff'
         self.green_color = '#4af441'
         self.button_color = '#ffffe6'
@@ -54,6 +56,8 @@ class GUI:
         self.pasteimg = ImageTk.PhotoImage(Image.open(os.path.join('textures', 'pasteimg.png')))
         self.delimg = ImageTk.PhotoImage(Image.open(os.path.join('textures', 'delimg.png')))
         self.buttonimg = ImageTk.PhotoImage(Image.open(os.path.join('textures', 'button.png')))
+        self.infoOnImg = ImageTk.PhotoImage(Image.open(os.path.join('textures', 'info_on.png')))
+        self.infoOffImg = ImageTk.PhotoImage(Image.open(os.path.join('textures', 'info_off.png')))
 
         self.start_frame = tk.Frame(self.root, bg=self.bg_color)
         self.start_frame2 = tk.Frame(self.root, bg=self.bg_color)
@@ -70,8 +74,15 @@ class GUI:
             clipboard = ""
         if len(clipboard) > 10 and clipboard[:4] == 'http':
             self.siteEntry.insert(0, clipboard)
-        tk.Button(self.start_frame, image=self.delimg, bg=self.button_color, command=self.clear_site).pack(side='right')
-        tk.Button(self.start_frame, image=self.pasteimg, bg=self.button_color, command=self.paste_site).pack(side='right')
+        self.del_button = tk.Button(self.start_frame, image=self.delimg, bg=self.button_color, command=self.clear_site)
+        self.del_button.pack(side='right')
+        self.paste_button = tk.Button(self.start_frame, image=self.pasteimg, bg=self.button_color, command=self.paste_site)
+        self.paste_button.pack(side='right')
+        self.info_button = tk.Button(self.start_frame, image=self.infoOffImg, border=0, highlightthickness=0, bg=self.bg_color, activebackground=self.bg_color, command=self.on_info)
+        self.info_button.pack(side='left')
+        text = "Activate to show hover over help text"
+        self.info_toolTip = self.createToolTip(self.info_button, text)
+
         tk.Label(self.start_frame2, text="Choose what you want to download", font=font, padx=20, pady=20, bg=self.bg_color).pack(side='top')
 
         color = self.docgray
@@ -110,15 +121,15 @@ class GUI:
         self.options["menu"].config(bg=self.button_color, font=menufont1)
         self.options.grid(row=2, column=1)
 
-        self.run_button = tk.Button(self.end_frame, text="Fast run", font=font, image=self.buttonimg, border=0, highlightthickness=0, bg=self.bg_color, activebackground=self.bg_color,compound=tk.CENTER, command=self.on_run)
-        self.run_button.pack(side='left', padx=50, pady=30)
+        self.run_button = tk.Button(self.end_frame, text="Run", font=font, image=self.buttonimg, border=0, highlightthickness=0, bg=self.bg_color, activebackground=self.bg_color,compound=tk.CENTER, command=self.on_run)
+        self.run_button.pack(side='left', padx=50)
         self.button = tk.Button(self.end_frame, text='Extensive run', font=font, image=self.buttonimg, border=0, highlightthickness=0, bg=self.bg_color, activebackground=self.bg_color,compound=tk.CENTER, command=self.on_extensive_run)
-        self.button.pack(side='left', padx=50, pady=30)
+        self.button.pack(side='left', padx=50)
 
         self.start_frame.pack(side="top")
         self.start_frame2.pack(side="top")
         self.body_frame.pack()
-        self.end_frame.pack(side="bottom")
+        self.end_frame.pack(side="bottom", pady=25)
 
         self.root.mainloop()
 
@@ -191,6 +202,48 @@ class GUI:
         settings = {'path':path, 'extensive':extensive,'images':img_settings, 'documents':doc_settings, 'videos':vid_settings, 'audios':aud_settings, 'dev':dev_settings}
         pickle.dump(settings, open('settings.sav', 'wb'))
         return settings
+
+
+    def on_info(self):
+        if self.info_on:
+            self.info_button["image"] = self.infoOffImg
+            self.info_on = False
+            self.destroyToolTips()
+        else:
+            self.info_button["image"] = self.infoOnImg
+            self.info_on = True
+            self.createToolTips()
+
+    def createToolTip(self, widget, text):
+        toolTip = ToolTip(widget)
+        def enter(event):
+            toolTip.showtip(text)
+        def leave(event):
+            toolTip.hidetip()
+        widget.bind('<Enter>', enter)
+        widget.bind('<Leave>', leave)
+        return toolTip
+
+    def createToolTips(self):
+        self.toolTips = []
+        self.info_toolTip.hidetip()
+        text = "Deactivate to hide hover over help text"
+        self.info_toolTip = self.createToolTip(self.info_button, text)
+        self.toolTips.append(self.info_button)
+        text = "Paste in url from clipboard"
+        self.createToolTip(self.paste_button, text)
+        self.toolTips.append(self.paste_button)
+        text = "Empty url entry field"
+        self.createToolTip(self.del_button, text)
+        self.toolTips.append(self.del_button)
+
+    def destroyToolTips(self):
+        for w in self.toolTips:
+            w.unbind('<Enter>')
+            w.unbind('<Leave>')
+        self.info_toolTip.hidetip()
+        text = "Activate to show hover over help text"
+        self.info_toolTip = self.createToolTip(self.info_button, text)
 
     def on_extensive_run(self):
         self.on_run(extensive=True)

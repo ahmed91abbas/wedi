@@ -8,6 +8,7 @@ import os
 import runGUI
 from PIL import Image, ImageTk
 from ToolTip import ToolTip
+from settingsGUI import settings_GUI
 
 class GUI:
     def __init__(self):
@@ -34,7 +35,7 @@ class GUI:
         self.root.config(menu=menu)
         prefmenu = tk.Menu(menu, tearoff=0)
         menu.add_cascade(label="Preferences", menu=prefmenu)
-        prefmenu.add_command(label="Settings", command=self.about)
+        prefmenu.add_command(label="Settings", command=self.on_settings_menu)
         helpmenu = tk.Menu(menu, tearoff=0)
         menu.add_cascade(label="Help", menu=helpmenu)
         helpmenu.add_command(label="How to...", command=self.about)
@@ -242,7 +243,7 @@ class GUI:
         text = "Creates files containing information about the supplied\nurl, the results of the run and some analytics data"
         self.createToolTip(self.dev_button, text)
         self.toolTips.append(self.dev_button)
-        text = "This option will also try to extract the audio from the videos found in the url\nPlease note that you need to have ffmpeg installed in your machine if you want\nthe downloaded audio file to be converted to mp3"
+        text = "This option will also try to extract the audio from the videos found in the url\nPlease note that you need to have FFmpeg installed in your machine if you want\nthe downloaded audio file to be converted to mp3"
         self.createToolTip(self.aud_button, text)
         self.toolTips.append(self.aud_button)
         text = "This option will also try to extract empeded video files found in the url\nPlease note that not all websites are supported"

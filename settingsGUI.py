@@ -1,7 +1,9 @@
 try:
     import tkinter as tk
+    from tkinter import filedialog
 except ImportError:
     import Tkinter as tk
+    from Tkinter import filedialog
 import os, sys
 from PIL import Image, ImageTk
 import math
@@ -31,10 +33,17 @@ class settings_GUI:
         self.buttonsFrame.pack()
 
         #Header frame combonents
+        sub_frame = tk.Frame(self.bodyFrame, bg=self.bg_color)
+        sub_frame.pack()
         width = 50
         tk.Label(self.headerFrame, text="General settings",\
             bg=self.bg_color, font=title_font).pack()
         #Body frame combonents
+        self.download_path_entry = tk.Entry(sub_frame, width=width, font=font)
+        self.download_path_entry.insert(0, self.settings["path"])
+        self.download_path_entry.pack(side="left")
+        tk.Button(sub_frame, text="Browse", command=self.on_browse).pack(side="left")
+
         tk.Label(self.bodyFrame, text="Documents types:", font=font,\
             bg=self.bg_color, anchor="w").pack()
         self.doc_entry = tk.Entry(self.bodyFrame, width=width, font=font)
@@ -111,5 +120,10 @@ class settings_GUI:
         self.insert_list(self.aud_entry, aud_types)
         self.insert_list(self.vid_entry, vid_types)
 
+    def on_browse(self):
+        filename = filedialog.askdirectory()
+        self.download_path_entry.delete(0, "end")
+        self.download_path_entry.insert(0, filename)
+
 if __name__ == '__main__':
-    settingsGUI('settings.sav')
+    settings_GUI('settings.sav')

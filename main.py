@@ -11,9 +11,10 @@ from ToolTip import ToolTip
 from settingsGUI import settings_GUI
 
 class GUI:
-    def __init__(self):
+    def __init__(self, settings_filepath):
+        self.settings_filepath = settings_filepath
         try:
-            self.settings = pickle.load(open('settings.sav', 'rb'))
+            self.settings = pickle.load(open(settings_filepath, 'rb'))
         except:
             self.settings = self.default_settings()
         self.format_dict = {"Best video quality":'best', "Worst video quality":'worst', "Only video (no audio)":'bestvideo'}
@@ -273,5 +274,9 @@ class GUI:
         else:
             print("Enter the webpage url!")
 
+    def on_settings_menu(self):
+        settings_GUI(self.settings_filepath)
+
 if __name__ == '__main__':
-    GUI()
+    settings_filepath = 'settings.sav'
+    GUI(settings_filepath)

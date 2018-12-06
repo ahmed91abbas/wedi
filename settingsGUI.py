@@ -34,36 +34,39 @@ class settings_GUI:
 
         #Header frame combonents
         sub_frame = tk.Frame(self.bodyFrame, bg=self.bg_color)
-        sub_frame.pack()
+        sub_frame.pack(fill="both")
         width = 50
         tk.Label(self.headerFrame, text="General settings",\
             bg=self.bg_color, font=title_font).pack()
         #Body frame combonents
-        self.download_path_entry = tk.Entry(sub_frame, width=width, font=font)
+        padx = 15
+        tk.Label(sub_frame, text="Download path:", font=font,\
+            bg=self.bg_color, anchor="w").pack(side="left", padx=padx)
+        tk.Button(sub_frame, text="Browse", command=self.on_browse).pack(side="right", padx=padx)
+        self.download_path_entry = tk.Entry(self.bodyFrame, width=width, font=font)
         self.download_path_entry.insert(0, self.settings["path"])
-        self.download_path_entry.pack(side="left")
-        tk.Button(sub_frame, text="Browse", command=self.on_browse).pack(side="left")
+        self.download_path_entry.pack(fill="both", padx=padx)
 
-        tk.Label(self.bodyFrame, text="Documents types:", font=font,\
-            bg=self.bg_color, anchor="w").pack()
+        tk.Label(self.bodyFrame, text="Document types:", font=font,\
+            bg=self.bg_color, anchor="w").pack(fill="both", padx=padx)
         self.doc_entry = tk.Entry(self.bodyFrame, width=width, font=font)
         self.insert_list(self.doc_entry, self.settings["documents"]["doc_types"])
-        self.doc_entry.pack()
-        tk.Label(self.bodyFrame, text="Images types:", font=font,\
-            bg=self.bg_color, anchor="w").pack()
+        self.doc_entry.pack(fill="both", padx=padx)
+        tk.Label(self.bodyFrame, text="Image types:", font=font,\
+            bg=self.bg_color, anchor="w").pack(fill="both", padx=padx)
         self.img_entry = tk.Entry(self.bodyFrame, width=width, font=font)
         self.insert_list(self.img_entry, self.settings["images"]["img_types"])
-        self.img_entry.pack()
-        tk.Label(self.bodyFrame, text="Audios types:", font=font,\
-            bg=self.bg_color, anchor="w").pack()
+        self.img_entry.pack(fill="both", padx=padx)
+        tk.Label(self.bodyFrame, text="Audio types:", font=font,\
+            bg=self.bg_color, anchor="w").pack(fill="both", padx=padx)
         self.aud_entry = tk.Entry(self.bodyFrame, width=width, font=font)
         self.insert_list(self.aud_entry, self.settings["audios"]["aud_types"])
-        self.aud_entry.pack()
-        tk.Label(self.bodyFrame, text="Videos types:", font=font,\
-            bg=self.bg_color, anchor="w").pack()
+        self.aud_entry.pack(fill="both", padx=padx)
+        tk.Label(self.bodyFrame, text="Video types:", font=font,\
+            bg=self.bg_color, anchor="w").pack(fill="both", padx=padx)
         self.vid_entry = tk.Entry(self.bodyFrame, width=width, font=font)
         self.insert_list(self.vid_entry, self.settings["videos"]["vid_types"])
-        self.vid_entry.pack()
+        self.vid_entry.pack(fill="both", padx=padx)
 
         #Buttons frame combonents
         padx = 10
@@ -102,7 +105,12 @@ class settings_GUI:
     def mainloop(self):
         tk.mainloop()
 
+    def get_elements(self, combonent):
+        text = combonent.get()
+        elems = text.split(",")
+
     def on_ok(self):
+        doc_types = self.doc_entry.get()
         print("OK pressed")
 
     def on_default(self):
@@ -111,6 +119,8 @@ class settings_GUI:
         doc_types = ['txt', 'py', 'java', 'php', 'pdf', 'md', 'gitignore', 'c']
         vid_types = ['mp4', 'avi', 'mpeg', 'mpg', 'wmv', 'mov', 'flv', 'swf', 'mkv', '3gp', 'webm', 'ogg']
         aud_types = ['mp3', 'aac', 'wma', 'wav', 'm4a']
+        self.download_path_entry.delete(0, "end")
+        self.download_path_entry.insert(0, ".")
         self.doc_entry.delete(0, "end")
         self.img_entry.delete(0, "end")
         self.aud_entry.delete(0, "end")

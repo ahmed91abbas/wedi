@@ -11,8 +11,8 @@ import pickle
 
 class settings_GUI:
     def __init__(self, settings_filepath):
-        self.settings = pickle.load(open(settings_filepath, 'rb'))
-        print(self.settings)
+        self.settings_filepath = settings_filepath
+        self.settings = pickle.load(open(self.settings_filepath, 'rb'))
         self.createGUI()
         self.mainloop()
 
@@ -109,9 +109,30 @@ class settings_GUI:
         text = combonent.get()
         elems = text.split(",")
 
+    def str_to_list(self, str_):
+        res = []
+        elements = str_.split(",")
+        for elem in elements:
+            res.append(elem.replace(" ", ""))
+        return res
+
     def on_ok(self):
+        path = self.download_path_entry.get()
         doc_types = self.doc_entry.get()
-        print("OK pressed")
+        doc_types = self.str_to_list(doc_types)
+        img_types = self.img_entry.get()
+        img_types = self.str_to_list(img_types)
+        aud_types = self.aud_entry.get()
+        aud_types = self.str_to_list(aud_types)
+        vid_types = self.vid_entry.get()
+        vid_types = self.str_to_list(vid_types)
+        self.settings["path"] = path
+        self.settings["documents"]["doc_types"] = doc_types
+        self.settings["images"]["img_types"] = img_types
+        self.settings["audios"]["aud_types"] = aud_types
+        self.settings["videos"]["vid_types"] = vid_types
+        pickle.dump(self.settings, open(self.settings_filepath, 'wb'))
+        self.on_close()
 
     def on_default(self):
         path = "."
@@ -132,8 +153,9 @@ class settings_GUI:
 
     def on_browse(self):
         filename = filedialog.askdirectory()
-        self.download_path_entry.delete(0, "end")
-        self.download_path_entry.insert(0, filename)
+        if filename != "":
+            self.download_path_entry.delete(0, "end")
+            self.download_path_entry.insert(0, filename)
 
 if __name__ == '__main__':
     settings_GUI('settings.sav')

@@ -43,7 +43,7 @@ class services:
         self.site = site
         self.domain = self.extract_domain(self.site)
         self.path = settings['path']
-        self.clean_up() #TODO remove'
+        # self.clean_up() #TODO remove'
         if GUI:
             self.gui = GUI
         else:
@@ -140,7 +140,7 @@ class services:
     def create_dest_folders(self):
         tokens_to_be_replaced = ['https://', 'http://', 'www.', '*', '\\', '/', ':', '<', '>', '|', '?', '"', '\'']
         site_name = self.multi_replace(tokens_to_be_replaced, '_', self.site)
-        self.downloadpath = os.path.join(site_name, self.path)
+        self.downloadpath = os.path.join(self.path, site_name)
         if len(self.downloadpath) > 200:
             self.downloadpath = self.downloadpath[:200] + '_'
         self.img_folder = os.path.join(self.downloadpath, "images")

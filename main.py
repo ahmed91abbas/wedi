@@ -266,9 +266,15 @@ class GUI:
         self.on_run(extensive=True)
 
     def on_run(self, extensive=False):
+        current_settings = pickle.load(open(self.settings_filepath, 'rb'))
         self.settings['extensive'] = extensive
         site = self.siteEntry.get()
         if len(site) > 10 and site[:4] == 'http':
+            self.settings["path"] = current_settings["path"]
+            self.settings["documents"]["doc_types"] = current_settings["documents"]["doc_types"]
+            self.settings["images"]["img_types"] = current_settings["images"]["img_types"]
+            self.settings["audios"]["aud_types"] = current_settings["audios"]["aud_types"]
+            self.settings["videos"]["vid_types"] = current_settings["videos"]["vid_types"]
             pickle.dump(self.settings, open('settings.sav', 'wb'))
             runGUI.runGUI(site, self.settings)
         else:

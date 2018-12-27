@@ -10,13 +10,13 @@ import math
 import pickle
 
 class settings_GUI:
-    def __init__(self, settings_filepath):
+    def __init__(self, settings_filepath, imgicon=None):
         self.settings_filepath = settings_filepath
         self.settings = pickle.load(open(self.settings_filepath, 'rb'))
-        self.createGUI()
+        self.createGUI(imgicon)
         self.mainloop()
 
-    def createGUI(self):
+    def createGUI(self, imgicon):
         self.bg_color = '#e6e6ff'
         font = ('calibri', 13)
         title_font = ('calibri', 16)
@@ -24,6 +24,8 @@ class settings_GUI:
         self.top.title("Settings")
         self.top.wm_protocol("WM_DELETE_WINDOW", self.on_close)
         self.top.resizable(False, False)
+        if imgicon:
+            self.top.tk.call('wm', 'iconphoto', self.top._w, imgicon)
 
         self.headerFrame = tk.Frame(self.top, bg=self.bg_color)
         self.bodyFrame = tk.Frame(self.top, bg=self.bg_color)
@@ -153,6 +155,7 @@ class settings_GUI:
 
     def on_browse(self):
         filename = filedialog.askdirectory()
+        self.top.lift()
         if filename != "":
             self.download_path_entry.delete(0, "end")
             self.download_path_entry.insert(0, filename)

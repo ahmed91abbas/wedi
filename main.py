@@ -60,6 +60,10 @@ class GUI:
         self.buttonimg = ImageTk.PhotoImage(Image.open(os.path.join('textures', 'button.png')))
         self.infoOnImg = ImageTk.PhotoImage(Image.open(os.path.join('textures', 'info_on.png')))
         self.infoOffImg = ImageTk.PhotoImage(Image.open(os.path.join('textures', 'info_off.png')))
+        self.imgicon = ImageTk.PhotoImage(Image.open(os.path.join('textures', 'icon.ico')))
+
+        #set the window icon
+        self.root.tk.call('wm', 'iconphoto', self.root._w, self.imgicon)
 
         self.start_frame = tk.Frame(self.root, bg=self.bg_color)
         self.start_frame2 = tk.Frame(self.root, bg=self.bg_color)
@@ -276,12 +280,12 @@ class GUI:
             self.settings["audios"]["aud_types"] = current_settings["audios"]["aud_types"]
             self.settings["videos"]["vid_types"] = current_settings["videos"]["vid_types"]
             pickle.dump(self.settings, open('settings.sav', 'wb'))
-            runGUI.runGUI(site, self.settings)
+            runGUI.runGUI(site, self.settings, imgicon=self.imgicon)
         else:
             print("Enter the webpage url!")
 
     def on_settings_menu(self):
-        settings_GUI(self.settings_filepath)
+        settings_GUI(self.settings_filepath, imgicon=self.imgicon)
 
 if __name__ == '__main__':
     settings_filepath = 'settings.sav'

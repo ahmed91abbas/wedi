@@ -12,7 +12,8 @@ from wedi import services
 import math
 
 class runGUI:
-    def __init__(self, site, settings):
+    def __init__(self, site, settings, imgicon = None):
+        self.imgicon = imgicon
         self.downloaded = {}
         self.error = False
         self.createGUI()
@@ -279,6 +280,8 @@ class runGUI:
         self.top.destroy()
 
     def mainloop(self):
+        if self.imgicon:
+            self.top.tk.call('wm', 'iconphoto', self.top._w, self.imgicon)
         tk.mainloop()
 
 if __name__ == '__main__':

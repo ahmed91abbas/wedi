@@ -391,6 +391,18 @@ class services:
                 filename = self.create_filename(output_dir, "noname." + types[0])
                 self.download_url(url, filename)
 
+    def ffmpeg_convert(self, in_file, out_file):
+        params = ['ffmpeg', '-i', in_file, out_file]
+        # subprocess.Popen(params)
+        subprocess.call(params, shell=False, close_fds=True)
+        # process = subprocess.Popen(params, shell=False,
+        # stdout=subprocess.PIPE, stderr=subprocess.STDOUT, close_fds=True)
+        # while True:
+        #     line = process.stdout.readline().decode("utf8")
+        #     if not line:
+        #         break
+        #     print(line)
+
     def ydl_audios(self):
         try:
             logger = MyLogger()
@@ -401,18 +413,21 @@ class services:
                 'outtmpl': filepath,
                 'logger': logger,
                 'progress_hooks': [self.my_hook],
-                'postprocessors': [{
-                    'key': 'FFmpegExtractAudio',
-                    'preferredcodec': 'mp3',
-                    'preferredquality': '192',
-                }],
             }
             with youtube_dl.YoutubeDL(ydl_opts) as ydl:
                 ydl.download([self.site])
             msgs = logger.msgs
-            if len(msgs) > 1 and "Deleting" in msgs[len(msgs)-1]: #If last msg in logger begins with 'Deleting' replace the file name in gui
-                file = msgs[len(msgs)-2][22:] #Remove leading '[ffmpeg] Destination: '
-                self.gui.add_to_list(file, replace=True)
+            for msg in msgs:
+                if "[download] Destination: " in msg:
+                    filename = msg[24:]
+                    name = os.path.splitext(filename)[0]
+                    extension = os.path.splitext(filename)[1]
+                    if extension != ".mp3":
+                        new_name = name + ".mp3"
+                        self.ffmpeg_convert(filename, new_name)
+                        self.gui.add_to_list(new_name, replace=True)
+                        os.remove(filename)
+                    break
         except Exception as e:
             self.gui.update_action(str(e))
             print(str(e))
@@ -573,12 +588,13 @@ class services:
 
 if __name__ == "__main__":
     site = 'https://www.dplay.se/videos/stories-from-norway/stories-from-norway-102'
-    site = 'http://cs.lth.se/edan20/'
     site = 'https://www.bytbil.com/'
     site = 'https://www.blocket.se/malmo/Mini_Cooper_Clubman_Pepper_120hk_6_vaxl_82169382.htm?ca=23_11&w=0'
     site = 'https://www.nordea.se/'
     site = 'https://m2.ikea.com/se/sv/campaigns/nytt-laegre-pris-pub3c9e0c81' #js rendered page
+    site = 'http://cs.lth.se/edan20/'
     site = 'https://www.youtube.com/watch?v=zmr2I8caF0c' #small
+    site = "https://www.youtube.com/watch?v=JR0BYMDWmVo"
     path = "."
     extensive = False
     img_types = ['jpg', 'jpeg', 'png', 'gif', 'svg']
@@ -588,7 +604,7 @@ if __name__ == "__main__":
     img_settings = {'run':False, 'img_types':img_types}
     doc_settings = {'run':False, 'doc_types':doc_types}
     vid_settings = {'run':False, 'vid_types':vid_types, 'format':'best'}
-    aud_settings = {'run':False, 'aud_types':aud_types}
+    aud_settings = {'run':True, 'aud_types':aud_types}
     dev_settings = {'run':False}
     settings = {'path':path, 'extensive':extensive, 'images':img_settings, 'documents':doc_settings, 'videos':vid_settings, 'audios':aud_settings, 'dev':dev_settings}
     services = services(site, settings)

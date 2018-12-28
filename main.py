@@ -6,6 +6,7 @@ import sys
 import pickle
 import os
 import runGUI
+import webbrowser
 from PIL import Image, ImageTk
 from ToolTip import ToolTip
 from settingsGUI import settings_GUI
@@ -40,6 +41,7 @@ class GUI:
         helpmenu = tk.Menu(menu, tearoff=0)
         menu.add_cascade(label="Help", menu=helpmenu)
         helpmenu.add_command(label="Open download folder", command=self.on_open_download_folder)
+        helpmenu.add_command(label="Open Github page", command=self.on_open_github)
         helpmenu.add_command(label="How to...", command=self.about)
         helpmenu.add_command(label="Disclaimer", command=self.about)
         helpmenu.add_command(label="About", command=self.about)
@@ -270,6 +272,9 @@ class GUI:
     def on_extensive_run(self):
         self.on_run(extensive=True)
 
+    def on_settings_menu(self):
+        settings_GUI(self.settings_filepath, imgicon=self.imgicon)
+
     def on_open_download_folder(self):
         downloadpath = pickle.load(open(self.settings_filepath, 'rb'))["path"]
         _platform = sys.platform
@@ -279,6 +284,10 @@ class GUI:
             subprocess.Popen(["open", downloadpath])
         elif _platform == "win32" or _platform == "win64": # Windows
             os.startfile(downloadpath)
+
+    def on_open_github(self):
+        url = "https://github.com/ahmed91abbas/WeDi"
+        webbrowser.open(url, new=0, autoraise=True)
 
     def on_run(self, extensive=False):
         current_settings = pickle.load(open(self.settings_filepath, 'rb'))
@@ -294,9 +303,6 @@ class GUI:
             runGUI.runGUI(site, self.settings, imgicon=self.imgicon)
         else:
             print("Enter the webpage url!")
-
-    def on_settings_menu(self):
-        settings_GUI(self.settings_filepath, imgicon=self.imgicon)
 
 if __name__ == '__main__':
     settings_filepath = 'settings.sav'

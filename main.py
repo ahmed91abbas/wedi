@@ -39,6 +39,7 @@ class GUI:
         prefmenu.add_command(label="Settings", command=self.on_settings_menu)
         helpmenu = tk.Menu(menu, tearoff=0)
         menu.add_cascade(label="Help", menu=helpmenu)
+        helpmenu.add_command(label="Open download folder", command=self.on_open_download_folder)
         helpmenu.add_command(label="How to...", command=self.about)
         helpmenu.add_command(label="Disclaimer", command=self.about)
         helpmenu.add_command(label="About", command=self.about)
@@ -268,6 +269,16 @@ class GUI:
 
     def on_extensive_run(self):
         self.on_run(extensive=True)
+
+    def on_open_download_folder(self):
+        downloadpath = pickle.load(open(self.settings_filepath, 'rb'))["path"]
+        _platform = sys.platform
+        if _platform == "linux" or _platform == "linux2": # linux
+            subprocess.Popen(["xdg-open", downloadpath])
+        elif _platform == "darwin": # MAC OS X
+            subprocess.Popen(["open", downloadpath])
+        elif _platform == "win32" or _platform == "win64": # Windows
+            os.startfile(downloadpath)
 
     def on_run(self, extensive=False):
         current_settings = pickle.load(open(self.settings_filepath, 'rb'))

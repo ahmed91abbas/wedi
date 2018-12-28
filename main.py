@@ -1,7 +1,9 @@
 try:
     import tkinter as tk
+    from tkinter import messagebox
 except ImportError:
     import Tkinter as tk
+    import tkMessageBox as messagebox
 import sys
 import pickle
 import os
@@ -42,9 +44,8 @@ class GUI:
         menu.add_cascade(label="Help", menu=helpmenu)
         helpmenu.add_command(label="Open download folder", command=self.on_open_download_folder)
         helpmenu.add_command(label="Open Github page", command=self.on_open_github)
-        helpmenu.add_command(label="How to...", command=self.about)
-        helpmenu.add_command(label="Disclaimer", command=self.about)
-        helpmenu.add_command(label="About", command=self.about)
+        helpmenu.add_command(label="Disclaimer", command=self.on_disclaimer)
+        helpmenu.add_command(label="About", command=self.on_about)
 
         self.docgray = ImageTk.PhotoImage(Image.open(os.path.join('textures', 'docgray.png')))
         self.docgreen = ImageTk.PhotoImage(Image.open(os.path.join('textures', 'docgreen.png')))
@@ -193,9 +194,6 @@ class GUI:
         else:
             self.dev_button['image'] = self.devgray
 
-    def about(self):
-        print("About", "WeDi (Web Dissector) is...")
-
     def default_settings(self):
         path = "."
         extensive = False
@@ -274,6 +272,17 @@ class GUI:
 
     def on_settings_menu(self):
         settings_GUI(self.settings_filepath, imgicon=self.imgicon)
+
+    def on_about(self):
+        msg = "WeDi (Web Dissector) is a tool that makes it \
+possible to download all contents of a page easily \
+(images, documents, videos...etc)"
+        messagebox.showinfo("About", msg)
+
+    def on_disclaimer(self):
+        msg = "The user of WeDi is responsible to use WeDi only on \
+web pages that allow their contents to be downloaded and stored locally."
+        messagebox.showinfo("Disclaimer", msg)
 
     def on_open_download_folder(self):
         downloadpath = pickle.load(open(self.settings_filepath, 'rb'))["path"]

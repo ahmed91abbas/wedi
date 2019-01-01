@@ -223,8 +223,12 @@ class services:
             self.connect_extensive('firefox')
         else:
             try:
-                self.response = requests.get(self.site, allow_redirects=True)
-                self.page_source = self.response.text
+                self.response = requests.get(self.site[:-1], allow_redirects=True, stream=True)
+                content_type = self.response.headers.get('Content-Type').split(";")[0]
+                if content_type != "text/html":
+                    self.page_source = ""
+                else:
+                    self.page_source = self.response.text
                 self.soup = BeautifulSoup(self.page_source, 'html.parser')
             except:
                 msg = "Couldn't establish a connection to: " + self.site
@@ -255,9 +259,10 @@ class services:
                     self.img_urls.append(link)
                 elif (self.is_doc_link(link)):
                     self.doc_urls.append(link)
-                elif (self.is_vid_link(link)):
+                #main url is handeled by youtube_dl for video and audio
+                elif (link != self.site[:-1] and self.is_vid_link(link)):
                     self.vid_urls.append(link)
-                elif (self.is_aud_link(link)):
+                elif (link != self.site[:-1] and self.is_aud_link(link)):
                     self.aud_urls.append(link)
         self.extract_images()
         return res
@@ -589,23 +594,25 @@ class services:
             pass
 
 if __name__ == "__main__":
-    site = 'https://www.dplay.se/videos/stories-from-norway/stories-from-norway-102'
-    site = 'https://www.bytbil.com/'
     site = 'https://www.blocket.se/malmo/Mini_Cooper_Clubman_Pepper_120hk_6_vaxl_82169382.htm?ca=23_11&w=0'
-    site = 'https://www.nordea.se/'
     site = 'https://m2.ikea.com/se/sv/campaigns/nytt-laegre-pris-pub3c9e0c81' #js rendered page
-    site = 'http://cs.lth.se/edan20/'
     site = 'https://www.youtube.com/watch?v=zmr2I8caF0c' #small
     site = "https://www.youtube.com/watch?v=JR0BYMDWmVo"
+    site = 'http://cs.lth.se/edan20/'
+    site = 'https://www.bytbil.com/'
     site = "https://www3059.playercdn.net/1p-dl/0/-Yr5ejWImiGKNAQLwzX1Lw/1546394162/181101/498FWSRGZAZLCRFC4PCAP.mp4?name=anime_105980.mp4-720.mp4"
+    site = "https://www.eit.lth.se/fileadmin/eit/courses/etsf10/ht18/Exercises/KRplusextraTut3solutions.pdf"
+    site = 'https://www.dplay.se/videos/stories-from-norway/stories-from-norway-102'
+    site = 'https://www.nordea.se/'
+
     path = "C:\\Users\\Ahmed\\Desktop\\Others\\wedi_downloads"
     extensive = False
     img_types = ['jpg', 'jpeg', 'png', 'gif', 'svg']
     doc_types = ['txt', 'py', 'java', 'php', 'pdf', 'md', 'gitignore', 'c']
     vid_types = ['mp4', 'avi', 'mpeg', 'mpg', 'wmv', 'mov', 'flv', 'swf', 'mkv', '3gp', 'webm', 'ogg']
     aud_types = ['mp3', 'aac', 'wma', 'wav', 'm4a']
-    img_settings = {'run':False, 'img_types':img_types}
-    doc_settings = {'run':False, 'doc_types':doc_types}
+    img_settings = {'run':True, 'img_types':img_types}
+    doc_settings = {'run':True, 'doc_types':doc_types}
     vid_settings = {'run':True, 'vid_types':vid_types, 'format':'best'}
     aud_settings = {'run':False, 'aud_types':aud_types}
     dev_settings = {'run':False}

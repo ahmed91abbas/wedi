@@ -126,6 +126,8 @@ class services:
             url = url.replace('https://github.com/', 'https://raw.github.com/')
             url = url .replace('blob/', '')
             return url
+        if "rapidvideo" in url:
+            self.ydl_urls.append(url)
         return url
 
     def multi_replace(self, tokens_to_be_replaced, replace_with, text):
@@ -245,6 +247,7 @@ class services:
         for link in self.soup.find_all('a'):
             if 'href' in link:
                 urls.append((link['href'], ""))
+        self.ydl_urls = [self.site[:-1]]
         urls.append((self.site[:-1], "")) #remove tailing /
         urls = set(urls)
         for url in urls:
@@ -447,12 +450,13 @@ class services:
             'logger': MyLogger(),
             'progress_hooks': [self.my_hook],
         }
-        try:
-            with youtube_dl.YoutubeDL(ydl_opts) as ydl:
-                ydl.download([self.site])
-        except Exception as e:
-            self.gui.update_action(str(e))
-            print(str(e))
+        for url in self.ydl_urls:
+            try:
+                with youtube_dl.YoutubeDL(ydl_opts) as ydl:
+                    ydl.download([url])
+            except Exception as e:
+                self.gui.update_action(str(e))
+                print(str(e))
 
     def output_dev(self):
         #General information about main url
@@ -604,6 +608,8 @@ if __name__ == "__main__":
     site = "https://www.eit.lth.se/fileadmin/eit/courses/etsf10/ht18/Exercises/KRplusextraTut3solutions.pdf"
     site = 'https://www.dplay.se/videos/stories-from-norway/stories-from-norway-102'
     site = 'https://www.nordea.se/'
+    site = "https://www.rapidvideo.com/e/FWSQUTHRV5"
+    site = "https://gogoanimes.co/nanatsu-no-taizai-imashime-no-fukkatsu-episode-21"
 
     path = "C:\\Users\\Ahmed\\Desktop\\Others\\wedi_downloads"
     extensive = False
@@ -611,11 +617,11 @@ if __name__ == "__main__":
     doc_types = ['txt', 'py', 'java', 'php', 'pdf', 'md', 'gitignore', 'c']
     vid_types = ['mp4', 'avi', 'mpeg', 'mpg', 'wmv', 'mov', 'flv', 'swf', 'mkv', '3gp', 'webm', 'ogg']
     aud_types = ['mp3', 'aac', 'wma', 'wav', 'm4a']
-    img_settings = {'run':True, 'img_types':img_types}
-    doc_settings = {'run':True, 'doc_types':doc_types}
+    img_settings = {'run':False, 'img_types':img_types}
+    doc_settings = {'run':False, 'doc_types':doc_types}
     vid_settings = {'run':True, 'vid_types':vid_types, 'format':'best'}
     aud_settings = {'run':False, 'aud_types':aud_types}
-    dev_settings = {'run':False}
+    dev_settings = {'run':True}
     settings = {'path':path, 'extensive':extensive, 'images':img_settings, 'documents':doc_settings, 'videos':vid_settings, 'audios':aud_settings, 'dev':dev_settings}
     services = services(site, settings)
     services.run()

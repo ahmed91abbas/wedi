@@ -312,6 +312,8 @@ class services:
         return False
 
     def create_filename(self, path, filename):
+        tokens_to_be_replaced = ['*', '\\', '/', ':', '<', '>', '|', '?', '"', '\'']
+        filename = self.multi_replace(tokens_to_be_replaced, '_', filename)
         filename = os.path.join(path, filename)
         while os.path.exists(filename):
             temp = os.path.basename(filename).split('.')
@@ -595,7 +597,8 @@ if __name__ == "__main__":
     site = 'http://cs.lth.se/edan20/'
     site = 'https://www.youtube.com/watch?v=zmr2I8caF0c' #small
     site = "https://www.youtube.com/watch?v=JR0BYMDWmVo"
-    path = "."
+    site = "https://www3059.playercdn.net/1p-dl/0/-Yr5ejWImiGKNAQLwzX1Lw/1546394162/181101/498FWSRGZAZLCRFC4PCAP.mp4?name=anime_105980.mp4-720.mp4"
+    path = "C:\\Users\\Ahmed\\Desktop\\Others\\wedi_downloads"
     extensive = False
     img_types = ['jpg', 'jpeg', 'png', 'gif', 'svg']
     doc_types = ['txt', 'py', 'java', 'php', 'pdf', 'md', 'gitignore', 'c']
@@ -603,8 +606,8 @@ if __name__ == "__main__":
     aud_types = ['mp3', 'aac', 'wma', 'wav', 'm4a']
     img_settings = {'run':False, 'img_types':img_types}
     doc_settings = {'run':False, 'doc_types':doc_types}
-    vid_settings = {'run':False, 'vid_types':vid_types, 'format':'best'}
-    aud_settings = {'run':True, 'aud_types':aud_types}
+    vid_settings = {'run':True, 'vid_types':vid_types, 'format':'best'}
+    aud_settings = {'run':False, 'aud_types':aud_types}
     dev_settings = {'run':False}
     settings = {'path':path, 'extensive':extensive, 'images':img_settings, 'documents':doc_settings, 'videos':vid_settings, 'audios':aud_settings, 'dev':dev_settings}
     services = services(site, settings)

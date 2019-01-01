@@ -215,7 +215,7 @@ class runGUI:
             self.openfolderLabel.pack()
             self.openfolderButton.config(image=self.completedImg)
 
-    def update_values(self, url='',dl='0.0', perc='', size='0.0', eta='', speed='', action='Now downloading...'):
+    def update_values(self, url=None, dl='0.0', perc='', size='0.0', eta='', speed='', action='Now downloading...'):
         dl = float(dl)
         size = float(size)
         if size != 0:
@@ -228,7 +228,8 @@ class runGUI:
             dl_str = str(round(dl/10**6, 2)) + ' MB'
         else:
             dl_str = str(round(dl/10**3, 2)) + ' KB'
-        self.urlLabel['text'] = url
+        if url:
+            self.urlLabel['text'] = url
         self.percLabel['text'] = perc
         self.sizeLabel['text'] = size_str
         self.downloadedLabel['text'] = dl_str

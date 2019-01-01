@@ -79,6 +79,7 @@ class services:
             self.gui.add_to_urls(set(self.doc_urls))
         if self.vid_run:
             self.gui.add_to_urls(set(self.vid_urls))
+            self.gui.add_to_urls(set(self.ydl_urls))
         if self.aud_run:
             self.gui.add_to_urls(set(self.aud_urls))
         self.output_results()
@@ -91,7 +92,7 @@ class services:
             self.gui.add_to_list(d['filename'])
             print('\nDone downloading, now converting...')
         else:
-            self.gui.update_values(url=self.site, dl=d['downloaded_bytes'], perc=d['_percent_str'],
+            self.gui.update_values(dl=d['downloaded_bytes'], perc=d['_percent_str'],
                  size=d['total_bytes'], eta=d['_eta_str'], speed=d['_speed_str'])
             print("Progress:" + d['_percent_str'], "of ~" + d['_total_bytes_str'],
                 "at " + d['_speed_str'], "ETA " + d['_eta_str'], " "*5, end='\r')
@@ -452,6 +453,8 @@ class services:
         }
         for url in self.ydl_urls:
             try:
+                self.gui.remove_from_urls(url)
+                self.gui.update_values(url=url)
                 with youtube_dl.YoutubeDL(ydl_opts) as ydl:
                     ydl.download([url])
             except Exception as e:

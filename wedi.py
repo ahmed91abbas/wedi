@@ -8,14 +8,6 @@ import subprocess
 import time
 from selenium import webdriver
 
-'''
-*Thread to make connection to all extracted urls and check the content type
-*Better parsing for urls. Two apended urls might be considered as one in this version
-*Make settings GUI
-*Fix about menu
-*Add disclaimer to help menu
-'''
-
 class MyLogger(object):
     def __init__(self):
         self.msgs = []
@@ -123,11 +115,11 @@ class services:
         return url
 
     def apply_special_rules(self, url):
-        if ("github" in self.domain[1]):
+        if "github" in self.domain[1]:
             url = url.replace('https://github.com/', 'https://raw.github.com/')
             url = url .replace('blob/', '')
             return url
-        if "rapidvideo" in url:
+        if "rapidvideo" in url and "rapidvideo" not in self.domain[1]:
             self.ydl_urls.append(url)
         return url
 
@@ -611,8 +603,9 @@ if __name__ == "__main__":
     site = "https://www.eit.lth.se/fileadmin/eit/courses/etsf10/ht18/Exercises/KRplusextraTut3solutions.pdf"
     site = 'https://www.dplay.se/videos/stories-from-norway/stories-from-norway-102'
     site = 'https://www.nordea.se/'
-    site = "https://www.rapidvideo.com/e/FWSQUTHRV5"
-    site = "https://gogoanimes.co/nanatsu-no-taizai-imashime-no-fukkatsu-episode-21"
+    site = "https://www.rapidvideo.com/e/FYOIHWGHES"
+    site = "https://gogoanimes.co/asobi-asobase-specials-episode-2"
+    site = "https://soundcloud.com/jahseh-onfroy/bad"
 
     path = "C:\\Users\\Ahmed\\Desktop\\Others\\wedi_downloads"
     extensive = False
@@ -622,9 +615,9 @@ if __name__ == "__main__":
     aud_types = ['mp3', 'aac', 'wma', 'wav', 'm4a']
     img_settings = {'run':False, 'img_types':img_types}
     doc_settings = {'run':False, 'doc_types':doc_types}
-    vid_settings = {'run':True, 'vid_types':vid_types, 'format':'best'}
-    aud_settings = {'run':False, 'aud_types':aud_types}
-    dev_settings = {'run':True}
+    vid_settings = {'run':False, 'vid_types':vid_types, 'format':'best'}
+    aud_settings = {'run':True, 'aud_types':aud_types}
+    dev_settings = {'run':False}
     settings = {'path':path, 'extensive':extensive, 'images':img_settings, 'documents':doc_settings, 'videos':vid_settings, 'audios':aud_settings, 'dev':dev_settings}
     services = services(site, settings)
     services.run()

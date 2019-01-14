@@ -606,6 +606,7 @@ if __name__ == "__main__":
     site = "https://www.rapidvideo.com/e/FYOIHWGHES"
     site = "https://gogoanimes.co/asobi-asobase-specials-episode-2"
     site = "https://soundcloud.com/jahseh-onfroy/bad"
+    site = "https://www.youtube.com/watch?v=VWIHxYvo6dk"
 
     path = "C:\\Users\\Ahmed\\Desktop\\Others\\wedi_downloads"
     extensive = False

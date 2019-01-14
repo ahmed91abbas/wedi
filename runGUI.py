@@ -229,22 +229,23 @@ class runGUI:
         else:
             dl_str = str(round(dl/10**3, 2)) + ' KB'
         if url:
-            self.urlLabel['text'] = url
+            self.urlLabel['text'] = self.tk_str(url)
         self.percLabel['text'] = perc
         self.sizeLabel['text'] = size_str
         self.downloadedLabel['text'] = dl_str
         self.timeLeftLabel['text'] = eta
         self.speedLabel['text'] = speed
-        self.actionLabel['text'] = action
+        self.actionLabel['text'] = self.tk_str(action)
 
     def update_action(self, text):
-        self.actionLabel['text'] = text
+        self.actionLabel['text'] = self.tk_str(text)
 
     def add_to_list(self, path, replace=False):
         name = os.path.basename(path)
         self.downloaded[name] = path
         if replace:
             self.listbox.delete(tk.END)
+        name = self.tk_str(name)
         self.listbox.insert(tk.END, name)
 
     def add_to_urls(self, urls):
@@ -284,6 +285,13 @@ class runGUI:
         if self.imgicon:
             self.top.tk.call('wm', 'iconphoto', self.top._w, self.imgicon)
         tk.mainloop()
+
+    def tk_str(self, input_str):
+        char_list = [input_str[i] for i in range(len(input_str)) if ord(input_str[i]) in range(65536)]
+        tk_str = ''
+        for ch in char_list:
+            tk_str = tk_str + ch
+        return tk_str
 
 if __name__ == '__main__':
     site = 'https://www.stackoverflow.com/'

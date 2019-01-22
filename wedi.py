@@ -121,6 +121,8 @@ class services:
             return url
         if "rapidvideo" in url and "rapidvideo" not in self.domain[1]:
             self.ydl_urls.append(url)
+        if "streamango" in url and "streamango" not in self.domain[1]:
+            self.ydl_urls.append(url)
         return url
 
     def multi_replace(self, tokens_to_be_replaced, replace_with, text):
@@ -238,8 +240,10 @@ class services:
         res = []
         urls = re.findall('["\']((http|ftp)s?://.*?)["\']', self.page_source)
         for link in self.soup.find_all('a'):
-            if 'href' in link:
+            try:
                 urls.append((link['href'], ""))
+            except:
+                pass
         self.ydl_urls = [self.site[:-1]]
         urls.append((self.site[:-1], "")) #remove tailing /
         urls = set(urls)
@@ -607,6 +611,9 @@ if __name__ == "__main__":
     site = "https://gogoanimes.co/asobi-asobase-specials-episode-2"
     site = "https://soundcloud.com/jahseh-onfroy/bad"
     site = "https://www.youtube.com/watch?v=VWIHxYvo6dk"
+    site = "https://www09.gogoanimes.tv/tonari-seki-kun-episode-1"
+    site = "https://www09.gogoanimes.tv/hetalia-axis-powers-episode-1"
+    site = "https://github.com/harvitronix/neural-network-genetic-algorithm" #debugg docs
 
     path = "C:\\Users\\Ahmed\\Desktop\\Others\\wedi_downloads"
     extensive = False
@@ -615,10 +622,10 @@ if __name__ == "__main__":
     vid_types = ['mp4', 'avi', 'mpeg', 'mpg', 'wmv', 'mov', 'flv', 'swf', 'mkv', '3gp', 'webm', 'ogg']
     aud_types = ['mp3', 'aac', 'wma', 'wav', 'm4a']
     img_settings = {'run':False, 'img_types':img_types}
-    doc_settings = {'run':False, 'doc_types':doc_types}
+    doc_settings = {'run':True, 'doc_types':doc_types}
     vid_settings = {'run':False, 'vid_types':vid_types, 'format':'best'}
-    aud_settings = {'run':True, 'aud_types':aud_types}
-    dev_settings = {'run':False}
+    aud_settings = {'run':False, 'aud_types':aud_types}
+    dev_settings = {'run':True}
     settings = {'path':path, 'extensive':extensive, 'images':img_settings, 'documents':doc_settings, 'videos':vid_settings, 'audios':aud_settings, 'dev':dev_settings}
     services = services(site, settings)
     services.run()

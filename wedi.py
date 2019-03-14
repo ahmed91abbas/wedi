@@ -119,10 +119,50 @@ class services:
             url = url.replace('https://github.com/', 'https://raw.github.com/')
             url = url .replace('blob/', '')
             return url
-        if "rapidvideo" in url and "rapidvideo" not in self.domain[1]:
-            self.ydl_urls.append(url)
-        if "streamango" in url and "streamango" not in self.domain[1]:
-            self.ydl_urls.append(url)
+        if not "gogoanimes" in self.domain[1]:
+            if "vidstreaming" in url and "vidstreaming" not in self.domain[1]:
+                self.ydl_urls.append(url)
+            if "rapidvideo" in url and "rapidvideo" not in self.domain[1]:
+                self.ydl_urls.append(url)
+            if "streamango" in url and "streamango" not in self.domain[1]:
+                self.ydl_urls.append(url)
+        else:
+            if "rapidvideo.com/e/" in url:
+                url = url.replace("rapidvideo.com/e/", "rapidvideo.com/d/")
+                response = requests.get(url, allow_redirects=True, stream=True)
+                page_source = response.text
+                soup = BeautifulSoup(page_source, 'html.parser')
+                urls = re.findall('["\']((http|ftp)s?://.*?)["\']', page_source)
+                for link in soup.find_all('a'):
+                    try:
+                        urls.append((link['href'], ""))
+                    except:
+                        pass
+                urls = set(urls)
+                res = []
+                for url in urls:
+                    url = url[0]
+                    if self.is_vid_link(url):
+                        res.append(url)
+                if res:
+                    min_v = 2000
+                    max_v = -1
+                    best = worst = ""
+                    for link in res:
+                        nbr = re.sub("[^0-9]", "", link.replace("mp4", ""))
+                        nbr = nbr[len(nbr)-4:]
+                        if nbr != "1080":
+                            nbr = nbr[1:]
+                        if int(nbr) > max_v:
+                            max_v = int(nbr)
+                            best = link
+                        if int(nbr) < min_v:
+                            min_v = int(nbr)
+                            worst = link
+                    if self.vid_format == "best":
+                        self.ydl_urls.append(best)
+                    else:
+                        self.ydl_urls.append(worst)
         return url
 
     def multi_replace(self, tokens_to_be_replaced, replace_with, text):
@@ -614,6 +654,13 @@ if __name__ == "__main__":
     site = "https://www09.gogoanimes.tv/tonari-seki-kun-episode-1"
     site = "https://www09.gogoanimes.tv/hetalia-axis-powers-episode-1"
     site = "https://github.com/harvitronix/neural-network-genetic-algorithm" #debugg docs
+    site = "https://www.rapidvideo.com/d/G0LGGGIOU4"
+    site = "https://gogoanimes.co/tate-no-yuusha-no-nariagari-episode-8"
+    site = "https://vidstream.co/download?id=MTE0MTM0&typesub=Gogoanime-SUB&title=Tate+no+Yuusha+no+Nariagari+Episode+8"
+    site = "https://www.rapidvideo.com/d/G0MW1FLIA5"
+    site = "https://www12.gogoanimes.tv/kaze-ga-tsuyoku-fuiteiru-episode-19" #94mb
+    site = "https://www14.gogoanimes.tv/sword-art-online-alicization-episode-21"
+    site = "https://www15.gogoanimes.tv/tate-no-yuusha-no-nariagari-episode-10"
 
     path = "C:\\Users\\Ahmed\\Desktop\\Others\\wedi_downloads"
     extensive = False
@@ -622,8 +669,8 @@ if __name__ == "__main__":
     vid_types = ['mp4', 'avi', 'mpeg', 'mpg', 'wmv', 'mov', 'flv', 'swf', 'mkv', '3gp', 'webm', 'ogg']
     aud_types = ['mp3', 'aac', 'wma', 'wav', 'm4a']
     img_settings = {'run':False, 'img_types':img_types}
-    doc_settings = {'run':True, 'doc_types':doc_types}
-    vid_settings = {'run':False, 'vid_types':vid_types, 'format':'best'}
+    doc_settings = {'run':False, 'doc_types':doc_types}
+    vid_settings = {'run':True, 'vid_types':vid_types, 'format':'best'}
     aud_settings = {'run':False, 'aud_types':aud_types}
     dev_settings = {'run':True}
     settings = {'path':path, 'extensive':extensive, 'images':img_settings, 'documents':doc_settings, 'videos':vid_settings, 'audios':aud_settings, 'dev':dev_settings}

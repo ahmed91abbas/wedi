@@ -71,7 +71,7 @@ class services:
             self.gui.add_to_urls(set(self.doc_urls))
         if self.vid_run:
             self.gui.add_to_urls(set(self.vid_urls))
-            self.gui.add_to_urls(set(self.ydl_urls))
+            self.gui.add_to_urls(set(self.ydl_urls.keys()))
         if self.aud_run:
             self.gui.add_to_urls(set(self.aud_urls))
         self.output_results()
@@ -121,11 +121,11 @@ class services:
             return url
         if not "gogoanimes" in self.domain[1]:
             if "vidstreaming" in url and "vidstreaming" not in self.domain[1]:
-                self.ydl_urls.append(url)
+                self.ydl_urls[url] = None
             if "rapidvideo" in url and "rapidvideo" not in self.domain[1]:
-                self.ydl_urls.append(url)
+                self.ydl_urls[url] = None
             if "streamango" in url and "streamango" not in self.domain[1]:
-                self.ydl_urls.append(url)
+                self.ydl_urls[url] = None
         else:
             if "rapidvideo.com/e/" in url:
                 url = url.replace("rapidvideo.com/e/", "rapidvideo.com/d/")
@@ -159,10 +159,11 @@ class services:
                         if int(nbr) < min_v:
                             min_v = int(nbr)
                             worst = link
+                    filename = self.site.replace(self.domain[0] + "://" + self.domain[1], "")
                     if self.vid_format == "best":
-                        self.ydl_urls.append(best)
+                        self.ydl_urls[best] = filename
                     else:
-                        self.ydl_urls.append(worst)
+                        self.ydl_urls[worst] = filename
         return url
 
     def multi_replace(self, tokens_to_be_replaced, replace_with, text):
@@ -284,7 +285,8 @@ class services:
                 urls.append((link['href'], ""))
             except:
                 pass
-        self.ydl_urls = [self.site[:-1]]
+        self.ydl_urls = {}
+        self.ydl_urls[self.site[:-1]] = None
         urls.append((self.site[:-1], "")) #remove tailing /
         urls = set(urls)
         for url in urls:
@@ -491,8 +493,15 @@ class services:
             try:
                 self.gui.remove_from_urls(url)
                 self.gui.update_values(url=url)
-                with youtube_dl.YoutubeDL(ydl_opts) as ydl:
-                    ydl.download([url])
+                if self.ydl_urls[url]:
+                    filepath = self.create_filename(self.vid_folder, self.ydl_urls[url])
+                    temp_ydl_opts = ydl_opts.copy()
+                    temp_ydl_opts['outtmpl'] = filepath + ".%(ext)s"
+                    with youtube_dl.YoutubeDL(temp_ydl_opts) as ydl:
+                        ydl.download([url])
+                else:
+                    with youtube_dl.YoutubeDL(ydl_opts) as ydl:
+                        ydl.download([url])
             except Exception as e:
                 self.gui.update_action(str(e))
                 print(str(e))
@@ -537,7 +546,7 @@ class services:
         if (len(self.vid_urls) != 0):
             filename = os.path.join(self.dev_folder, 'vidURLs.txt')
             with open(filename, 'wb') as f:
-                for url in set(self.vid_urls):
+                for url in self.ydl_urls:
                     line = url + '\n'
                     f.write(line.encode('utf-8'))
                 self.gui.add_to_list(filename)
@@ -570,7 +579,9 @@ class services:
             self.download_links(self.doc_urls, self.doc_types, self.doc_folder)
             print()
         if self.vid_run:
-            self.download_links(self.vid_urls, self.vid_types, self.vid_folder)
+            #self.download_links(self.vid_urls, self.vid_types, self.vid_folder)
+            for url in self.vid_urls:
+                self.ydl_urls[url] = None
             print()
             print("Trying to extract video using youtube_dl...")
             self.gui.update_action("Trying to extract video using youtube_dl...")
@@ -648,19 +659,13 @@ if __name__ == "__main__":
     site = 'https://www.dplay.se/videos/stories-from-norway/stories-from-norway-102'
     site = 'https://www.nordea.se/'
     site = "https://www.rapidvideo.com/e/FYOIHWGHES"
-    site = "https://gogoanimes.co/asobi-asobase-specials-episode-2"
     site = "https://soundcloud.com/jahseh-onfroy/bad"
     site = "https://www.youtube.com/watch?v=VWIHxYvo6dk"
     site = "https://www09.gogoanimes.tv/tonari-seki-kun-episode-1"
     site = "https://www09.gogoanimes.tv/hetalia-axis-powers-episode-1"
     site = "https://github.com/harvitronix/neural-network-genetic-algorithm" #debugg docs
-    site = "https://www.rapidvideo.com/d/G0LGGGIOU4"
-    site = "https://gogoanimes.co/tate-no-yuusha-no-nariagari-episode-8"
     site = "https://vidstream.co/download?id=MTE0MTM0&typesub=Gogoanime-SUB&title=Tate+no+Yuusha+no+Nariagari+Episode+8"
     site = "https://www.rapidvideo.com/d/G0MW1FLIA5"
-    site = "https://www12.gogoanimes.tv/kaze-ga-tsuyoku-fuiteiru-episode-19" #94mb
-    site = "https://www14.gogoanimes.tv/sword-art-online-alicization-episode-21"
-    site = "https://www15.gogoanimes.tv/tate-no-yuusha-no-nariagari-episode-10"
     site = 'https://www.youtube.com/watch?v=zmr2I8caF0c' #small
 
     path = "wedi_downloads"
@@ -671,8 +676,8 @@ if __name__ == "__main__":
     aud_types = ['mp3', 'aac', 'wma', 'wav', 'm4a']
     img_settings = {'run':False, 'img_types':img_types}
     doc_settings = {'run':False, 'doc_types':doc_types}
-    vid_settings = {'run':False, 'vid_types':vid_types, 'format':'best'}
-    aud_settings = {'run':True, 'aud_types':aud_types}
+    vid_settings = {'run':True, 'vid_types':vid_types, 'format':'best'}
+    aud_settings = {'run':False, 'aud_types':aud_types}
     dev_settings = {'run':True}
     settings = {'path':path, 'extensive':extensive, 'images':img_settings, 'documents':doc_settings, 'videos':vid_settings, 'audios':aud_settings, 'dev':dev_settings}
     services = services(site, settings)

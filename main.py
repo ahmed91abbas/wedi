@@ -195,18 +195,21 @@ class GUI:
             self.dev_button['image'] = self.devgray
 
     def default_settings(self):
-        path = "."
+        path = "..//wedi_downloads"
         extensive = False
         img_types = ['jpg', 'jpeg', 'png', 'gif', 'svg']
         doc_types = ['txt', 'py', 'java', 'php', 'pdf', 'md', 'gitignore', 'c']
-        vid_types = ['mp4', 'avi', 'mpeg', 'mpg', 'wmv', 'mov', 'flv', 'swf', 'mkv', '3gp', 'webm', 'ogg']
+        vid_types = ['mp4', 'avi', 'mpeg', 'mpg', 'wmv', 'mov', 'flv',\
+                    'swf', 'mkv', '3gp', 'webm', 'ogg']
         aud_types = ['mp3', 'aac', 'wma', 'wav', 'm4a']
-        img_settings = {'run':True, 'img_types':img_types}
-        doc_settings = {'run':True, 'doc_types':doc_types}
+        img_settings = {'run':False, 'img_types':img_types}
+        doc_settings = {'run':False, 'doc_types':doc_types}
         vid_settings = {'run':True, 'vid_types':vid_types, 'format':'best'}
-        aud_settings = {'run':True, 'aud_types':aud_types}
+        aud_settings = {'run':False, 'aud_types':aud_types}
         dev_settings = {'run':True}
-        settings = {'path':path, 'extensive':extensive,'images':img_settings, 'documents':doc_settings, 'videos':vid_settings, 'audios':aud_settings, 'dev':dev_settings}
+        settings = {'path':path, 'extensive':extensive,'images':img_settings,\
+                    'documents':doc_settings, 'videos':vid_settings,\
+                    'audios':aud_settings, 'dev':dev_settings}
         pickle.dump(settings, open('settings.sav', 'wb'))
         return settings
 

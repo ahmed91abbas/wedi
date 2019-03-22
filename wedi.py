@@ -439,16 +439,16 @@ class services:
                 self.download_url(url, filename)
 
     def ffmpeg_convert(self, in_file, out_file):
-        params = ['ffmpeg', '-i', in_file, out_file]
-        # subprocess.Popen(params)
-        subprocess.call(params, shell=False, close_fds=True)
-        # process = subprocess.Popen(params, shell=False,
-        # stdout=subprocess.PIPE, stderr=subprocess.STDOUT, close_fds=True)
-        # while True:
-        #     line = process.stdout.readline().decode("utf8")
-        #     if not line:
-        #         break
-        #     print(line)
+        #TODO support for linux and Mac
+        _platform = sys.platform
+        if _platform == "linux" or _platform == "linux2": # linux
+            print("Converting in Linux is not supported yet!")
+        elif _platform == "darwin": # MAC OS X
+            print("Converting in MAC OS is not supported yet!")
+        elif _platform == "win32" or _platform == "win64": # Windows
+            ffmpeg_exe = "ffmpeg_win\\bin\\ffmpeg.exe"
+            params = [ffmpeg_exe, '-i', in_file, out_file]
+            subprocess.call(params, shell=False, close_fds=True)
 
     def ydl_audios(self):
         try:
@@ -630,6 +630,7 @@ class services:
             exclude.append(os.path.join(self.path, 'textures'))
             exclude.append(os.path.join(self.path, 'drivers'))
             exclude.append(os.path.join(self.path, 'certifi'))
+            exclude.append(os.path.join(self.path, 'ffmpeg_win'))
             for d in dirs:
                 if d not in exclude:
                     shutil.rmtree(d)
@@ -639,7 +640,6 @@ class services:
 if __name__ == "__main__":
     site = 'https://www.blocket.se/malmo/Mini_Cooper_Clubman_Pepper_120hk_6_vaxl_82169382.htm?ca=23_11&w=0'
     site = 'https://m2.ikea.com/se/sv/campaigns/nytt-laegre-pris-pub3c9e0c81' #js rendered page
-    site = 'https://www.youtube.com/watch?v=zmr2I8caF0c' #small
     site = "https://www.youtube.com/watch?v=JR0BYMDWmVo"
     site = 'http://cs.lth.se/edan20/'
     site = 'https://www.bytbil.com/'
@@ -661,8 +661,9 @@ if __name__ == "__main__":
     site = "https://www12.gogoanimes.tv/kaze-ga-tsuyoku-fuiteiru-episode-19" #94mb
     site = "https://www14.gogoanimes.tv/sword-art-online-alicization-episode-21"
     site = "https://www15.gogoanimes.tv/tate-no-yuusha-no-nariagari-episode-10"
+    site = 'https://www.youtube.com/watch?v=zmr2I8caF0c' #small
 
-    path = "C:\\Users\\Ahmed\\Desktop\\Others\\wedi_downloads"
+    path = "wedi_downloads"
     extensive = False
     img_types = ['jpg', 'jpeg', 'png', 'gif', 'svg']
     doc_types = ['txt', 'py', 'java', 'php', 'pdf', 'md', 'gitignore', 'c']
@@ -670,8 +671,8 @@ if __name__ == "__main__":
     aud_types = ['mp3', 'aac', 'wma', 'wav', 'm4a']
     img_settings = {'run':False, 'img_types':img_types}
     doc_settings = {'run':False, 'doc_types':doc_types}
-    vid_settings = {'run':True, 'vid_types':vid_types, 'format':'best'}
-    aud_settings = {'run':False, 'aud_types':aud_types}
+    vid_settings = {'run':False, 'vid_types':vid_types, 'format':'best'}
+    aud_settings = {'run':True, 'aud_types':aud_types}
     dev_settings = {'run':True}
     settings = {'path':path, 'extensive':extensive, 'images':img_settings, 'documents':doc_settings, 'videos':vid_settings, 'audios':aud_settings, 'dev':dev_settings}
     services = services(site, settings)

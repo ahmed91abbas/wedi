@@ -195,7 +195,7 @@ class GUI:
             self.dev_button['image'] = self.devgray
 
     def default_settings(self):
-        path = "..//wedi_downloads"
+        path = "..\\wedi_downloads"
         extensive = False
         img_types = ['jpg', 'jpeg', 'png', 'gif', 'svg']
         doc_types = ['txt', 'py', 'java', 'php', 'pdf', 'md', 'gitignore', 'c']

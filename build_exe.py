@@ -27,9 +27,9 @@ def call_process():
     subprocess.call(params)
 
 def add_files():
-    shutil.copyfile("settings.sav", "dist\main\settings.sav")
-    shutil.copyfile("certifi\cacert.pem", "dist\main\certifi\cacert.pem")
-    folders = ["textures", "drivers"]
+    shutil.copyfile("settings.sav", "dist\\main\\settings.sav")
+    shutil.copyfile("certifi\\cacert.pem", "dist\\main\\certifi\\cacert.pem")
+    folders = ["textures", "drivers", "ffmpeg_win"]
     for folder in folders:
         dist = "dist\\main\\" + folder
         if os.path.exists(dist):
@@ -40,15 +40,17 @@ def replace_local_copy():
     dist = "C:\\Users\\Ahmed\\Desktop\\Others\\wedi"
     if os.path.exists(dist):
         shutil.rmtree(dist)
-    shutil.copytree("dist\\main", dist)
+    exe_path = os.path.join(dist, "exe_files")
+    shutil.copytree("dist\\main", exe_path)
+    download_path = os.path.join(dist, "wedi_downloads")
+    os.mkdir(download_path)
 
-
-print("Cleaning up old files...")
+print("Cleaning up old files...\n")
 clean_up()
-print("Creating the exe...")
+print("\nCreating the exe...\n")
 call_process()
-print("Adding missing files...")
+print("\nAdding missing files...\n")
 add_files()
-print("Replacing local copy of wedi...")
+print("\nReplacing local copy of wedi...\n")
 replace_local_copy()
-print("Done.")
+print("\nDone.")

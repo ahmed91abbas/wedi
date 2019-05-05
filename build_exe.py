@@ -43,14 +43,12 @@ def add_files():
     folders = ["textures", "drivers", "ffmpeg_win"]
     for folder in folders:
         dist = "dist\\main\\" + folder
-        if os.path.exists(dist):
-            shutil.rmtree(dist)
+        remove_dir(dist)
         shutil.copytree(folder, dist)
 
 def replace_local_copy():
     dist = "C:\\Users\\Ahmed\\Desktop\\Others\\wedi"
-    if os.path.exists(dist):
-        shutil.rmtree(dist)
+    remove_dir(dist)
     exe_path = os.path.join(dist, "exe_files")
     shutil.copytree("dist\\main", exe_path)
     download_path = os.path.join(dist, "wedi_downloads")

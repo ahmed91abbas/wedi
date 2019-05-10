@@ -13,3 +13,4 @@ dist/
 *.pyc
 *.sav
 *.txt
+.DS_Store

@@ -7,7 +7,7 @@ body {
 .buttonDownload {
     display: inline-block;
     position: relative;
-    padding: 10px 25px;
+    padding: 20px 50px;
 
     background-color: #4CC713;
     color: white;

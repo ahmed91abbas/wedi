@@ -32,8 +32,9 @@
 
 /* Style the image inside the centered container, if needed */
 .centered img {
-  width: 150px;
-  border-radius: 50%;
+  width: auto;
+  height: auto;
+  max-width: 50vw;
 }
 
 .text_style {

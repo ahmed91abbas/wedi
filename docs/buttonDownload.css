@@ -8,7 +8,7 @@ body {
     display: inline-block;
     position: relative;
     padding: 20px 50px;
-
+    width: 90px;
     background-color: #4CC713;
     color: white;
 

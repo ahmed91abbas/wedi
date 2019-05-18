@@ -12,6 +12,8 @@ import webbrowser
 from PIL import Image, ImageTk
 from ToolTip import ToolTip
 from settingsGUI import settings_GUI
+import requests
+import json
 
 class GUI:
     def __init__(self, settings_filepath):
@@ -44,6 +46,8 @@ class GUI:
         menu.add_cascade(label="Help", menu=helpmenu)
         helpmenu.add_command(label="Open download folder", command=self.on_open_download_folder)
         helpmenu.add_command(label="Open Github page", command=self.on_open_github)
+        helpmenu.add_command(label="Open download page", command=self.on_open_download_page)
+        helpmenu.add_command(label="Check for updates", command=self.check_for_updates)
         helpmenu.add_command(label="Disclaimer", command=self.on_disclaimer)
         helpmenu.add_command(label="About", command=self.on_about)
 
@@ -140,7 +144,6 @@ class GUI:
         self.start_frame2.pack(side="top")
         self.body_frame.pack()
         self.end_frame.pack(side="bottom", pady=25)
-
         self.root.mainloop()
 
     def clear_site(self):
@@ -196,6 +199,7 @@ class GUI:
 
     def default_settings(self):
         path = "..\\wedi_downloads"
+        version = 1.0
         extensive = False
         img_types = ['jpg', 'jpeg', 'png', 'gif', 'svg']
         doc_types = ['txt', 'py', 'java', 'php', 'pdf', 'md', 'gitignore', 'c']
@@ -209,10 +213,9 @@ class GUI:
         dev_settings = {'run':True}
         settings = {'path':path, 'extensive':extensive,'images':img_settings,\
                     'documents':doc_settings, 'videos':vid_settings,\
-                    'audios':aud_settings, 'dev':dev_settings}
+                    'audios':aud_settings, 'dev':dev_settings, 'version':version}
         pickle.dump(settings, open('settings.sav', 'wb'))
         return settings
-
 
     def on_info(self):
         if self.info_on:
@@ -277,10 +280,10 @@ class GUI:
         settings_GUI(self.settings_filepath, imgicon=self.imgicon)
 
     def on_about(self):
-        msg = "WeDi (Web Dissector) is a tool that makes it \
+        msg = 'WeDi (Web Dissector) is a tool that makes it \
 possible to download all contents of a page easily \
-(images, documents, videos...etc)"
-        messagebox.showinfo("About", msg)
+(images, documents, videos...etc)'
+        messagebox.showinfo(f'About WeDi v{self.settings["version"]}', msg)
 
     def on_disclaimer(self):
         msg = "The user of WeDi is responsible to use WeDi only on \
@@ -301,6 +304,10 @@ web pages that allow their contents to be downloaded and stored locally."
         url = "https://github.com/ahmed91abbas/WeDi"
         webbrowser.open(url, new=0, autoraise=True)
 
+    def on_open_download_page(self):
+        url = "https://ahmed91abbas.github.io/WeDi/"
+        webbrowser.open(url, new=0, autoraise=True)
+
     def on_run(self, extensive=False):
         current_settings = pickle.load(open(self.settings_filepath, 'rb'))
         self.settings['extensive'] = extensive
@@ -315,6 +322,22 @@ web pages that allow their contents to be downloaded and stored locally."
             runGUI.runGUI(site, self.settings, imgicon=self.imgicon)
         else:
             print("Enter the webpage url!")
+
+    def check_for_updates(self):
+        url = "https://api.github.com/repos/ahmed91abbas/wedi/releases/latest"
+        response = requests.get(url)
+        if response.status_code == 200:
+            response = response.json()
+            version_tag = response["tag_name"]
+            version = float(version_tag[1:])
+            if version > self.settings["version"]:
+                ans = messagebox.askyesno('Check for updates', f'Version {version_tag}'
+                    f' is available. Current version is v{self.settings["version"]}'\
+                    f'\nDo you want to open the download page?')
+                if ans:
+                    self.on_open_download_page()
+            else:
+                messagebox.showinfo("Check for updates", "Your version is up to date.")
 
 if __name__ == '__main__':
     settings_filepath = 'settings.sav'

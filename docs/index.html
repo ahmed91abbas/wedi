@@ -7,6 +7,7 @@
   <link rel="stylesheet" type="text/css" href="overview.css">
  </head>
 <body>
+  <!--HTML body-->
   <div class="split left">
     <div class="centered">
       <p class="text_style">
@@ -16,9 +17,9 @@
       <p style="font-family:georgia,garamond,serif;font-size:50px;font-style:italic;color:white">
         Downloads
       </p>
-      <a href="https://github.com/ahmed91abbas/WeDi/releases/download/v1.0/WeDi_win.zip" class="buttonDownload">Windows</a>
+      <a id="win_link" class="buttonDownload"><p id="win_tag_name"></p></a>
       <br><br>
-      <a href="https://github.com/ahmed91abbas/WeDi/releases/download/v1.0/WeDi_win.zip" class="buttonDownload">Linux</a>
+      <a id="linux_link" class="buttonDownload"><p id="linux_tag_name"></p></a>
     </div>
   </div>
   <div class="split right">
@@ -26,5 +27,23 @@
       <img src="wedi.gif" alt="wedi">
     </div>
   </div>
+
+  <!--Script to get the latest versions and download links-->
+  <script>
+  var xmlhttp = new XMLHttpRequest();
+  var url = "https://api.github.com/repos/ahmed91abbas/wedi/releases/latest";
+
+  xmlhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+      var response = JSON.parse(this.responseText);
+      document.getElementById('win_tag_name').innerHTML = "Windows " + response["tag_name"];
+      document.getElementById("win_link").setAttribute("href",response["assets"][0]["browser_download_url"]);
+      document.getElementById('linux_tag_name').innerHTML = "Linux coming soon";
+      //document.getElementById("linux_link").setAttribute("href",response["assets"][0]["browser_download_url"]);
+    }
+  };
+  xmlhttp.open("GET", url, true);
+  xmlhttp.send();
+  </script>
 </body>
 </html>

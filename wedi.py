@@ -59,6 +59,9 @@ class services:
         self.dev_run = settings['dev']['run']
         self.dev_folder = ""
 
+        self.video_streaming_services = ["vidstreaming", "rapidvideo", "streamango"]
+        self.found_embedded_video_download_link = False
+
     def run(self):
         self.start_time = time.clock()
         self.connect()
@@ -117,52 +120,67 @@ class services:
             url = url.replace('https://github.com/', 'https://raw.github.com/')
             url = url .replace('blob/', '')
             return url
-        if not "gogoanimes" in self.domain[1]:
-            if "vidstreaming" in url and "vidstreaming" not in self.domain[1]:
+
+        for service in self.video_streaming_services:
+            if service in url and service not in self.domain[1]:
                 self.ydl_urls[url] = None
-            if "rapidvideo" in url and "rapidvideo" not in self.domain[1]:
-                self.ydl_urls[url] = None
-            if "streamango" in url and "streamango" not in self.domain[1]:
-                self.ydl_urls[url] = None
-        else:
-            if "rapidvideo.com/e/" in url:
-                url = url.replace("rapidvideo.com/e/", "rapidvideo.com/d/")
-                response = requests.get(url, allow_redirects=True, stream=True)
-                page_source = response.text
-                soup = BeautifulSoup(page_source, 'html.parser')
-                urls = re.findall('["\']((http|ftp)s?://.*?)["\']', page_source)
-                for link in soup.find_all('a'):
-                    try:
-                        urls.append((link['href'], ""))
-                    except:
-                        pass
-                urls = set(urls)
-                res = []
-                for url in urls:
-                    url = url[0]
-                    if self.is_vid_link(url):
-                        res.append(url)
-                if res:
-                    min_v = 2000
-                    max_v = -1
-                    best = worst = ""
-                    for link in res:
-                        nbr = re.sub("[^0-9]", "", link.replace("mp4", ""))
-                        nbr = nbr[len(nbr)-4:]
-                        if nbr != "1080":
-                            nbr = nbr[1:]
-                        if int(nbr) > max_v:
-                            max_v = int(nbr)
-                            best = link
-                        if int(nbr) < min_v:
-                            min_v = int(nbr)
-                            worst = link
+
+        if "rapidvideo.com/e/" in url:
+            url = url.replace("rapidvideo.com/e/", "rapidvideo.com/d/")
+            response = requests.get(url, allow_redirects=True, stream=True)
+            page_source = response.text
+            soup = BeautifulSoup(page_source, 'html.parser')
+            urls = re.findall('["\']((http|ftp)s?://.*?)["\']', page_source)
+            for link in soup.find_all('a'):
+                try:
+                    urls.append((link['href'], ""))
+                except:
+                    pass
+            urls = set(urls)
+            res = []
+            for url in urls:
+                url = url[0]
+                if self.is_vid_link(url):
+                    res.append(url)
+            if res:
+                min_v = 2000
+                max_v = -1
+                best = worst = ""
+                for link in res:
+                    nbr = re.sub("[^0-9]", "", link.replace("mp4", ""))
+                    nbr = nbr[len(nbr)-4:]
+                    if nbr != "1080":
+                        nbr = nbr[1:]
+                    if int(nbr) > max_v:
+                        max_v = int(nbr)
+                        best = link
+                    if int(nbr) < min_v:
+                        min_v = int(nbr)
+                        worst = link
+                if "gogoanimes" in self.domain[1]:
                     filename = self.site.replace(self.domain[0] + "://" + self.domain[1], "")
-                    if self.vid_format == "best":
-                        self.ydl_urls[best] = filename
-                    else:
-                        self.ydl_urls[worst] = filename
+                else:
+                    filename = None
+                if self.vid_format == "best":
+                    self.ydl_urls[best] = filename
+                else:
+                    self.ydl_urls[worst] = filename
+                #signal that a direct link to the video was found
+                self.found_embedded_video_download_link = True
         return url
+
+    '''
+    removes all the urls in ydl_urls dict that has as a domain
+    one of the predefined video streaming services
+    '''
+    def remove_other_video_streaming_services(self):
+        keys_to_remove = []
+        for url in self.ydl_urls:
+            for service in self.video_streaming_services:
+                if service in url:
+                    keys_to_remove.append(url)
+        for key in keys_to_remove:
+            del self.ydl_urls[key]
 
     def multi_replace(self, tokens_to_be_replaced, replace_with, text):
         for token in tokens_to_be_replaced:
@@ -304,6 +322,9 @@ class services:
                     self.vid_urls.append(link)
                 elif (link != self.site[:-1] and self.is_aud_link(link)):
                     self.aud_urls.append(link)
+        #To avoid downloading duplicates
+        if self.found_embedded_video_download_link:
+            self.remove_other_video_streaming_services()
         self.extract_images()
         return res
 

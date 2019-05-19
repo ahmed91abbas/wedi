@@ -27,7 +27,6 @@ class dummyGUI:
 
 class services:
     def __init__(self, site, settings, GUI=None):
-        #sys.stdout = open(os.devnull, 'w')
         os.environ['REQUESTS_CA_BUNDLE'] = os.path.join("certifi", "cacert.pem")
         self.extensive = settings['extensive']
         if site[-1:] != '/':
@@ -35,7 +34,6 @@ class services:
         self.site = site
         self.domain = self.extract_domain(self.site)
         self.path = settings['path']
-        # self.clean_up() #TODO remove'
         if GUI:
             self.gui = GUI
         else:
@@ -631,22 +629,6 @@ class services:
             os.rmdir(self.img_folder)
         if not os.listdir(self.dev_folder):
             os.rmdir(self.dev_folder)
-
-    def clean_up(self):
-        try:
-            dirs = [os.path.join(self.path, d) for d in os.listdir(self.path)
-                        if os.path.isdir(os.path.join(self.path, d))]
-            exclude = []
-            exclude.append(os.path.join(self.path, '.git'))
-            exclude.append(os.path.join(self.path, 'textures'))
-            exclude.append(os.path.join(self.path, 'drivers'))
-            exclude.append(os.path.join(self.path, 'certifi'))
-            exclude.append(os.path.join(self.path, 'ffmpeg_win'))
-            for d in dirs:
-                if d not in exclude:
-                    shutil.rmtree(d)
-        except:
-            pass
 
 if __name__ == "__main__":
     site = 'https://www.blocket.se/malmo/Mini_Cooper_Clubman_Pepper_120hk_6_vaxl_82169382.htm?ca=23_11&w=0'

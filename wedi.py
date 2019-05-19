@@ -62,6 +62,8 @@ class services:
         self.video_streaming_services = ["vidstreaming", "rapidvideo", "streamango"]
         self.found_embedded_video_download_link = False
 
+        self.force_stop = False
+
     def run(self):
         self.start_time = time.clock()
         self.connect()
@@ -77,7 +79,12 @@ class services:
             self.gui.add_to_urls(set(self.aud_urls))
         self.output_results()
 
+    def stop(self):
+        self.force_stop = True
+
     def my_hook(self, d):
+        if self.force_stop:
+            raise Exception("Stopping...")
         if d['status'] == 'finished':
             self.gui.update_values(url=d['filename'], dl=d['total_bytes'], perc='100.0%',
                 size=d['total_bytes'], eta='0 Seconds', speed='0.0 KB/s',
@@ -411,6 +418,8 @@ class services:
                     start = time.clock()
                     total_length = int(total_length)
                     for data in response.iter_content(chunk_size=4096):
+                        if self.force_stop:
+                            raise Exception("Stopping...")
                         dl += len(data)
                         f.write(data)
                         done = int(50 * dl / total_length)

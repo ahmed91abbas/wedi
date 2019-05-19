@@ -13,12 +13,16 @@ import math
 
 class runGUI:
     def __init__(self, site, settings, imgicon = None):
+        self.site = site
+        self.settings = settings
         self.imgicon = imgicon
         self.downloaded = {}
         self.error = False
+
+    def start(self):
         self.createGUI()
         self.cycleImages()
-        self.services = services(site, settings, self)
+        self.services = services(self.site, self.settings, self)
         threading.Thread(target=self.run_services).start()
         self.mainloop()
 
@@ -279,6 +283,7 @@ class runGUI:
         self.actionLabel['text'] = msg
 
     def on_close(self):
+        self.services.stop()
         self.top.destroy()
 
     def mainloop(self):

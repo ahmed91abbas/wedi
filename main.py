@@ -7,7 +7,7 @@ except ImportError:
 import sys
 import pickle
 import os
-import runGUI
+from runGUI import runGUI
 import webbrowser
 from PIL import Image, ImageTk
 from ToolTip import ToolTip
@@ -17,6 +17,7 @@ import json
 
 class GUI:
     def __init__(self, settings_filepath):
+        self.runGUI_objects = []
         self.settings_filepath = settings_filepath
         try:
             self.settings = pickle.load(open(settings_filepath, 'rb'))
@@ -159,8 +160,10 @@ class GUI:
             self.siteEntry.insert(0, clipboard)
 
     def on_close(self):
+        for runGUI_object in self.runGUI_objects:
+            runGUI_object.on_close()
         self.root.destroy()
-        sys.exit(1)
+        sys.exit()
 
     def on_videos(self):
         self.settings['videos']['run'] = not self.settings['videos']['run']
@@ -319,7 +322,9 @@ web pages that allow their contents to be downloaded and stored locally."
             self.settings["audios"]["aud_types"] = current_settings["audios"]["aud_types"]
             self.settings["videos"]["vid_types"] = current_settings["videos"]["vid_types"]
             pickle.dump(self.settings, open('settings.sav', 'wb'))
-            runGUI.runGUI(site, self.settings, imgicon=self.imgicon)
+            runGUI_object = runGUI(site, self.settings, imgicon=self.imgicon)
+            self.runGUI_objects.append(runGUI_object)
+            runGUI_object.start()
         else:
             print("Enter the webpage url!")
 

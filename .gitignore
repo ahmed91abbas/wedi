@@ -12,5 +12,4 @@ dist/
 *.log
 *.pyc
 *.sav
-*.txt
 .DS_Store

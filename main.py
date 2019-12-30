@@ -308,7 +308,7 @@ web pages that allow their contents to be downloaded and stored locally."
         webbrowser.open(url, new=0, autoraise=True)
 
     def on_open_download_page(self):
-        url = "https://ahmed91abbas.github.io/WeDi/"
+        url = "https://ahmed91abbas.github.io/wedi/"
         webbrowser.open(url, new=0, autoraise=True)
 
     def on_run(self, extensive=False):

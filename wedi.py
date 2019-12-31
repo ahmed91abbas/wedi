@@ -220,60 +220,93 @@ class services:
         if not os.path.isdir(self.dev_folder):
             os.makedirs(self.dev_folder)
 
-    def connect_extensive(self, browser):
+    def exit_with_error(self, error_message):
+        print(error_message)
+        self.gui.show_error(error_message)
+        sys.exit(1)
+
+    def get_executable_driver_path(self, browser):
         _platform = sys.platform
-        if _platform == "linux" or _platform == "linux2": # linux
+        if _platform == "linux" or _platform == "linux2":
             firefox_driver_path = os.path.join('drivers', 'geckodriver_linux')
             chrome_driver_path = os.path.join('drivers', 'chromedriver_linux')
-        elif _platform == "darwin": # MAC OS X
+        elif _platform == "darwin":
             firefox_driver_path = os.path.join('drivers', 'geckodriver_mac')
             chrome_driver_path = os.path.join('drivers', 'chromedriver_mac')
-        elif _platform == "win32" or _platform == "win64": # Windows
-            firefox_driver_path = os.path.join('drivers', 'geckodriver_win')
-            chrome_driver_path = os.path.join('drivers', 'chromedriver_win')
-
-        if browser == 'firefox':
-            try:
-                from selenium.webdriver.firefox.options import Options
-                firefox_options = Options()
-                firefox_options.add_argument("--headless")
-                self.driver = webdriver.Firefox(executable_path=firefox_driver_path, firefox_options=firefox_options)
-            except Exception as e:
-                if 'executable needs to be in PATH' in str(e): #driver not found
-                    msg = "Firefox webdriver is missing! Try reinstalling the program."
-                    print(msg)
-                    self.gui.show_error(msg)
-                    sys.exit(1)
-                else:
-                    self.connect_extensive('chrome')
-        elif browser == 'chrome':
-            try:
-                from selenium.webdriver.chrome.options import Options
-                chrome_options = Options()
-                chrome_options.add_argument("--headless")
-                self.driver = webdriver.Chrome(executable_path=chrome_driver_path, chrome_options=chrome_options)
-            except Exception as e:
-                print(e)
-                if 'executable needs to be in PATH' in str(e): #driver not found
-                    msg = "Chrome webdriver is missing! Try reinstalling the program."
-                    print(msg)
-                    self.gui.show_error(msg)
-                    sys.exit(1)
-                else:
-                    self.connect_extensive(None)
+        elif _platform == "win32" or _platform == "win64":
+            firefox_driver_path = os.path.join('drivers', 'geckodriver_win.exe')
+            chrome_driver_path = os.path.join('drivers', 'chromedriver_win.exe')
+        
+        msg = "%s webdriver is missing! Try reinstalling the program."
+        if browser == "firefox":
+            if not os.path.isfile(firefox_driver_path):
+                self.exit_with_error(msg %browser.capitalize())
+            return firefox_driver_path
+        elif browser == "chrome":
+            if not os.path.isfile(chrome_driver_path):
+                self.exit_with_error(msg %browser.capitalize())
+            return chrome_driver_path
         else:
-            msg = "To use extensive run either Firefox or Chrome browser should be installed!"
-            print(msg)
-            self.gui.show_error(msg)
-            sys.exit(1)
+            self.exit_with_error("%s webdriver is not supported" %browser)
 
-        self.driver.get(self.site)
-        self.page_source = self.driver.page_source
-        self.driver.stop_client()
-        self.driver.close()
-        self.driver.quit()
-        self.soup = BeautifulSoup(self.page_source, 'html.parser')
-        self.response = requests.get(self.site, allow_redirects=True)
+    def get_firefox_driver(self):
+        executable_path = self.get_executable_driver_path("firefox")
+        try:
+            from selenium.webdriver.firefox.options import Options
+            firefox_options = Options()
+            firefox_options.add_argument("--headless")
+            driver = webdriver.Firefox(executable_path=executable_path, firefox_options=firefox_options)
+            return driver
+        except:
+            return None
+
+    def get_chrome_driver(self):
+        chrome_driver_path = self.get_executable_driver_path("chrome")
+        try:
+            from selenium.webdriver.chrome.options import Options
+            chrome_options = Options()
+            chrome_options.add_argument("--headless")
+            driver = webdriver.Chrome(executable_path=chrome_driver_path, chrome_options=chrome_options)
+            return driver
+        except:
+            return None
+
+    def connect_extensive(self):
+        driver = self.get_firefox_driver()
+        if not driver:
+            driver = self.get_chrome_driver()
+        if not driver:
+            msg = "To use extensive run either Firefox or Chrome browser should be installed!"
+            self.exit_with_error(msg)
+
+        try:
+            driver.get(self.site)
+            self.page_source = driver.page_source
+            driver.stop_client()
+            driver.close()
+            driver.quit()
+            self.soup = BeautifulSoup(self.page_source, 'html.parser')
+            self.response = requests.get(self.site, allow_redirects=True)
+        except:
+            msg = "Couldn't establish a connection to: " + self.site
+            if len(msg) > 100:
+                msg = msg[:97] + "..."
+            self.exit_with_error(msg)
+
+    def connect_normal(self):
+        try:
+            self.response = requests.get(self.site[:-1], allow_redirects=True, stream=True)
+            content_type = self.response.headers.get('Content-Type').split(";")[0]
+            if content_type != "text/html":
+                self.page_source = ""
+            else:
+                self.page_source = self.response.text
+            self.soup = BeautifulSoup(self.page_source, 'html.parser')
+        except:
+            msg = "Couldn't establish a connection to: " + self.site
+            if len(msg) > 100:
+                msg = msg[:97] + "..."
+            self.exit_with_error(msg)
 
     def connect(self):
         msg = 'Establishing connection to ' + self.site
@@ -281,23 +314,9 @@ class services:
             msg = msg[:97] + "..."
         self.gui.update_action(msg)
         if self.extensive:
-            self.connect_extensive('firefox')
+            self.connect_extensive()
         else:
-            try:
-                self.response = requests.get(self.site[:-1], allow_redirects=True, stream=True)
-                content_type = self.response.headers.get('Content-Type').split(";")[0]
-                if content_type != "text/html":
-                    self.page_source = ""
-                else:
-                    self.page_source = self.response.text
-                self.soup = BeautifulSoup(self.page_source, 'html.parser')
-            except:
-                msg = "Couldn't establish a connection to: " + self.site
-                if len(msg) > 100:
-                    msg = msg[:97] + "..."
-                self.gui.show_error(msg)
-                print("Couldn't establish a connection to: " + self.site)
-                sys.exit(1)
+            self.connect_normal()
 
     def extract_urls(self):
         self.gui.update_action("Extracting the urls from the website...")

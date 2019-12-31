@@ -27,6 +27,8 @@ class dummyGUI:
 
 class services:
     def __init__(self, site, settings, GUI=None):
+        self.url_regex = '(https?://[0-9A-Za-z-._~?/#]+)'
+        self.relative_url_regex = '(?:src|alt|srcset)=[\"\']{1}(/[0-9A-Za-z-._~?/#]+)[\"\']{1}'
         os.environ['REQUESTS_CA_BUNDLE'] = os.path.join("certifi", "cacert.pem")
         self.extensive = settings['extensive']
         if site[-1:] != '/':
@@ -107,7 +109,13 @@ class services:
         return (protocol, domain)
 
     def fix_url(self, url):
-        if 'http' not in url and len(url) > 2:
+        if url[-1:] == '/':
+            url = url[:-1]
+
+        if re.match(self.url_regex, url):
+            return url
+
+        if len(url) > 2 and url[0] == '/':
             protocol = self.domain[0]
             domain_name = self.domain[1]
             if url[:2] == '//':
@@ -118,9 +126,8 @@ class services:
             if len(url) > x and url[:x] == domain_name:
                 return protocol + '://' + url
             return protocol + '://' + domain_name + url
-        if len(url) <= 2:
-            return None
-        return url
+
+        return None
 
     def apply_special_rules(self, url):
         if "github" in self.domain[1]:
@@ -147,7 +154,7 @@ class services:
             res = []
             for url in urls:
                 url = url[0]
-                if self.is_vid_link(url):
+                if self.is_media_url(url, self.vid_types):
                     res.append(url)
             if res:
                 min_v = 2000
@@ -320,50 +327,45 @@ class services:
 
     def extract_urls(self):
         self.gui.update_action("Extracting the urls from the website...")
-        res = []
-        urls = re.findall('["\']((http|ftp)s?://.*?)["\']', self.page_source)
-        for link in self.soup.find_all('a'):
-            try:
-                urls.append((link['href'], ""))
-            except:
-                pass
+        results = []
+        urls = set()
+        urls.update(re.findall(self.url_regex, self.page_source))
+        urls.update(re.findall(self.relative_url_regex, self.page_source))
+        for link in self.soup.find_all('a', href=True):
+            urls.add(link['href'])
         self.ydl_urls = {}
-        self.ydl_urls[self.site[:-1]] = None
-        urls.append((self.site[:-1], "")) #remove tailing /
+        self.ydl_urls[self.site] = None
+        urls.add(self.site)
         urls = set(urls)
         for url in urls:
-            url = url[0]
-            for link in url.split(" "):
-                link = self.fix_url(link)
-                if not link:
-                    continue
-                link = self.apply_special_rules(link)
-                res.append(link)
-                if (self.is_img_link(link)):
-                    self.img_urls.append(link)
-                elif (self.is_doc_link(link)):
-                    self.doc_urls.append(link)
-                #main url is handeled by youtube_dl for video and audio
-                elif (link != self.site[:-1] and self.is_vid_link(link)):
-                    self.vid_urls.append(link)
-                elif (link != self.site[:-1] and self.is_aud_link(link)):
-                    self.aud_urls.append(link)
-        #To avoid downloading duplicates
-        if self.found_embedded_video_download_link:
-            self.remove_other_video_streaming_services()
-        self.extract_images()
-        return res
-
-    def extract_images(self):
-        res = re.findall(';pic=.*;', str(self.soup))
-        for url in res:
-            url = url[5:-1]
-            url =  self.fix_url(url)
+            url = self.fix_url(url)
             if not url:
                 continue
             url = self.apply_special_rules(url)
-            self.img_urls.append(url)
-            self.urls.append(url)
+            results.append(url)
+            if self.is_media_url(url, self.img_types):
+                self.img_urls.append(url)
+            elif self.is_media_url(url, self.doc_types):
+                self.doc_urls.append(url)
+            #main url is handeled by youtube_dl for video and audio
+            elif url != self.fix_url(self.site) and self.is_media_url(url, self.vid_types):
+                self.vid_urls.append(url)
+            elif url != self.fix_url(self.site) and self.is_media_url(url, self.aud_types):
+                self.aud_urls.append(url)
+
+        #To avoid downloading duplicates
+        if self.found_embedded_video_download_link:
+            self.remove_other_video_streaming_services()
+
+        image_urls = self.extract_images()
+        self.img_urls += image_urls
+        urls.update(image_urls)
+
+        return results
+
+    def extract_images(self):
+        results = re.findall(';pic=(.*);', str(self.soup))
+        results = list(map(self.fix_url, results))
 
         img_tags = self.soup.find_all('img')
         for img in img_tags:
@@ -375,31 +377,15 @@ class services:
             url =  self.fix_url(url)
             if not url:
                 continue
-            url = self.apply_special_rules(url)
-            self.img_urls.append(url)
-            self.urls.append(url)
+            results.append(url)
+        return results
 
-    def is_img_link(self, url):
-        for img_type in self.img_types:
-            if ('.' + img_type) in url:
-                return True
-        return False
-
-    def is_doc_link(self, url):
-        for doc_type in self.doc_types:
-            if ('.' + doc_type) in url[-len(doc_type) - 1:]:
-                return True
-        return False
-
-    def is_vid_link(self, url):
-        for vid_type in self.vid_types:
-            if ('.' + vid_type) in url[-len(vid_type) - 1:]:
-                return True
-        return False
-
-    def is_aud_link(self, url):
-        for aud_type in self.aud_types:
-            if ('.' + aud_type) in url[-len(aud_type) - 1:]:
+    def is_media_url(self, url, media_types):
+        for media_type in media_types:
+            extension = ""
+            if len(url) > len(media_type):
+                extension = url[-len(media_type)-1:]
+            if ('.' + media_type) == extension:
                 return True
         return False
 

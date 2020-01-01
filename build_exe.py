@@ -2,6 +2,7 @@ import subprocess
 import os, sys, shutil
 from os.path import join
 from win32com.client import Dispatch
+import zipfile
 from environs import Env
 
 def path_join(list_of_names):
@@ -67,6 +68,27 @@ def remove_leading_slashes(path_str):
     while path_str[0] in ["/", "\\"]:
         path_str = path_str[1:]
     return path_str
+
+def create_release_zip(parent_path):
+    local_copy = join(parent_path, "wedi")
+    release_target = join(local_copy, "wedi-win.zip")
+    
+    empty_dirs = []
+    zipf = zipfile.ZipFile(release_target, 'w', zipfile.ZIP_DEFLATED)
+    for root, dirs, files in os.walk(local_copy):
+        target_folder = remove_leading_slashes(root.replace(parent_path, ""))
+        empty_dirs.extend([dir for dir in dirs if os.listdir(join(root, dir)) == []])
+        for filename in files:
+            if filename == "wedi-win.zip":
+                continue
+            zipf.write(join(root, filename), join(target_folder, filename))
+    
+        for dirname in empty_dirs:
+            zipinfo = zipfile.ZipInfo(join(target_folder, dirname) + "/")  
+            zipf.writestr(zipinfo, "")
+        empty_dirs = []
+    zipf.close()
+
 if __name__ == '__main__':
     env = Env()
     env.read_env()
@@ -81,4 +103,6 @@ if __name__ == '__main__':
     add_files(root_path)
     print("\nReplacing local copy of wedi...\n")
     replace_local_copy(save_to_parent_path, root_path)
+    print("\nCreating release zip file...\n")
+    create_release_zip(save_to_parent_path)
     print("\nDone.")

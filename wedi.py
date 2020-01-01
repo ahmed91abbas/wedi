@@ -64,9 +64,6 @@ class services:
         self.dev_run = settings['dev']['run']
         self.dev_folder = ""
 
-        self.video_streaming_services = ["vidstreaming", "rapidvideo", "streamango"]
-        self.found_embedded_video_download_link = False
-
         self.force_stop = False
 
         self.domains_dict = self.init_domains_dict()
@@ -81,7 +78,6 @@ class services:
             self.gui.add_to_urls(set(self.doc_urls))
         if self.vid_run:
             self.gui.add_to_urls(set(self.vid_urls))
-            self.gui.add_to_urls(set(self.ydl_urls.keys()))
         if self.aud_run:
             self.gui.add_to_urls(set(self.aud_urls))
         self.output_results()
@@ -159,19 +155,6 @@ class services:
         if domain_name in self.domains_dict:
             return self.domains_dict[domain_name].apply_domian_rules(url)
         return url
-
-    '''
-    removes all the urls in ydl_urls dict that has as a domain
-    one of the predefined video streaming services
-    '''
-    def remove_other_video_streaming_services(self):
-        keys_to_remove = []
-        for url in self.ydl_urls:
-            for service in self.video_streaming_services:
-                if service in url:
-                    keys_to_remove.append(url)
-        for key in keys_to_remove:
-            del self.ydl_urls[key]
 
     def multi_replace(self, tokens_to_be_replaced, replace_with, text):
         for token in tokens_to_be_replaced:
@@ -310,8 +293,6 @@ class services:
         urls.update(re.findall(self.relative_url_regex, self.page_source))
         for link in self.soup.find_all('a', href=True):
             urls.add(link['href'])
-        self.ydl_urls = {}
-        self.ydl_urls[self.site] = None
         urls.add(self.site)
         urls = set(urls)
         for url in urls:
@@ -324,19 +305,16 @@ class services:
                 self.img_urls.append(url)
             elif self.is_media_url(url, self.doc_types):
                 self.doc_urls.append(url)
-            #main url is handeled by youtube_dl for video and audio
-            elif url != self.fix_url(self.site) and self.is_media_url(url, self.vid_types):
+            elif self.is_media_url(url, self.vid_types):
                 self.vid_urls.append(url)
-            elif url != self.fix_url(self.site) and self.is_media_url(url, self.aud_types):
+            elif self.is_media_url(url, self.aud_types):
                 self.aud_urls.append(url)
-
-        #To avoid downloading duplicates
-        if self.found_embedded_video_download_link:
-            self.remove_other_video_streaming_services()
 
         image_urls = self.extract_images()
         self.img_urls += image_urls
         urls.update(image_urls)
+
+        self.vid_urls.append(self.site)
 
         return results
 
@@ -462,7 +440,7 @@ class services:
             params = [ffmpeg_exe, '-i', in_file, out_file]
             subprocess.call(params, shell=False, close_fds=True)
 
-    def ydl_audios(self):
+    def ydl_download_audio_urls(self):
         try:
             logger = MyLogger()
             filepath = os.path.join(self.aud_folder, '%(title)s.%(ext)s')
@@ -491,7 +469,36 @@ class services:
             self.gui.update_action(str(e))
             print(str(e))
 
-    def ydl_video(self):
+    def get_youtube_dl_download_url(self, url):
+        try:
+            response = youtube_dl.YoutubeDL().extract_info(url, download=False)
+        except:
+            self.gui.remove_from_urls(url)
+            return None
+        if "url" in response:
+            return response["url"]
+        if "entries" in response:
+            return response["entries"][-1]['formats'][-1]['url']
+        if "formats" in response:
+            return response['formats'][-1]['url']
+
+    def filter_youtube_dl_urls(self):
+        results = {}
+        for url in self.vid_urls:
+            download_url = self.get_youtube_dl_download_url(url)
+            if download_url:
+                if download_url[-1:] == '/':
+                    basename = ntpath.basename(download_url[:-1])
+                else:
+                    basename = ntpath.basename(download_url)
+                results[basename] = {
+                    "url": url,
+                    "download_url": download_url
+                }
+        return results
+
+    def ydl_download_video_urls(self):
+        results = self.filter_youtube_dl_urls()
         filepath = os.path.join(self.vid_folder, '%(title)s.%(ext)s')
         ydl_opts = {
             'outtmpl': filepath,
@@ -499,19 +506,13 @@ class services:
             'logger': MyLogger(),
             'progress_hooks': [self.my_hook],
         }
-        for url in self.ydl_urls:
+        for value in results.values():
             try:
+                url = value["url"]
                 self.gui.remove_from_urls(url)
                 self.gui.update_values(url=url)
-                if self.ydl_urls[url]:
-                    filepath = self.create_filename(self.vid_folder, self.ydl_urls[url])
-                    temp_ydl_opts = ydl_opts.copy()
-                    temp_ydl_opts['outtmpl'] = filepath + ".%(ext)s"
-                    with youtube_dl.YoutubeDL(temp_ydl_opts) as ydl:
-                        ydl.download([url])
-                else:
-                    with youtube_dl.YoutubeDL(ydl_opts) as ydl:
-                        ydl.download([url])
+                with youtube_dl.YoutubeDL(ydl_opts) as ydl:
+                    ydl.download([url])
             except Exception as e:
                 self.gui.update_action(str(e))
                 print(str(e))
@@ -556,7 +557,7 @@ class services:
         if (len(self.vid_urls) != 0):
             filename = os.path.join(self.dev_folder, 'vidURLs.txt')
             with open(filename, 'wb') as f:
-                for url in self.ydl_urls:
+                for url in self.vid_urls:
                     line = url + '\n'
                     f.write(line.encode('utf-8'))
                 self.gui.add_to_list(filename)
@@ -589,20 +590,16 @@ class services:
             self.download_links(self.doc_urls, self.doc_types, self.doc_folder)
             print()
         if self.vid_run:
-            #self.download_links(self.vid_urls, self.vid_types, self.vid_folder)
-            for url in self.vid_urls:
-                self.ydl_urls[url] = None
-            print()
             print("Trying to extract video using youtube_dl...")
             self.gui.update_action("Trying to extract video using youtube_dl...")
-            self.ydl_video()
+            self.ydl_download_video_urls()
             print()
         if self.aud_run:
             self.download_links(self.aud_urls, self.aud_types, self.aud_folder)
             print()
             print("Trying to extract audios using youtube_dl...")
             self.gui.update_action("Trying to extract audio using youtube_dl...")
-            self.ydl_audios()
+            self.ydl_download_audio_urls()
             print()
         self.rm_empty_dirs()
         print("Done.")

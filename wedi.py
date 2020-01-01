@@ -7,6 +7,9 @@ import youtube_dl
 import subprocess
 import time
 from selenium import webdriver
+import glob
+import ntpath
+import importlib
 
 class MyLogger(object):
     def __init__(self):
@@ -66,6 +69,8 @@ class services:
 
         self.force_stop = False
 
+        self.domains_dict = self.init_domains_dict()
+
     def run(self):
         self.start_time = time.clock()
         self.connect()
@@ -84,6 +89,20 @@ class services:
     def stop(self):
         self.force_stop = True
 
+    def init_domains_dict(self):
+        domains = {}
+        root = "domains"
+        for filename in glob.glob(os.path.join(root, "*.py")):
+            domain_name = ntpath.basename(filename).replace(".py", "")
+            module_name = f'{root}.{domain_name}'
+            class_name = module_name.replace(f"{root}.", "").capitalize()
+
+            module = importlib.import_module(module_name)
+            service = getattr(module, class_name)()
+
+            domains[domain_name] = service
+        return domains
+
     def my_hook(self, d):
         if self.force_stop:
             raise Exception("Stopping...")
@@ -100,12 +119,14 @@ class services:
                 "at " + d['_speed_str'], "ETA " + d['_eta_str'], " "*5, end='\r')
 
     def extract_domain(self, site):
-        domain = re.search('https?:\/\/[-_A-Za-z0-9\.]+\/', site)
+        domain = re.search(r'https?:\/\/[-_A-Za-z0-9\.]+\/?', site)
         if not domain:
             return ""
         res = domain.group(0).split('://')
         protocol = res[0]
         domain = res[1]
+        if domain[-1:] != '/':
+            domain += '/'
         return (protocol, domain)
 
     def fix_url(self, url):
@@ -129,58 +150,14 @@ class services:
 
         return None
 
-    def apply_special_rules(self, url):
-        if "github" in self.domain[1]:
-            url = url.replace('https://github.com/', 'https://raw.github.com/')
-            url = url .replace('blob/', '')
-            return url
+    def get_domain_name(self, url):
+        domain = self.extract_domain(url)[1]
+        return ".".join(domain.split(".")[:-1])
 
-        for service in self.video_streaming_services:
-            if service in url and service not in self.domain[1]:
-                self.ydl_urls[url] = None
-
-        if "rapidvideo.com/e/" in url:
-            url = url.replace("rapidvideo.com/e/", "rapidvideo.com/d/")
-            response = requests.get(url, allow_redirects=True, stream=True)
-            page_source = response.text
-            soup = BeautifulSoup(page_source, 'html.parser')
-            urls = re.findall('["\']((http|ftp)s?://.*?)["\']', page_source)
-            for link in soup.find_all('a'):
-                try:
-                    urls.append((link['href'], ""))
-                except:
-                    pass
-            urls = set(urls)
-            res = []
-            for url in urls:
-                url = url[0]
-                if self.is_media_url(url, self.vid_types):
-                    res.append(url)
-            if res:
-                min_v = 2000
-                max_v = -1
-                best = worst = ""
-                for link in res:
-                    nbr = re.sub("[^0-9]", "", link.replace("mp4", ""))
-                    nbr = nbr[len(nbr)-4:]
-                    if nbr != "1080":
-                        nbr = nbr[1:]
-                    if int(nbr) > max_v:
-                        max_v = int(nbr)
-                        best = link
-                    if int(nbr) < min_v:
-                        min_v = int(nbr)
-                        worst = link
-                if "gogoanimes" in self.domain[1]:
-                    filename = self.site.replace(self.domain[0] + "://" + self.domain[1], "")
-                else:
-                    filename = None
-                if self.vid_format == "best":
-                    self.ydl_urls[best] = filename
-                else:
-                    self.ydl_urls[worst] = filename
-                #signal that a direct link to the video was found
-                self.found_embedded_video_download_link = True
+    def apply_domain_special_rules(self, url):
+        domain_name = self.get_domain_name(url)
+        if domain_name in self.domains_dict:
+            return self.domains_dict[domain_name].apply_domian_rules(url)
         return url
 
     '''
@@ -341,7 +318,7 @@ class services:
             url = self.fix_url(url)
             if not url:
                 continue
-            url = self.apply_special_rules(url)
+            url = self.apply_domain_special_rules(url)
             results.append(url)
             if self.is_media_url(url, self.img_types):
                 self.img_urls.append(url)

@@ -33,6 +33,7 @@ class services:
         self.url_regex = '(https?://[0-9A-Za-z-._~?/#]+)'
         self.relative_url_regex = '(?:src|alt|srcset)=[\"\']{1}(/[0-9A-Za-z-._~?/#]+)[\"\']{1}'
         os.environ['REQUESTS_CA_BUNDLE'] = os.path.join("certifi", "cacert.pem")
+        self.settings = settings
         self.extensive = settings['extensive']
         if site[-1:] != '/':
             site = site + '/'
@@ -147,13 +148,13 @@ class services:
         return None
 
     def get_domain_name(self, url):
-        domain = self.extract_domain(url)[1]
+        domain = self.extract_domain(url)[1].replace("www.", "")
         return ".".join(domain.split(".")[:-1])
 
     def apply_domain_special_rules(self, url):
         domain_name = self.get_domain_name(url)
         if domain_name in self.domains_dict:
-            return self.domains_dict[domain_name].apply_domian_rules(url)
+            return self.domains_dict[domain_name].apply_domian_rules(url, self.settings)
         return url
 
     def multi_replace(self, tokens_to_be_replaced, replace_with, text):

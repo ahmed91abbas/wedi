@@ -76,12 +76,12 @@ class runGUI:
         self.lFrame2 = tk.Frame(self.listFrame, bg=self.bg_color)
         self.lFrame3 = tk.Frame(self.listFrame, bg=self.bg_color)
 
-        self.lFrame1.pack(side='left', pady=pady)
+        self.lFrame1.pack(side='left', padx=padx, pady=pady)
         self.lFrame2.pack(side='left', pady=pady)
-        self.lFrame3.pack(side='left',pady=pady)
+        self.lFrame3.pack(side='left', padx=padx, pady=pady)
 
 
-        width = 110
+        width = 130
         #downloadingFrame children
         file = os.path.join('textures', 'a.png')
         img = ImageTk.PhotoImage(Image.open(file))
@@ -128,7 +128,7 @@ class runGUI:
         #listFrame children
         wlist = int(width/2.5)
         wimg = width - 2*wlist
-        hlist = int(width/5)
+        hlist = int(width/5.5)
         tk.Label(self.lFrame1, text='List of urls to download:', font=font, bg=self.bg_color).pack()
         scrollbar = tk.Scrollbar(self.lFrame1)
         scrollbar.pack(side='right', fill=tk.Y)
@@ -156,8 +156,10 @@ class runGUI:
     def load_animation(self, width, height):
         self.images = []
         self.imgIndex = 0
-        width = int(width*7.17) +50
-        height = width*2
+        # int(width*11.5)
+        # height = int(width*1.5)
+        width = int(width*9)
+        height = int(width*1.5)
         path = os.path.join('textures', 'animation')
         files = [os.path.join(path,f) for f in os.listdir(path) if os.path.isfile(os.path.join(path, f))]
         files = sorted(files)
@@ -209,11 +211,10 @@ class runGUI:
         img = self.nextImg()
         self.animationLabel.config(image=img)
         if not self.stopevent:
-            self.top.after(170, self.cycleImages)
+            self.top.after(80, self.cycleImages)
         elif self.error:
             self.animationLabel.config(image=self.errorImg)
         else:
-            #self.downloadingFrame.pack_forget()
             self.animationLabel.pack_forget()
             self.openfolderButton.pack()
             self.openfolderLabel.pack()
@@ -314,4 +315,7 @@ if __name__ == '__main__':
     aud_settings = {'run':True, 'aud_types':aud_types}
     dev_settings = {'run':True}
     settings = {'path':path, 'extensive':extensive,'images':img_settings, 'documents':doc_settings, 'videos':vid_settings, 'audios':aud_settings, 'dev':dev_settings}
-    runGUI(site, settings)
+    run = runGUI(site, settings)
+    run.createGUI()
+    run.cycleImages()
+    run.mainloop()

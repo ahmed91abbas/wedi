@@ -70,7 +70,7 @@ class services:
         self.domains_dict = self.init_domains_dict()
 
     def run(self):
-        self.start_time = time.clock()
+        self.start_time = time.perf_counter()
         self.connect()
         self.urls = self.extract_urls()
         if self.img_run:
@@ -204,7 +204,7 @@ class services:
         elif _platform == "win32" or _platform == "win64":
             firefox_driver_path = os.path.join('drivers', 'geckodriver_win.exe')
             chrome_driver_path = os.path.join('drivers', 'chromedriver_win.exe')
-        
+
         msg = "%s webdriver is missing! Try reinstalling the program."
         if browser == "firefox":
             if not os.path.isfile(firefox_driver_path):
@@ -376,7 +376,7 @@ class services:
                     f.write(response.content)
                 else:
                     dl = 0
-                    start = time.clock()
+                    start = time.perf_counter()
                     total_length = int(total_length)
                     for data in response.iter_content(chunk_size=4096):
                         if self.force_stop:
@@ -392,7 +392,7 @@ class services:
                             eta_str = '0 Seconds'
                         else:
                             perc_str = str(round(dl*100/total_length, 1)) + '%'
-                            speed = dl/(time.clock() - start)
+                            speed = dl/(time.perf_counter() - start)
                             eta = int((total_length - dl) / speed)
                             if eta > 3600:
                                 eta_str = str(round(eta / 3600, 2)) + ' Hours'
@@ -606,7 +606,7 @@ class services:
         print("Done.")
         self.gui.update_values(url=self.site, action="Done.")
         nbr_files, total_size = self.get_folder_info(self.downloadpath)
-        runtime = time.clock() - self.start_time
+        runtime = time.perf_counter() - self.start_time
         self.gui.set_stopevent(files=nbr_files, size=total_size, time=runtime)
 
     def open_path(self):

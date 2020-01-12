@@ -14,6 +14,7 @@ from ToolTip import ToolTip
 from settingsGUI import settings_GUI
 import requests
 import json
+import subprocess
 
 class GUI:
     def __init__(self, settings_filepath):
@@ -26,6 +27,13 @@ class GUI:
         self.format_dict = {"Best video quality":'best', "Worst video quality":'worst', "Only video (no audio)":'bestvideo'}
         self.inv_format_dict = {v: k for k, v in self.format_dict.items()}
         self.info_on = False
+        self.create_gui()
+        self.start_gui()
+
+    def start_gui(self):
+        self.root.mainloop()
+
+    def create_gui(self):
         self.bg_color = '#e6e6ff'
         self.green_color = '#4af441'
         self.button_color = '#ffffe6'
@@ -145,7 +153,6 @@ class GUI:
         self.start_frame2.pack(side="top")
         self.body_frame.pack()
         self.end_frame.pack(side="bottom", pady=25)
-        self.root.mainloop()
 
     def clear_site(self):
         self.siteEntry.delete(0, "end")

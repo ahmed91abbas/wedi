@@ -5,7 +5,6 @@ except ImportError:
     import Tkinter as tk
     import tkMessageBox as messagebox
 import sys
-import pickle
 import os
 from runGUI import runGUI
 import webbrowser
@@ -15,13 +14,14 @@ from settingsGUI import settings_GUI
 import requests
 import json
 import subprocess
+import util
 
 class GUI:
     def __init__(self, settings_filepath):
         self.runGUI_objects = []
         self.settings_filepath = settings_filepath
         try:
-            self.settings = pickle.load(open(settings_filepath, 'rb'))
+            self.settings = util.open_json(settings_filepath)
         except:
             self.settings = self.default_settings()
         self.format_dict = {"Best video quality":'best', "Worst video quality":'worst', "Only video (no audio)":'bestvideo'}
@@ -224,7 +224,7 @@ class GUI:
         settings = {'path':path, 'extensive':extensive,'images':img_settings,\
                     'documents':doc_settings, 'videos':vid_settings,\
                     'audios':aud_settings, 'dev':dev_settings, 'version':version}
-        pickle.dump(settings, open('settings.sav', 'wb'))
+        util.save_json(self.settings_filepath, settings)
         return settings
 
     def on_info(self):
@@ -301,7 +301,7 @@ web pages that allow their contents to be downloaded and stored locally."
         messagebox.showinfo("Disclaimer", msg)
 
     def on_open_download_folder(self):
-        downloadpath = pickle.load(open(self.settings_filepath, 'rb'))["path"]
+        downloadpath = util.open_json(self.settings_filepath)["path"]
         _platform = sys.platform
         if _platform == "linux" or _platform == "linux2": # linux
             subprocess.Popen(["xdg-open", downloadpath])
@@ -319,7 +319,7 @@ web pages that allow their contents to be downloaded and stored locally."
         webbrowser.open(url, new=0, autoraise=True)
 
     def on_run(self, extensive=False):
-        current_settings = pickle.load(open(self.settings_filepath, 'rb'))
+        current_settings = util.open_json(self.settings_filepath)
         self.settings['extensive'] = extensive
         site = self.siteEntry.get()
         if len(site) > 10 and site[:4] == 'http':
@@ -328,7 +328,7 @@ web pages that allow their contents to be downloaded and stored locally."
             self.settings["images"]["img_types"] = current_settings["images"]["img_types"]
             self.settings["audios"]["aud_types"] = current_settings["audios"]["aud_types"]
             self.settings["videos"]["vid_types"] = current_settings["videos"]["vid_types"]
-            pickle.dump(self.settings, open('settings.sav', 'wb'))
+            util.save_json(self.settings_filepath, self.settings)
             runGUI_object = runGUI(site, self.settings, imgicon=self.imgicon)
             self.runGUI_objects.append(runGUI_object)
             runGUI_object.start()
@@ -352,5 +352,5 @@ web pages that allow their contents to be downloaded and stored locally."
                 messagebox.showinfo("Check for updates", "Your version is up to date.")
 
 if __name__ == '__main__':
-    settings_filepath = 'settings.sav'
+    settings_filepath = 'settings.json'
     GUI(settings_filepath)

@@ -13,3 +13,4 @@ dist/
 *.pyc
 *.sav
 .DS_Store
+settings.json

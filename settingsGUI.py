@@ -7,12 +7,12 @@ except ImportError:
 import os, sys
 from PIL import Image, ImageTk
 import math
-import pickle
+import util
 
 class settings_GUI:
     def __init__(self, settings_filepath, imgicon=None):
         self.settings_filepath = settings_filepath
-        self.settings = pickle.load(open(self.settings_filepath, 'rb'))
+        self.settings = util.open_json(settings_filepath)
         self.createGUI(imgicon)
         self.mainloop()
 
@@ -133,7 +133,7 @@ class settings_GUI:
         self.settings["images"]["img_types"] = img_types
         self.settings["audios"]["aud_types"] = aud_types
         self.settings["videos"]["vid_types"] = vid_types
-        pickle.dump(self.settings, open(self.settings_filepath, 'wb'))
+        util.save_json(self.settings_filepath, self.settings)
         self.on_close()
 
     def on_default(self):
@@ -161,4 +161,4 @@ class settings_GUI:
             self.download_path_entry.insert(0, filename)
 
 if __name__ == '__main__':
-    settings_GUI('settings.sav')
+    settings_GUI('settings.json')

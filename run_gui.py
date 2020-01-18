@@ -12,7 +12,7 @@ from wedi import services
 import math
 
 class Run_gui:
-    def __init__(self, site, settings, imgicon = None):
+    def __init__(self, site, settings, imgicon=None):
         self.site = site
         self.settings = settings
         self.imgicon = imgicon
@@ -20,8 +20,8 @@ class Run_gui:
         self.error = False
 
     def start(self):
-        self.createGUI()
-        self.cycleImages()
+        self.create_gui()
+        self.cycle_images()
         self.services = services(self.site, self.settings, self)
         threading.Thread(target=self.run_services).start()
         self.mainloop()
@@ -29,7 +29,7 @@ class Run_gui:
     def run_services(self):
         self.services.run()
 
-    def createGUI(self):
+    def create_gui(self):
         self.stopevent = False
         self.bg_color = '#e6e6ff'
         font = ('calibri', 13)
@@ -138,7 +138,7 @@ class Run_gui:
         scrollbar.config(command=self.urlslistbox.yview)
         self.openfolderLabel = tk.Label(self.lFrame2, text='Open download folder', font=font, bg=self.bg_color)#pack on complete
         self.openfolderButton = tk.Button(self.lFrame2, bg=self.bg_color,
-            activebackground=self.bg_color, command=self.openDownloadPath)#pack on complete
+            activebackground=self.bg_color, command=self.open_download_path)#pack on complete
         self.animationLabel = tk.Label(self.lFrame2, bg=self.bg_color)
         self.animationLabel.pack()
         tk.Label(self.lFrame3, text='List of downloaded files:', font=font, bg=self.bg_color).pack()
@@ -156,62 +156,58 @@ class Run_gui:
     def load_animation(self, width, height):
         self.images = []
         self.imgIndex = 0
-        # int(width*11.5)
-        # height = int(width*1.5)
         width = int(width*9)
         height = int(width*1.5)
         path = os.path.join('textures', 'animation')
         files = [os.path.join(path,f) for f in os.listdir(path) if os.path.isfile(os.path.join(path, f))]
         files = sorted(files)
-        for file in files:
-            image = Image.open(file)
+        for file_ in files:
+            image = Image.open(file_)
             image = image.resize((width, height), Image.ANTIALIAS)
             self.images.append(ImageTk.PhotoImage(image))
         self.animationLabel.config(image=self.images[0])
-        #load the image for completed
-        file = os.path.join('textures', 'completed.png')
-        self.completedImg = ImageTk.PhotoImage(Image.open(file))
-        #load the image for error
-        file = os.path.join('textures', 'error.png')
-        self.errorImg = ImageTk.PhotoImage(Image.open(file))
+        file_ = os.path.join('textures', 'completed.png')
+        self.completedImg = ImageTk.PhotoImage(Image.open(file_))
+        file_ = os.path.join('textures', 'error.png')
+        self.errorImg = ImageTk.PhotoImage(Image.open(file_))
+
+    def size_to_str(self, size):
+        if size > 10**6:
+            return str(round(size/10**6, 2)) + ' MB'
+        return str(round(size/10**3, 2)) + ' KB'
+
+    def sec_to_time_str(self, sec):
+        if sec > 3600:
+            return str(round(sec / 3600, 2)) + ' Hours'
+        if sec > 60:
+            return str(round(sec / 60, 2)) + ' Minutes'
+        return str(round(sec, 1)) + ' Seconds'
 
     def set_stopevent(self, files=0, size=0, time=0):
+        #Replaces the download frames with info frames and sets stopevent
         self.stopevent = True
-        #Change the download frames with info frames
-        #convert size into string
-        if size > 10**6:
-            size_str = str(round(size/10**6, 2)) + ' MB'
-        else:
-            size_str = str(round(size/10**3, 2)) + ' KB'
-        #convert time into string
-        if time > 3600:
-            time_str = str(round(time / 3600, 2)) + ' Hours'
-        elif time > 60:
-            time_str = str(round(time / 60, 2)) + ' Minutes'
-        else:
-            time_str = str(round(time,1)) + ' Seconds'
         for frame in self.dFrame3.winfo_children():
             for label in frame.winfo_children():
                 label.destroy()
         tk.Label(self.dFrame3_1, text='Run time', bg=self.bg_color).pack()
-        tk.Label(self.dFrame3_1, text=time_str, bg=self.bg_color).pack()
+        tk.Label(self.dFrame3_1, text=self.sec_to_time_str(time), bg=self.bg_color).pack()
         tk.Label(self.dFrame3_3, text='Total download size', bg=self.bg_color).pack()
-        tk.Label(self.dFrame3_3, text=size_str, bg=self.bg_color).pack()
+        tk.Label(self.dFrame3_3, text=self.size_to_str(size), bg=self.bg_color).pack()
         tk.Label(self.dFrame3_5, text='File count', bg=self.bg_color).pack()
         tk.Label(self.dFrame3_5, text=str(files), bg=self.bg_color).pack()
         self.urlLabel['anchor'] = 'center'
 
-    def nextImg(self):
+    def get_next_image(self):
         self.imgIndex = self.imgIndex + 1
         if self.imgIndex == len(self.images):
             self.imgIndex = 0
         return self.images[self.imgIndex]
 
-    def cycleImages(self):
-        img = self.nextImg()
+    def cycle_images(self):
+        img = self.get_next_image()
         self.animationLabel.config(image=img)
         if not self.stopevent:
-            self.top.after(80, self.cycleImages)
+            self.top.after(80, self.cycle_images)
         elif self.error:
             self.animationLabel.config(image=self.errorImg)
         else:
@@ -225,19 +221,11 @@ class Run_gui:
         size = float(size)
         if size != 0:
             self.progress.set(int(dl*100/size))
-        if size > 10**6:
-            size_str = str(round(size/10**6, 2)) + ' MB'
-        else:
-            size_str = str(round(size/10**3, 2)) + ' KB'
-        if dl > 10**6:
-            dl_str = str(round(dl/10**6, 2)) + ' MB'
-        else:
-            dl_str = str(round(dl/10**3, 2)) + ' KB'
         if url:
             self.urlLabel['text'] = self.tk_str(url)
         self.percLabel['text'] = perc
-        self.sizeLabel['text'] = size_str
-        self.downloadedLabel['text'] = dl_str
+        self.sizeLabel['text'] = self.size_to_str(size)
+        self.downloadedLabel['text'] = self.size_to_str(dl)
         self.timeLeftLabel['text'] = eta
         self.speedLabel['text'] = speed
         self.actionLabel['text'] = self.tk_str(action)
@@ -275,7 +263,7 @@ class Run_gui:
         except:
             pass
 
-    def openDownloadPath(self):
+    def open_download_path(self):
         self.services.open_path()
 
     def show_error(self, msg):
@@ -316,6 +304,6 @@ if __name__ == '__main__':
     dev_settings = {'run':True}
     settings = {'path':path, 'extensive':extensive,'images':img_settings, 'documents':doc_settings, 'videos':vid_settings, 'audios':aud_settings, 'dev':dev_settings}
     run = Run_gui(site, settings)
-    run.createGUI()
-    run.cycleImages()
+    run.create_gui()
+    run.cycle_images()
     run.mainloop()

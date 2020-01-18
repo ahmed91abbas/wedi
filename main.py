@@ -6,7 +6,7 @@ except ImportError:
     import tkMessageBox as messagebox
 import sys
 import os
-from runGUI import runGUI
+from run_gui import Run_gui
 import webbrowser
 from PIL import Image, ImageTk
 from ToolTip import ToolTip
@@ -18,7 +18,7 @@ import util
 
 class GUI:
     def __init__(self, settings_filepath):
-        self.runGUI_objects = []
+        self.run_gui_objects = []
         self.settings_filepath = settings_filepath
         try:
             self.settings = util.open_json(settings_filepath)
@@ -167,8 +167,8 @@ class GUI:
             self.siteEntry.insert(0, clipboard)
 
     def on_close(self):
-        for runGUI_object in self.runGUI_objects:
-            runGUI_object.on_close()
+        for run_gui_object in self.run_gui_objects:
+            run_gui_object.on_close()
         self.root.destroy()
         sys.exit()
 
@@ -311,7 +311,7 @@ web pages that allow their contents to be downloaded and stored locally."
             os.startfile(downloadpath)
 
     def on_open_github(self):
-        url = "https://github.com/ahmed91abbas/WeDi"
+        url = "https://github.com/ahmed91abbas/wedi"
         webbrowser.open(url, new=0, autoraise=True)
 
     def on_open_download_page(self):
@@ -329,9 +329,9 @@ web pages that allow their contents to be downloaded and stored locally."
             self.settings["audios"]["aud_types"] = current_settings["audios"]["aud_types"]
             self.settings["videos"]["vid_types"] = current_settings["videos"]["vid_types"]
             util.save_json(self.settings_filepath, self.settings)
-            runGUI_object = runGUI(site, self.settings, imgicon=self.imgicon)
-            self.runGUI_objects.append(runGUI_object)
-            runGUI_object.start()
+            run_gui_object = Run_gui(site, self.settings, imgicon=self.imgicon)
+            self.run_gui_objects.append(run_gui_object)
+            run_gui_object.start()
         else:
             print("Enter the webpage url!")
 

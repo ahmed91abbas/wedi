@@ -11,7 +11,7 @@ from PIL import Image, ImageTk
 from wedi import services
 import math
 
-class runGUI:
+class Run_gui:
     def __init__(self, site, settings, imgicon = None):
         self.site = site
         self.settings = settings
@@ -315,7 +315,7 @@ if __name__ == '__main__':
     aud_settings = {'run':True, 'aud_types':aud_types}
     dev_settings = {'run':True}
     settings = {'path':path, 'extensive':extensive,'images':img_settings, 'documents':doc_settings, 'videos':vid_settings, 'audios':aud_settings, 'dev':dev_settings}
-    run = runGUI(site, settings)
+    run = Run_gui(site, settings)
     run.createGUI()
     run.cycleImages()
     run.mainloop()

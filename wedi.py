@@ -66,6 +66,7 @@ class services:
         self.dev_folder = ""
 
         self.force_stop = False
+        self.skip = False
         self.finished_running = False
 
         self.domains_dict = self.init_domains_dict()
@@ -103,7 +104,7 @@ class services:
         return domains
 
     def my_hook(self, d):
-        if self.force_stop:
+        if self.force_stop or self.skip:
             raise Exception("Stopping...")
         if d['status'] == 'finished':
             self.gui.update_values(url=d['filename'], dl=d['total_bytes'], perc='100.0%',
@@ -385,7 +386,7 @@ class services:
                     start = time.perf_counter()
                     total_length = int(total_length)
                     for data in response.iter_content(chunk_size=4096):
-                        if self.force_stop:
+                        if self.force_stop or self.skip:
                             f.close()
                             raise Exception("Stopping...")
                         dl += len(data)
@@ -414,6 +415,8 @@ class services:
                         self.gui.update_values(url=url, dl=dl, perc=perc_str, size=total_length, eta=eta_str, speed=speed_str)
             self.gui.add_to_list(filename)
         except:
+            self.skip = False
+            self.delete_file(filename)
             msg = 'Failed to download ' + url
             if len(msg) > 100:
                 msg = msg[:97] + "..."
@@ -478,6 +481,7 @@ class services:
                         os.remove(filename)
                     break
         except Exception as e:
+            self.skip = False
             self.gui.update_action(str(e))
             print(str(e))
 
@@ -530,6 +534,7 @@ class services:
                 with youtube_dl.YoutubeDL(ydl_opts) as ydl:
                     ydl.download([url])
             except Exception as e:
+                self.skip = False
                 self.gui.update_action(str(e))
                 print(str(e))
 
@@ -656,6 +661,10 @@ class services:
             os.rmdir(self.img_folder)
         if not os.listdir(self.dev_folder):
             os.rmdir(self.dev_folder)
+
+    def delete_file(self, filepath):
+        if os.path.exists(filepath):
+            os.remove(filepath)
 
 if __name__ == "__main__":
     site = 'https://www.blocket.se/malmo/Mini_Cooper_Clubman_Pepper_120hk_6_vaxl_82169382.htm?ca=23_11&w=0'

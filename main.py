@@ -166,11 +166,21 @@ class GUI:
         if len(clipboard) > 10 and clipboard[:4] == 'http':
             self.siteEntry.insert(0, clipboard)
 
+    def wait_for_all_child_windows(self):
+        if len(self.run_gui_objects) > 0:
+            run_gui_object = self.run_gui_objects[0]
+            run_gui_object.on_close()
+            if run_gui_object.finished_running:
+                del self.run_gui_objects[0]
+            self.root.after(10, self.wait_for_all_child_windows)
+        else:
+            self.root.destroy()
+            sys.exit(1)
+
     def on_close(self):
         for run_gui_object in self.run_gui_objects:
             run_gui_object.on_close()
-        self.root.destroy()
-        sys.exit()
+        self.wait_for_all_child_windows()
 
     def on_videos(self):
         self.settings['videos']['run'] = not self.settings['videos']['run']

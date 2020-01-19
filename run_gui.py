@@ -18,6 +18,7 @@ class Run_gui:
         self.imgicon = imgicon
         self.downloaded = {}
         self.error = False
+        self.finished_running = False
 
     def start(self):
         self.create_gui()
@@ -280,6 +281,7 @@ class Run_gui:
     def on_close(self):
         self.services.stop()
         if self.services.finished_running:
+            self.finished_running = True
             self.top.destroy()
         else:
             self.top.after(10, self.on_close)

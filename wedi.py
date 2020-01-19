@@ -87,6 +87,11 @@ class services:
         self.finished_running = True
 
     def stop(self):
+        self.urls = []
+        self.img_urls = []
+        self.doc_urls = []
+        self.vid_urls = []
+        self.aud_urls = []
         self.force_stop = True
 
     def init_domains_dict(self):

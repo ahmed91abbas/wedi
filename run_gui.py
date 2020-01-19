@@ -273,7 +273,10 @@ class Run_gui:
 
     def on_close(self):
         self.services.stop()
-        self.top.destroy()
+        if self.services.finished_running:
+            self.top.destroy()
+        else:
+            self.top.after(10, self.on_close)
 
     def mainloop(self):
         if self.imgicon:

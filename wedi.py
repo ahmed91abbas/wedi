@@ -66,6 +66,7 @@ class services:
         self.dev_folder = ""
 
         self.force_stop = False
+        self.finished_running = False
 
         self.domains_dict = self.init_domains_dict()
 
@@ -82,6 +83,7 @@ class services:
         if self.aud_run:
             self.gui.add_to_urls(set(self.aud_urls))
         self.output_results()
+        self.finished_running = True
 
     def stop(self):
         self.force_stop = True
@@ -297,6 +299,8 @@ class services:
         urls.add(self.site)
         urls = set(urls)
         for url in urls:
+            if self.force_stop:
+                return
             url = self.fix_url(url)
             if not url:
                 continue
@@ -325,6 +329,8 @@ class services:
 
         img_tags = self.soup.find_all('img')
         for img in img_tags:
+            if self.force_stop:
+                return
             url = ''
             if ' src=' in str(img):
                 url = img['src']
@@ -380,6 +386,7 @@ class services:
                     total_length = int(total_length)
                     for data in response.iter_content(chunk_size=4096):
                         if self.force_stop:
+                            f.close()
                             raise Exception("Stopping...")
                         dl += len(data)
                         f.write(data)
@@ -411,11 +418,13 @@ class services:
             if len(msg) > 100:
                 msg = msg[:97] + "..."
             self.gui.update_action(msg)
-            print("Falied to download!")
+            print(msg)
 
     def download_links(self, urls, types, output_dir):
         urls = set(urls)
         for url in urls:
+            if self.force_stop:
+                return
             regex = r'/([^/]*[.]('
             for t in types:
                 regex += t + '|'
@@ -442,6 +451,8 @@ class services:
             subprocess.call(params, shell=False, close_fds=True)
 
     def ydl_download_audio_urls(self):
+        if self.force_stop:
+            return
         try:
             logger = MyLogger()
             filepath = os.path.join(self.aud_folder, '%(title)s.%(ext)s')
@@ -486,6 +497,8 @@ class services:
     def filter_youtube_dl_urls(self):
         results = {}
         for url in self.vid_urls:
+            if self.force_stop:
+                return
             download_url = self.get_youtube_dl_download_url(url)
             if download_url:
                 if download_url[-1:] == '/':
@@ -508,6 +521,8 @@ class services:
             'progress_hooks': [self.my_hook],
         }
         for value in results.values():
+            if self.force_stop:
+                return
             try:
                 url = value["url"]
                 self.gui.remove_from_urls(url)
@@ -519,6 +534,8 @@ class services:
                 print(str(e))
 
     def output_dev(self):
+        if self.force_stop:
+            return
         #General information about main url
         filename = os.path.join(self.dev_folder, 'mainURL.txt')
         with open(filename, 'wb') as f:

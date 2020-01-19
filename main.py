@@ -321,7 +321,7 @@ web pages that allow their contents to be downloaded and stored locally."
     def on_run(self, extensive=False):
         current_settings = util.open_json(self.settings_filepath)
         self.settings['extensive'] = extensive
-        site = self.siteEntry.get()
+        site = self.siteEntry.get().rstrip()
         if len(site) > 10 and site[:4] == 'http':
             self.settings["path"] = current_settings["path"]
             self.settings["documents"]["doc_types"] = current_settings["documents"]["doc_types"]

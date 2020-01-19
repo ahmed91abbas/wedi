@@ -96,8 +96,11 @@ class Run_gui:
         l.photo=img
         l.pack(side='left')
 
-        self.urlLabel = tk.Label(self.dFrame2, borderwidth= 3, relief='groove', bg=self.bg_color, width=width, anchor='w')
-        self.urlLabel.pack()
+        skip_button_width = 10
+        url_label_width = int(width - skip_button_width - padx/2)
+        self.urlLabel = tk.Label(self.dFrame2, borderwidth= 3, relief='groove', bg=self.bg_color, width=url_label_width, anchor='w')
+        self.urlLabel.pack(side="left")
+        tk.Button(self.dFrame2, text="Skip", width=skip_button_width, command=self.on_skip).pack(side="left", padx=padx)
 
         w1 = int(width/3)
         w11 = int(w1/2)
@@ -270,6 +273,9 @@ class Run_gui:
         self.error = True
         self.set_stopevent()
         self.actionLabel['text'] = msg
+
+    def on_skip(self):
+        self.services.skip = True
 
     def on_close(self):
         self.services.stop()

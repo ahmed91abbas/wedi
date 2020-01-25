@@ -18,6 +18,7 @@ import util
 
 class GUI:
     def __init__(self, settings_filepath):
+        self.version = 1.2
         self.run_gui_objects = []
         self.settings_filepath = settings_filepath
         try:
@@ -219,7 +220,6 @@ class GUI:
 
     def default_settings(self):
         path = "..\\wedi_downloads"
-        version = 1.0
         extensive = False
         img_types = ['jpg', 'jpeg', 'png', 'gif', 'svg']
         doc_types = ['txt', 'py', 'java', 'php', 'pdf', 'md', 'gitignore', 'c']
@@ -233,7 +233,7 @@ class GUI:
         dev_settings = {'run':True}
         settings = {'path':path, 'extensive':extensive,'images':img_settings,\
                     'documents':doc_settings, 'videos':vid_settings,\
-                    'audios':aud_settings, 'dev':dev_settings, 'version':version}
+                    'audios':aud_settings, 'dev':dev_settings}
         util.save_json(self.settings_filepath, settings)
         return settings
 
@@ -303,7 +303,7 @@ class GUI:
         msg = 'WeDi (Web Dissector) is a tool that makes it \
 possible to download all contents of a page easily \
 (images, documents, videos...etc)'
-        messagebox.showinfo(f'About WeDi v{self.settings["version"]}', msg)
+        messagebox.showinfo(f'About WeDi v{self.version}', msg)
 
     def on_disclaimer(self):
         msg = "The user of WeDi is responsible to use WeDi only on \
@@ -351,10 +351,10 @@ web pages that allow their contents to be downloaded and stored locally."
         if response.status_code == 200:
             response = response.json()
             version_tag = response["tag_name"]
-            version = float(version_tag[1:])
-            if version > self.settings["version"]:
+            online_version = float(version_tag[1:])
+            if online_version > self.version:
                 ans = messagebox.askyesno('Check for updates', f'Version {version_tag}'
-                    f' is available. Current version is v{self.settings["version"]}'\
+                    f' is available. Current version is v{self.version}'\
                     f'\nDo you want to open the download page?')
                 if ans:
                     self.on_open_download_page()

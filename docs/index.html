@@ -37,9 +37,15 @@
     if (this.readyState == 4 && this.status == 200) {
       var response = JSON.parse(this.responseText);
       document.getElementById('win_tag_name').innerHTML = "Windows " + response["tag_name"];
-      document.getElementById("win_link").setAttribute("href",response["assets"][0]["browser_download_url"]);
-      document.getElementById('linux_tag_name').innerHTML = "Linux coming soon";
-      //document.getElementById("linux_link").setAttribute("href",response["assets"][0]["browser_download_url"]);
+      document.getElementById('linux_tag_name').innerHTML = "Linux " + response["tag_name"];
+      var i;
+      for (i = 0; i < response["assets"].length; i++) {
+        if (response["assets"][i]["name"].toLowerCase() === "wedi-win.zip") {
+          document.getElementById("win_link").setAttribute("href",response["assets"][i]["browser_download_url"]);
+        } else if (response["assets"][i]["name"].toLowerCase() === "wedi-linux.zip") {
+          document.getElementById("linux_link").setAttribute("href",response["assets"][i]["browser_download_url"]);
+        }
+      }
     }
   };
   xmlhttp.open("GET", url, true);

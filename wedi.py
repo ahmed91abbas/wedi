@@ -72,19 +72,23 @@ class services:
         self.domains_dict = self.init_domains_dict()
 
     def run(self):
-        self.start_time = time.perf_counter()
-        self.connect()
-        self.urls = self.extract_urls()
-        if self.img_run:
-            self.gui.add_to_urls(set(self.img_urls))
-        if self.doc_run:
-            self.gui.add_to_urls(set(self.doc_urls))
-        if self.vid_run:
-            self.gui.add_to_urls(set(self.vid_urls))
-        if self.aud_run:
-            self.gui.add_to_urls(set(self.aud_urls))
-        self.output_results()
-        self.finished_running = True
+        try:
+            self.start_time = time.perf_counter()
+            self.connect()
+            self.urls = self.extract_urls()
+            if self.img_run:
+                self.gui.add_to_urls(set(self.img_urls))
+            if self.doc_run:
+                self.gui.add_to_urls(set(self.doc_urls))
+            if self.vid_run:
+                self.gui.add_to_urls(set(self.vid_urls))
+            if self.aud_run:
+                self.gui.add_to_urls(set(self.aud_urls))
+            self.output_results()
+            self.finished_running = True
+        except:
+            self.stop()
+            self.finished_running = True
 
     def stop(self):
         self.urls = []
@@ -197,9 +201,9 @@ class services:
             os.makedirs(self.dev_folder)
 
     def exit_with_error(self, error_message):
+        self.stop()
         print(error_message)
         self.gui.show_error(error_message)
-        sys.exit(1)
 
     def get_executable_driver_path(self, browser):
         _platform = sys.platform
@@ -705,4 +709,3 @@ if __name__ == "__main__":
     settings = {'path':path, 'extensive':extensive, 'images':img_settings, 'documents':doc_settings, 'videos':vid_settings, 'audios':aud_settings, 'dev':dev_settings}
     services = services(site, settings)
     services.run()
-

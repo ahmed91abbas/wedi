@@ -7,7 +7,7 @@ except ImportError:
 import threading
 import subprocess, os, sys
 from PIL import Image, ImageTk
-from wedi import services
+from download_handler import services
 import math
 
 class Run_gui:

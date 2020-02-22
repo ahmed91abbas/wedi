@@ -34,7 +34,7 @@ def create_shourtcut(save_to, wDir, exe_name):
     shortcut.save()
 
 def clean_up():
-    file = 'main.spec'
+    file = 'wedi.spec'
     remove_file(file)
 
     dirs = ['build', 'dist']
@@ -48,15 +48,15 @@ def upgrade_packages():
 def call_process(root_path):
     icon = join('textures', 'icon.ico')
     site_packages = path_join([root_path, 'env', 'Lib', 'site-packages'])
-    params = ['pyinstaller3', '--icon=' + icon, '--noconsole', '--paths', site_packages, 'main.py']
+    params = ['pyinstaller3', '--icon=' + icon, '--noconsole', '--paths', site_packages, 'wedi.py']
     subprocess.call(params)
 
 def add_files(root_path):
-    shutil.copyfile('settings.json', path_join([root_path, 'dist', 'main', 'settings.json']))
-    shutil.copyfile(join('certifi', 'cacert.pem'), path_join([root_path, 'dist', 'main', 'certifi', 'cacert.pem']))
+    shutil.copyfile('settings.json', path_join([root_path, 'dist', 'wedi', 'settings.json']))
+    shutil.copyfile(join('certifi', 'cacert.pem'), path_join([root_path, 'dist', 'wedi', 'certifi', 'cacert.pem']))
     folders = ['textures', 'drivers', 'ffmpeg_win', 'domains']
     for folder in folders:
-        dist = path_join([root_path, 'dist', 'main', folder])
+        dist = path_join([root_path, 'dist', 'wedi', folder])
         remove_dir(dist)
         shutil.copytree(folder, dist)
 
@@ -64,10 +64,10 @@ def replace_local_copy(parent_path, root_path):
     dist = join(parent_path, 'wedi')
     remove_dir(dist)
     exe_path = join(dist, 'exe_files')
-    shutil.copytree(path_join([root_path, 'dist', 'main']), exe_path)
+    shutil.copytree(path_join([root_path, 'dist', 'wedi']), exe_path)
     download_path = join(dist, 'wedi_downloads')
     os.mkdir(download_path)
-    create_shourtcut(dist, exe_path, 'main.exe')
+    create_shourtcut(dist, exe_path, 'wedi.exe')
 
 def remove_leading_slashes(path_str):
     while path_str[0] in ['/', '\\']:

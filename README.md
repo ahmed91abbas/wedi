@@ -21,4 +21,4 @@ If you are only interested in the application and not the source code you can he
 
 1. Run the tool:
 
-        python main.py
+        python wedi.py

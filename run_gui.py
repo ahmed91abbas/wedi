@@ -4,7 +4,6 @@ try:
 except ImportError:
     import Tkinter as tk
     from Tkinter.ttk import Progressbar
-import mttkinter as mttkinter
 import threading
 import subprocess, os, sys
 from PIL import Image, ImageTk

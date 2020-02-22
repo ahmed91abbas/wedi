@@ -13,4 +13,7 @@ dist/
 *.pyc
 *.sav
 .DS_Store
+todo.txt
+.env
+.vscode
 settings.json

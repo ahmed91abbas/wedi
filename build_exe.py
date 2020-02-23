@@ -4,6 +4,7 @@ from os.path import join
 import zipfile
 from environs import Env
 
+
 def path_join(list_of_names):
     path = ''
     for name in list_of_names:
@@ -48,7 +49,9 @@ def call_process(root_path):
 
 def add_files(root_path):
     shutil.copyfile('settings.json', path_join([root_path, 'dist', 'settings.json']))
-    folders = ['textures', 'drivers', 'ffmpeg_win', 'domains', 'certifi']
+    folders = ['textures', 'drivers', 'domains', 'certifi']
+    if sys.platform == 'win32' or sys.platform == 'win64':
+        folders.append('ffmpeg_win')
     for folder in folders:
         dist = path_join([root_path, 'dist', folder])
         remove_dir(dist)
@@ -86,22 +89,44 @@ def create_release_zip(parent_path):
         empty_dirs = []
     zipf.close()
 
+def call_linux_process(root_path):
+    icon = join('textures', 'icon.ico')
+    params = ['pyinstaller',
+              '--icon=' + icon,
+              '--onefile',
+              '--noconsole',
+              '--hidden-import', 'PIL._tkinter_finder',
+              '--add-data', 'domains/*:domains/',
+              'wedi.py']
+    subprocess.call(params)
+
+
 if __name__ == '__main__':
     env = Env()
     env.read_env()
     save_to_parent_path = env('SAVE_TO_PARENT_PATH')
     root_path = env('ROOT_PATH')
 
-    print('Cleaning up old files...\n')
-    clean_up()
-    print('\nUpgrading python packages...\n')
-    upgrade_packages()
-    print('\nCreating the exe...\n')
-    call_process(root_path)
-    print('\nAdding missing files...\n')
-    add_files(root_path)
-    print('\nReplacing local copy of wedi...\n')
-    replace_local_copy(save_to_parent_path, root_path)
-    print('\nCreating release zip file...\n')
-    create_release_zip(save_to_parent_path)
-    print('\nDone.')
+    _platform = sys.platform
+    if _platform == 'linux' or _platform == 'linux2':
+        print('Cleaning up old files...\n')
+        clean_up()
+        print('\nCreating the exe...\n')
+        call_linux_process(root_path)
+        print('\nAdding missing files...\n')
+        add_files(root_path)
+        print('\nDone.')
+    elif _platform == 'win32' or _platform == 'win64':
+        print('Cleaning up old files...\n')
+        clean_up()
+        print('\nUpgrading python packages...\n')
+        upgrade_packages()
+        print('\nCreating the exe...\n')
+        call_process(root_path)
+        print('\nAdding missing files...\n')
+        add_files(root_path)
+        print('\nReplacing local copy of wedi...\n')
+        replace_local_copy(save_to_parent_path, root_path)
+        print('\nCreating release zip file...\n')
+        create_release_zip(save_to_parent_path)
+        print('\nDone.')

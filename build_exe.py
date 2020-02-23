@@ -1,7 +1,6 @@
 import subprocess
 import os, sys, shutil
 from os.path import join
-from win32com.client import Dispatch
 import zipfile
 from environs import Env
 
@@ -23,16 +22,6 @@ def remove_dir(dir):
     except:
         pass
 
-def create_shourtcut(save_to, wDir, exe_name):
-    target_file = join(wDir, exe_name)
-    save_to = join(save_to, 'WeDi.lnk')
-    shell = Dispatch('WScript.Shell')
-    shortcut = shell.CreateShortCut(save_to)
-    shortcut.Targetpath = target_file
-    shortcut.WorkingDirectory = wDir
-    shortcut.IconLocation = target_file
-    shortcut.save()
-
 def clean_up():
     file = 'wedi.spec'
     remove_file(file)
@@ -48,26 +37,29 @@ def upgrade_packages():
 def call_process(root_path):
     icon = join('textures', 'icon.ico')
     site_packages = path_join([root_path, 'env', 'Lib', 'site-packages'])
-    params = ['pyinstaller3', '--icon=' + icon, '--noconsole', '--paths', site_packages, 'wedi.py']
+    params = ['pyinstaller3',
+              '--icon=' + icon,
+              '--onefile',
+              '--noconsole',
+              '--paths', site_packages,
+              '--add-data', 'domains;.\\domains',
+              'wedi.py']
     subprocess.call(params)
 
 def add_files(root_path):
-    shutil.copyfile('settings.json', path_join([root_path, 'dist', 'wedi', 'settings.json']))
-    shutil.copyfile(join('certifi', 'cacert.pem'), path_join([root_path, 'dist', 'wedi', 'certifi', 'cacert.pem']))
-    folders = ['textures', 'drivers', 'ffmpeg_win', 'domains']
+    shutil.copyfile('settings.json', path_join([root_path, 'dist', 'settings.json']))
+    folders = ['textures', 'drivers', 'ffmpeg_win', 'domains', 'certifi']
     for folder in folders:
-        dist = path_join([root_path, 'dist', 'wedi', folder])
+        dist = path_join([root_path, 'dist', folder])
         remove_dir(dist)
         shutil.copytree(folder, dist)
 
 def replace_local_copy(parent_path, root_path):
     dist = join(parent_path, 'wedi')
     remove_dir(dist)
-    exe_path = join(dist, 'exe_files')
-    shutil.copytree(path_join([root_path, 'dist', 'wedi']), exe_path)
+    shutil.copytree(path_join([root_path, 'dist']), dist)
     download_path = join(dist, 'wedi_downloads')
     os.mkdir(download_path)
-    create_shourtcut(dist, exe_path, 'wedi.exe')
 
 def remove_leading_slashes(path_str):
     while path_str[0] in ['/', '\\']:
